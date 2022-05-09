@@ -17,17 +17,17 @@ export default function Dashboard() {
       <ParticlesContainer />
 
       <div className="z-10">
-        <div className="flex flex-col w-full">
-          <div className="grid flex-grow place-items-center">
-            <OwningAssetsPickerCard cardTitle="From" />
+        <div className="flex w-full">
+          <div className="grid flex-auto place-items-center">
+            <OwningAssetsPickerCard cardTitle="FROM" />
           </div>
-          <div className="grid md:col-span-1 pt-4 pb-4 row-span-1 justify-center content-center">
-            <button className="w-24 btn btn-primary bg-pink-600 hover:bg-black  border-pink-700 focus:border-pink-700 hover:border-pink-600">
+          <div className="divider divider-horizontal">
+            <button className="w-24 btn btn-primary bg-black hover:bg-pink-600  border-pink-700 focus:border-pink-700 hover:border-pink-600">
               Create
             </button>
           </div>
-          <div className="grid flex-grow place-items-center">
-            <RequestingAssetsPickerCard cardTitle={`To`} />
+          <div className="grid flex-auto place-items-center">
+            <RequestingAssetsPickerCard cardTitle={`TO`} />
           </div>
         </div>
       </div>

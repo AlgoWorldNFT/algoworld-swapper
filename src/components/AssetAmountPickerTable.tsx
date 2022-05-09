@@ -68,6 +68,7 @@ const AssetAmountPickerTable = observer(({ assets = [] }: Props) => {
         <tbody>
           {assets.map((asset: Asset) => (
             <tr key={asset.index}>
+              <th>{asset.index}</th>
               <td>{asset.name}</td>
               <td className="flex w-full bg-base-100 items-center justify-center pr-1 pl-1">
                 <button
