@@ -15,7 +15,7 @@ const AssetPickerTable = ({
   isLoadingAssets,
 }: Props) => {
   return (
-    <div className="overflow-x-auto opacity-90">
+    <div className="overflow-x-auto h-48 opacity-90">
       {!isLoadingAssets && (
         <>
           <table className="animate-fade-in-up table table-compact w-full text-center">
@@ -49,7 +49,7 @@ const AssetPickerTable = ({
           )}
         </>
       )}
-      {isLoadingAssets && <progress className="progress w-full" />}
+      {isLoadingAssets && <progress className="progress w-full bg-pink-600" />}
     </div>
   );
 };

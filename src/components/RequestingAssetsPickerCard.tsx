@@ -26,7 +26,7 @@ const RequestingAssetsPickerCard = ({ cardTitle }: Props) => {
       ? `asset-id=${searchContent}`
       : `name=${searchContent}`;
 
-    return `${ALGOEXPLORER_INDEXER_URL}/v2/assets?${searchParam}&limit=5`;
+    return `${ALGOEXPLORER_INDEXER_URL}/v2/assets?${searchParam}&limit=35`;
   }, [searchContent]);
 
   const { data, error } = useSWR(searchAssetSearchParam, axiosFetcher);
