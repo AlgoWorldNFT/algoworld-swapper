@@ -12,6 +12,10 @@ const ParticlesContainer = () => {
       id="tsparticles"
       init={particlesInit}
       options={{
+        fullScreen: {
+          enable: true,
+          zIndex: -1,
+        },
         fpsLimit: 30,
         interactivity: {
           detectsOn: `window`,
