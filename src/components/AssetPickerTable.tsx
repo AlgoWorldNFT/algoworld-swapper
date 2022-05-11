@@ -15,7 +15,7 @@ const AssetPickerTable = ({
   isLoadingAssets,
 }: Props) => {
   return (
-    <div className="overflow-x-auto h-48 opacity-90">
+    <div className="overflow-x-auto opacity-90">
       {!isLoadingAssets && (
         <>
           <table className="animate-fade-in-up table table-compact w-full text-center">
@@ -24,11 +24,10 @@ const AssetPickerTable = ({
                 <tr key={asset.index}>
                   <th>{asset.index}</th>
                   <td>{asset.name}</td>
-                  {isOwner && <td>{`x${asset.amount}`}</td>}
+                  {isOwner && <td>{`${asset.availableAmount} available`}</td>}
                   <td className="flex w-full bg-base-100 items-center justify-center">
                     <input
                       type="checkbox"
-                      checked={asset.amount > 0}
                       onChange={(event) => {
                         event.target.checked
                           ? onSelect(asset)
@@ -41,15 +40,11 @@ const AssetPickerTable = ({
               ))}
             </tbody>
           </table>
-          {assets.length > 4 && (
-            <div className="btn-group grid grid-cols-2">
-              <button className="btn btn-sm bg-base-100">prev</button>
-              <button className="btn btn-sm bg-base-100">next</button>
-            </div>
-          )}
         </>
       )}
-      {isLoadingAssets && <progress className="progress w-full bg-pink-600" />}
+      {isLoadingAssets && (
+        <progress className="progress w-full progress-warning" />
+      )}
     </div>
   );
 };

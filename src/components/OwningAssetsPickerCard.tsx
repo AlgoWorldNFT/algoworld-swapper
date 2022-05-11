@@ -3,7 +3,7 @@ import AssetPickerTable from './AssetPickerTable';
 import { observer } from 'mobx-react-lite';
 import { useContext, useMemo, useState } from 'react';
 import { RootContext } from '@/stores';
-import { Asset } from '@/models/Asset';
+import { Asset, OfferingAsset } from '@/models/Asset';
 
 type Props = {
   cardTitle: string;
@@ -18,6 +18,7 @@ const OwningAssetsPickerCard = observer(({ cardTitle = `` }: Props) => {
     return store.owningAssets.filter(
       (asset) =>
         searchContent !== `` &&
+        asset.availableAmount > 0 &&
         (String(asset.index).includes(searchContent) ||
           asset.name.toLowerCase().includes(searchContent.toLowerCase()) ||
           asset.unit_name.toLowerCase().includes(searchContent.toLowerCase())),
@@ -29,25 +30,23 @@ const OwningAssetsPickerCard = observer(({ cardTitle = `` }: Props) => {
   };
 
   const onAssetSelected = (asset: Asset) => {
-    store.setOwningAssets([
-      ...store.owningAssets.filter(
-        (curAsset) => asset.index !== curAsset.index,
-      ),
-      { ...asset, amount: 1 },
-    ]);
-    store.setOfferingAssets([...store.offeringAssets, { ...asset, amount: 1 }]);
+    store.addOfferingAssets({ ...asset, amount: 1 });
   };
 
   const onAssetDeselected = (asset: Asset) => {
-    store.setOwningAssets([
-      ...store.owningAssets.filter(
-        (curAsset) => asset.index !== curAsset.index,
-      ),
-      { ...asset, amount: 0 },
-    ]);
-    store.setOfferingAssets(
-      store.offeringAssets.filter((curAsset) => asset.index !== curAsset.index),
-    );
+    store.deleteOfferingAssets({ ...asset, amount: 0 });
+  };
+
+  const onAssetAmountIncreased = (asset: OfferingAsset) => {
+    store.updateOfferingAssetAmount(asset, asset.amount + 1);
+  };
+
+  const onAssetAmountDecreased = (asset: OfferingAsset) => {
+    if (asset.amount - 1 == 0) {
+      onAssetDeselected(asset);
+    } else {
+      store.updateOfferingAssetAmount(asset, asset.amount - 1);
+    }
   };
 
   return (
@@ -88,7 +87,11 @@ const OwningAssetsPickerCard = observer(({ cardTitle = `` }: Props) => {
                 </button>
               </div>
             </div>
-            {searchedOwningAssets.length > 0 && (
+            {searchContent !== `` && searchedOwningAssets.length === 0 ? (
+              <div className="alert shadow-lg">
+                <span>No results founds...</span>
+              </div>
+            ) : (
               <AssetPickerTable
                 assets={searchedOwningAssets}
                 onDeselect={onAssetDeselected}
@@ -103,7 +106,11 @@ const OwningAssetsPickerCard = observer(({ cardTitle = `` }: Props) => {
                 Selected assets
               </div>
               <div className="animate-fade-in-up grid flex-grow">
-                <AssetAmountPickerTable assets={store.offeringAssets} />
+                <AssetAmountPickerTable
+                  assets={store.offeringAssets}
+                  onAssetAmountIncreased={onAssetAmountIncreased}
+                  onAssetAmountDecreased={onAssetAmountDecreased}
+                />
               </div>
             </>
           )}

@@ -1,23 +1,17 @@
 import { useLocalObservable } from 'mobx-react-lite';
 import * as React from 'react';
-import { Asset } from '@/models/Asset';
-import { makeAutoObservable } from 'mobx';
+import { Asset, OfferingAsset, RequestingAsset } from '@/models/Asset';
+import { observable } from 'mobx';
 const { createContext } = React;
 
-const sortAssetsByNameAndAmount = (assets: Asset[]): Asset[] => {
-  return assets
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .sort((a, b) => b.amount - a.amount);
-};
-
 class RootStore {
-  owningAssets: Asset[] = [
+  owningAssets = observable<Asset>([
     {
       index: 12345,
       name: `AW Card #1`,
       decimals: 0,
       unit_name: `CARD`,
-      amount: 0,
+      availableAmount: 0,
       image_url: `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`,
     },
     {
@@ -25,28 +19,75 @@ class RootStore {
       name: `AW Card #2`,
       decimals: 0,
       unit_name: `CARD`,
-      amount: 0,
+      availableAmount: 2,
       image_url: `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`,
     },
-  ];
+  ]);
+  offeringAssets = observable<OfferingAsset>([]);
+  requestingAssets = observable<RequestingAsset>([]);
 
-  offeringAssets: Asset[] = [];
-  requestingAssets: Asset[] = [];
-
-  constructor() {
-    makeAutoObservable(this);
+  private getAssetIndex(
+    assets: Asset[],
+    asset: Asset | OfferingAsset | RequestingAsset,
+  ) {
+    const assetIndex = assets.findIndex(
+      (storedAsset) => storedAsset.index == asset.index,
+    );
+    return assetIndex;
   }
 
-  setOwningAssets(assets: Asset[]) {
-    this.owningAssets = sortAssetsByNameAndAmount(assets);
+  addOwningAsset(asset: Asset) {
+    if (this.getAssetIndex(this.owningAssets, asset) === -1) {
+      this.owningAssets.push(asset);
+    }
   }
 
-  setOfferingAssets(assets: Asset[]) {
-    this.offeringAssets = sortAssetsByNameAndAmount(assets);
+  deleteOwningAsset(asset: Asset) {
+    const assetIndex = this.getAssetIndex(this.owningAssets, asset);
+
+    if (this.getAssetIndex(this.owningAssets, asset) > -1) {
+      this.owningAssets.remove(this.owningAssets[assetIndex]);
+    }
   }
 
-  setRequestingAssets(assets: Asset[]) {
-    this.requestingAssets = sortAssetsByNameAndAmount(assets);
+  addOfferingAssets(asset: OfferingAsset) {
+    if (this.getAssetIndex(this.offeringAssets, asset) === -1) {
+      this.offeringAssets.push(asset);
+    }
+  }
+
+  updateOfferingAssetAmount(asset: OfferingAsset, amount: number) {
+    const assetIndex = this.getAssetIndex(this.offeringAssets, asset);
+    if (assetIndex > -1) {
+      this.offeringAssets[assetIndex].amount = amount;
+    }
+  }
+
+  deleteOfferingAssets(asset: OfferingAsset) {
+    const assetIndex = this.getAssetIndex(this.offeringAssets, asset);
+    if (assetIndex > -1) {
+      this.offeringAssets.remove(this.offeringAssets[assetIndex]);
+    }
+  }
+
+  addRequestingAssets(asset: RequestingAsset) {
+    if (this.getAssetIndex(this.requestingAssets, asset) === -1) {
+      this.requestingAssets.push(asset);
+    }
+  }
+
+  updateRequestingAssetAmount(asset: RequestingAsset, amount: number) {
+    const assetIndex = this.getAssetIndex(this.requestingAssets, asset);
+    if (assetIndex > -1) {
+      this.requestingAssets[assetIndex].amount = amount;
+    }
+  }
+
+  deleteRequestingAssets(asset: RequestingAsset) {
+    const assetIndex = this.getAssetIndex(this.requestingAssets, asset);
+    if (assetIndex > -1) {
+      this.requestingAssets.remove(this.requestingAssets[assetIndex]);
+    }
   }
 }
 

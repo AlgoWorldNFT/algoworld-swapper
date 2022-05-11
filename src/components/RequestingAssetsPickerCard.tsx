@@ -1,7 +1,8 @@
 import { ALGOEXPLORER_INDEXER_URL, axiosFetcher } from '@/common/api';
 import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
-import { Asset } from '@/models/Asset';
+import { Asset, RequestingAsset } from '@/models/Asset';
 import { RootContext } from '@/stores';
+import { observer } from 'mobx-react-lite';
 import { useContext, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import AssetAmountPickerTable from './AssetAmountPickerTable';
@@ -11,12 +12,14 @@ type Props = {
   cardTitle: string;
 };
 
-const RequestingAssetsPickerCard = ({ cardTitle }: Props) => {
+const RequestingAssetsPickerCard = observer(({ cardTitle }: Props) => {
   const store = useContext(RootContext);
 
   const [textInput, setTextInput] = useState(``);
   const [searchContent, setSearchContent] = useState(``);
+  const [nextToken, setNextToken] = useState(``);
   const [isLoadingAssets, setIsLoadingAssets] = useState(false);
+  const [hasSearchedAsset, setHasSearchedAsset] = useState(false);
 
   const searchAssetSearchParam = useMemo(() => {
     if (searchContent === ``) {
@@ -26,8 +29,10 @@ const RequestingAssetsPickerCard = ({ cardTitle }: Props) => {
       ? `asset-id=${searchContent}`
       : `name=${searchContent}`;
 
-    return `${ALGOEXPLORER_INDEXER_URL}/v2/assets?${searchParam}&limit=35`;
-  }, [searchContent]);
+    return `${ALGOEXPLORER_INDEXER_URL}/v2/assets?${searchParam}&limit=5${
+      nextToken === `` ? `` : `&next=${nextToken}`
+    }`;
+  }, [nextToken, searchContent]);
 
   const { data, error } = useSWR(searchAssetSearchParam, axiosFetcher);
 
@@ -37,6 +42,7 @@ const RequestingAssetsPickerCard = ({ cardTitle }: Props) => {
     }
 
     setIsLoadingAssets(false);
+    setHasSearchedAsset(true);
 
     return data.assets.map((rawAsset: any) => {
       const assetParams = rawAsset[`params`];
@@ -48,7 +54,7 @@ const RequestingAssetsPickerCard = ({ cardTitle }: Props) => {
           : EMPTY_ASSET_IMAGE_URL,
         decimals: assetParams[`decimals`],
         unit_name: assetParams[`unit-name`],
-        amount: 0,
+        availableAmount: 0,
       } as Asset;
     });
   }, [data, error]);
@@ -61,30 +67,26 @@ const RequestingAssetsPickerCard = ({ cardTitle }: Props) => {
   };
 
   const onAssetSelected = (asset: Asset) => {
-    store.setOwningAssets([
-      ...store.owningAssets.filter(
-        (curAsset) => asset.index !== curAsset.index,
-      ),
-      { ...asset, amount: 1 },
-    ]);
-    store.setOfferingAssets([...store.offeringAssets, { ...asset, amount: 1 }]);
+    store.addRequestingAssets({ ...asset, amount: 1 });
   };
 
   const onAssetDeselected = (asset: Asset) => {
-    store.setOwningAssets([
-      ...store.owningAssets.filter(
-        (curAsset) => asset.index !== curAsset.index,
-      ),
-      { ...asset, amount: 0 },
-    ]);
-    store.setOfferingAssets(
-      store.offeringAssets.filter((curAsset) => asset.index !== curAsset.index),
-    );
+    store.deleteRequestingAssets({ ...asset, amount: 0 });
   };
 
   const onSearchClicked = () => {
+    setHasSearchedAsset(false);
     setIsLoadingAssets(true);
     setSearchContent(textInput);
+    setNextToken(``);
+  };
+
+  const onAssetAmountIncreased = (asset: RequestingAsset) => {
+    store.updateOfferingAssetAmount(asset, asset.amount + 1);
+  };
+
+  const onAssetAmountDecreased = (asset: RequestingAsset) => {
+    store.updateOfferingAssetAmount(asset, asset.amount - 1);
   };
 
   return (
@@ -126,7 +128,15 @@ const RequestingAssetsPickerCard = ({ cardTitle }: Props) => {
               </button>
             </div>
           </div>
-          {searchedAssets.length > 0 && (
+
+          {!isLoadingAssets &&
+          hasSearchedAsset &&
+          searchedAssets.length === 0 &&
+          textInput !== `` ? (
+            <div className="alert shadow-lg">
+              <span>No results founds...</span>
+            </div>
+          ) : (
             <AssetPickerTable
               assets={searchedAssets}
               onDeselect={onAssetDeselected}
@@ -135,12 +145,24 @@ const RequestingAssetsPickerCard = ({ cardTitle }: Props) => {
               isLoadingAssets={isLoadingAssets}
             />
           )}
-          <br />
-          <AssetAmountPickerTable assets={[]} />
+          {store.requestingAssets.length > 0 && (
+            <>
+              <div className="animate-fade-in-up divider divider-vertical ">
+                Selected assets
+              </div>
+              <div className="animate-fade-in-up grid flex-grow">
+                <AssetAmountPickerTable
+                  assets={store.requestingAssets}
+                  onAssetAmountIncreased={onAssetAmountIncreased}
+                  onAssetAmountDecreased={onAssetAmountDecreased}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
   );
-};
+});
 
 export default RequestingAssetsPickerCard;
