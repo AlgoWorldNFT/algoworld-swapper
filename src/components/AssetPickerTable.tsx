@@ -24,7 +24,7 @@ const AssetPickerTable = ({
                 <tr key={asset.index}>
                   <th>{asset.index}</th>
                   <td>{asset.name}</td>
-                  {isOwner && <td>{`${asset.availableAmount} available`}</td>}
+                  {isOwner && <td>{`${asset.amount} available`}</td>}
                   <td className="flex w-full bg-base-100 items-center justify-center">
                     <input
                       type="checkbox"

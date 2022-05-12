@@ -19,8 +19,10 @@ const Layout = ({ children, title = `This is the default title` }: Props) => (
     <header>
       <NavBar />
     </header>
-    {children}
-    <Footer />
+    <main>{children}</main>
+    <footer>
+      <Footer />
+    </footer>
   </div>
 );
 
