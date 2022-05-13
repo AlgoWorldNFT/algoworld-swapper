@@ -1,9 +1,9 @@
 export type Asset = {
   index: number;
   name: string;
-  image_url: string;
+  imageUrl: string;
   decimals: number;
-  unit_name: string;
+  unitName: string;
   amount: number;
   offeringAmount: number;
   requestingAmount: number;

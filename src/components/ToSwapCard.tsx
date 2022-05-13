@@ -1,33 +1,33 @@
 import { ALGOEXPLORER_INDEXER_URL, axiosFetcher } from '@/common/api';
 import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
 import { Asset } from '@/models/Asset';
-import { RootContext } from '@/stores';
 import {
   Card,
   CardHeader,
   CardContent,
   Autocomplete,
   TextField,
-  Divider,
+  Stack,
+  CircularProgress,
 } from '@mui/material';
-import { observer } from 'mobx-react-lite';
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import useSWR from 'swr';
-import AssetCarouselViewer from './AssetCarouselViewer';
+import AssetGridView from './AssetGridView';
+import { useAppSelector, useAppDispatch } from '@/redux/hooks';
+import { setRequestingAssets } from '@/redux/slices/userSlice';
 
 type Props = {
   cardTitle: string;
 };
 
-const SwapCard = observer(({ cardTitle }: Props) => {
-  const store = useContext(RootContext);
+const ToSwapCard = ({ cardTitle }: Props) => {
+  const requestingAssets = useAppSelector(
+    (state) => state.user.selectedRequestingAssets,
+  );
+  const dispatch = useAppDispatch();
 
-  const [textInput, setTextInput] = useState(``);
   const [searchContent, setSearchContent] = useState(``);
-  const [nextToken, setNextToken] = useState(``);
-  const [isLoadingAssets, setIsLoadingAssets] = useState(false);
-  const [hasSearchedAsset, setHasSearchedAsset] = useState(false);
-
+  const [open, setOpen] = useState(false);
   const searchAssetSearchParam = useMemo(() => {
     if (searchContent === ``) {
       return undefined;
@@ -36,10 +36,8 @@ const SwapCard = observer(({ cardTitle }: Props) => {
       ? `asset-id=${searchContent}`
       : `name=${searchContent}`;
 
-    return `${ALGOEXPLORER_INDEXER_URL}/v2/assets?${searchParam}&limit=5${
-      nextToken === `` ? `` : `&next=${nextToken}`
-    }`;
-  }, [nextToken, searchContent]);
+    return `${ALGOEXPLORER_INDEXER_URL}/v2/assets?${searchParam}&limit=5`;
+  }, [searchContent]);
 
   const { data, error } = useSWR(searchAssetSearchParam, axiosFetcher);
 
@@ -48,55 +46,23 @@ const SwapCard = observer(({ cardTitle }: Props) => {
       return [];
     }
 
-    setIsLoadingAssets(false);
-    setHasSearchedAsset(true);
-
     return data.assets.map((rawAsset: any) => {
       const assetParams = rawAsset[`params`];
       return {
         index: rawAsset[`index`],
         name: assetParams.hasOwnProperty(`name`) ? assetParams[`name`] : ``,
-        image_url: assetParams.hasOwnProperty(`url`)
+        imageUrl: assetParams.hasOwnProperty(`url`)
           ? assetParams[`url`]
           : EMPTY_ASSET_IMAGE_URL,
         decimals: assetParams[`decimals`],
-        unit_name: assetParams[`unit-name`],
+        unitName: assetParams[`unit-name`],
         amount: 0,
         offeringAmount: 0,
         requestingAmount: 0,
       } as Asset;
     });
   }, [data, error]);
-
-  const onSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === undefined || e.target.value === ``) {
-      setSearchContent(``);
-    }
-    setTextInput(e.target.value);
-  };
-
-  const onAssetSelected = (asset: Asset) => {
-    store.addRequestingAssets({ ...asset, amount: 1 });
-  };
-
-  const onAssetDeselected = (asset: Asset) => {
-    store.deleteRequestingAssets({ ...asset, amount: 0 });
-  };
-
-  const onSearchClicked = () => {
-    setHasSearchedAsset(false);
-    setIsLoadingAssets(true);
-    setSearchContent(textInput);
-    setNextToken(``);
-  };
-
-  const onAssetAmountIncreased = (asset: Asset) => {
-    store.updateOfferingAssetAmount(asset, asset.amount + 1);
-  };
-
-  const onAssetAmountDecreased = (asset: Asset) => {
-    store.updateOfferingAssetAmount(asset, asset.amount - 1);
-  };
+  const loading = open && searchedAssets.length === 0;
 
   return (
     <Card sx={{ minWidth: 275 }}>
@@ -114,47 +80,66 @@ const SwapCard = observer(({ cardTitle }: Props) => {
         }}
       />
       <CardContent>
-        <Autocomplete
-          multiple
-          id="tags-outlined"
-          autoComplete
-          options={store.owningAssets}
-          getOptionLabel={(option) => option.name}
-          filterSelectedOptions
-          onChange={(_, value) => {
-            store.setOfferingAssets(value);
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Offering assets"
-              placeholder="Pick the assets you want to offer"
-            />
-          )}
-        />
+        <Stack spacing={2}>
+          <Autocomplete
+            multiple
+            id="tags-outlined"
+            autoComplete
+            open={open}
+            onOpen={() => {
+              setOpen(true);
+            }}
+            onClose={() => {
+              setOpen(false);
+            }}
+            options={searchedAssets}
+            getOptionLabel={(option) => option.name}
+            filterSelectedOptions
+            loading={loading}
+            onChange={(_, value) => {
+              dispatch(setRequestingAssets(value));
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Requesting assets"
+                placeholder="Pick the assets you want to offer"
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {loading ? (
+                        <CircularProgress color="inherit" size={20} />
+                      ) : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                }}
+              />
+            )}
+          />
 
-        <AssetCarouselViewer assets={store.offeringAssets} />
+          <AssetGridView assets={requestingAssets} />
 
-        <Divider />
-
-        <Autocomplete
-          multiple
-          id="tags-outlined"
-          autoComplete
-          options={store.requestingAssets}
-          getOptionLabel={(option) => option.name}
-          filterSelectedOptions
-          onChange={(_, value) => {
-            store.setRequestingAssets(value);
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Requesting assets"
-              placeholder="Pick the assets you want to obtain"
-            />
-          )}
-        />
+          {/* <Autocomplete
+            multiple
+            id="tags-outlined"
+            autoComplete
+            options={requestingAssets}
+            getOptionLabel={(option) => option.name}
+            filterSelectedOptions
+            onChange={(_, value) => {
+              dispatch(setRequestingAssets(value));
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Requesting assets"
+                placeholder="Pick the assets you want to obtain"
+              />
+            )}
+          /> */}
+        </Stack>
       </CardContent>
     </Card>
     // <div className="rounded-lg shadow-xl  border-2  border-pink-700 focus:border-pink-700 hover:border-pink-600 transform transition-all">
@@ -230,6 +215,6 @@ const SwapCard = observer(({ cardTitle }: Props) => {
     //   </div>
     // </div>
   );
-});
+};
 
-export default SwapCard;
+export default ToSwapCard;

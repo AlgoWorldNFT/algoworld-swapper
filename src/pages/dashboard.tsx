@@ -1,6 +1,7 @@
 import ParticlesContainer from '@/components/ParticlesContainer';
-import { Container, Typography } from '@mui/material';
-import SwapCard from '@/components/SwapCard';
+import { Button, Container, Stack, Typography } from '@mui/material';
+import FromSwapCard from '@/components/FromSwapCard';
+import ToSwapCard from '@/components/ToSwapCard';
 
 export default function Dashboard() {
   return (
@@ -36,8 +37,16 @@ export default function Dashboard() {
         </Container>
         {/* End hero unit */}
 
-        <Container maxWidth="md" component="main">
-          <SwapCard cardTitle="Swap" />
+        <Container maxWidth="md" sx={{ textAlign: `center` }} component="main">
+          <Stack spacing={2}>
+            <Stack direction="row" spacing={2}>
+              <FromSwapCard cardTitle="From" />
+              <ToSwapCard cardTitle="To" />
+            </Stack>
+            <Button variant="contained" color="primary">
+              Swap
+            </Button>
+          </Stack>
         </Container>
       </div>
     </div>
