@@ -1,5 +1,5 @@
 import { Asset } from '@/models/Asset';
-import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState = {
   owningAssets: [
@@ -8,7 +8,7 @@ const initialState = {
       name: `AW Card #1`,
       decimals: 0,
       unitName: `CARD`,
-      amount: 0,
+      amount: 5,
       offeringAmount: 0,
       requestingAmount: 0,
       imageUrl: `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`,

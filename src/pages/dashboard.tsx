@@ -39,7 +39,12 @@ export default function Dashboard() {
 
         <Container maxWidth="md" sx={{ textAlign: `center` }} component="main">
           <Stack spacing={2}>
-            <Stack direction="row" spacing={2}>
+            <Stack
+              alignItems={`center`}
+              justifyContent={`center`}
+              direction="row"
+              spacing={2}
+            >
               <FromSwapCard cardTitle="From" />
               <ToSwapCard cardTitle="To" />
             </Stack>

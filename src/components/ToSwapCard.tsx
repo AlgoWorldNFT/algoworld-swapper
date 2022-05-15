@@ -12,9 +12,12 @@ import {
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 import useSWR from 'swr';
-import AssetGridView from './AssetGridView';
+import AssetListView from './AssetListView';
 import { useAppSelector, useAppDispatch } from '@/redux/hooks';
-import { setRequestingAssets } from '@/redux/slices/userSlice';
+import {
+  setOfferingAssets,
+  setRequestingAssets,
+} from '@/redux/slices/userSlice';
 
 type Props = {
   cardTitle: string;
@@ -29,11 +32,11 @@ const ToSwapCard = ({ cardTitle }: Props) => {
   const [searchContent, setSearchContent] = useState(``);
   const [open, setOpen] = useState(false);
   const searchAssetSearchParam = useMemo(() => {
-    if (searchContent === ``) {
+    if (!searchContent || searchContent === ``) {
       return undefined;
     }
     const searchParam = !isNaN(Number(searchContent))
-      ? `asset-id=${searchContent}`
+      ? `asset-id=${Number(searchContent)}`
       : `name=${searchContent}`;
 
     return `${ALGOEXPLORER_INDEXER_URL}/v2/assets?${searchParam}&limit=5`;
@@ -96,6 +99,9 @@ const ToSwapCard = ({ cardTitle }: Props) => {
             getOptionLabel={(option) => option.name}
             filterSelectedOptions
             loading={loading}
+            onInputChange={(event, value) => {
+              setSearchContent(value);
+            }}
             onChange={(_, value) => {
               dispatch(setRequestingAssets(value));
             }}
@@ -119,8 +125,21 @@ const ToSwapCard = ({ cardTitle }: Props) => {
             )}
           />
 
-          <AssetGridView assets={requestingAssets} />
-
+          {requestingAssets.length > 0 && (
+            <AssetListView
+              assets={requestingAssets}
+              onAssetDeselected={(asset) => {
+                dispatch(
+                  setRequestingAssets([
+                    ...requestingAssets.filter(
+                      (curAsset) => curAsset.index !== asset.index,
+                    ),
+                  ]),
+                );
+              }}
+              isOffering={false}
+            />
+          )}
           {/* <Autocomplete
             multiple
             id="tags-outlined"
