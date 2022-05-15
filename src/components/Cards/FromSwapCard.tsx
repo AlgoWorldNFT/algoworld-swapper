@@ -1,17 +1,10 @@
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  Autocomplete,
-  TextField,
-  Stack,
-} from '@mui/material';
-import AssetListView from './AssetListView';
+import { Card, CardHeader, CardContent, Stack, Button } from '@mui/material';
 import { useAppSelector, useAppDispatch } from '@/redux/hooks';
 import { setOfferingAssets } from '@/redux/slices/userSlice';
 import { useState } from 'react';
 import { Asset } from '@/models/Asset';
-import { AssetPickerDialog } from './AssetPickerDialog';
+import { FromAssetPickerDialog } from '../Dialogs/FromAssetPickerDialog';
+import AssetListView from '../Lists/AssetListView';
 
 type Props = {
   cardTitle: string;
@@ -28,7 +21,7 @@ const FromSwapCard = ({ cardTitle }: Props) => {
 
   return (
     <>
-      <AssetPickerDialog
+      <FromAssetPickerDialog
         open={pickerOpen}
         onAssetSelected={(asset: Asset, amount: number) => {
           dispatch(
@@ -39,12 +32,13 @@ const FromSwapCard = ({ cardTitle }: Props) => {
           );
           setPickerOpen(false);
         }}
+        selectedAssets={offeringAssets}
         assets={owningAssets}
         onCancel={() => {
           setPickerOpen(false);
         }}
-      ></AssetPickerDialog>
-      <Card sx={{ minWidth: 275 }}>
+      />
+      <Card>
         <CardHeader
           title={cardTitle}
           titleTypographyProps={{ align: `center` }}
@@ -60,37 +54,14 @@ const FromSwapCard = ({ cardTitle }: Props) => {
         />
         <CardContent>
           <Stack spacing={2}>
-            {/* <Autocomplete
-              multiple
-              id="tags-outlined"
-              autoComplete
-              options={owningAssets}
-              getOptionLabel={(option) => option.name}
-              filterSelectedOptions
-              onClick={() => {
-                setPickerOpen(true);
-              }}
-              onChange={(_, value) => {
-                dispatch(setOfferingAssets(value));
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Offering assets"
-                  placeholder="Pick the assets you want to offer"
-                />
-              )}
-            /> */}
-            <TextField
-              id="name"
-              label="Offering asset amount"
-              onClick={() => {
-                setPickerOpen(true);
-              }}
-              type="number"
-              fullWidth
+            <Button
               variant="outlined"
-            />
+              onClick={() => {
+                setPickerOpen(true);
+              }}
+            >
+              Select Offering Asset
+            </Button>
 
             {offeringAssets.length > 0 && (
               <AssetListView

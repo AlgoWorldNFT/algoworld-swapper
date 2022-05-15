@@ -7,12 +7,16 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
+import AccountBalanceWalletOutlined from '@mui/icons-material/AccountBalanceWalletOutlined';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Icon from '@mui/material/Icon';
 import Image from 'next/image';
+import { AlgoConnectButton } from '../Buttons/AlgoConnectButton';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { useMemo } from 'react';
+import { logoutWalletClient } from '@/redux/slices/userSlice';
 
 const pages = [`Create`, `Browse`, `About`];
 const settings = [`My Swaps`, `Create Storefront`, `Logout`];
@@ -24,6 +28,13 @@ const NavBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   );
+  const walletAddress = useAppSelector((state) => state.user.walletAddress);
+
+  const dispatch = useAppDispatch();
+
+  const isConnected = useMemo(() => {
+    return walletAddress !== undefined;
+  }, [walletAddress]);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -38,6 +49,18 @@ const NavBar = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleClickUserMenu = (event: any) => {
+    setAnchorElUser(null);
+
+    if (!event || !event.target) {
+      return;
+    }
+
+    if (event.target.textContent === `Logout`) {
+      dispatch(logoutWalletClient());
+    }
   };
 
   return (
@@ -134,6 +157,7 @@ const NavBar = () => {
           >
             SWAPPER
           </Typography>
+
           <Box sx={{ flexGrow: 1, display: { xs: `none`, md: `flex` } }}>
             {pages.map((page) => (
               <Button
@@ -147,33 +171,43 @@ const NavBar = () => {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: `45px` }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: `top`,
-                horizontal: `right`,
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: `top`,
-                horizontal: `right`,
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+            {isConnected ? (
+              <>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <AccountBalanceWalletOutlined />
+                    {`${walletAddress?.slice(0, 4)}...${walletAddress?.slice(
+                      walletAddress.length - 4,
+                      walletAddress.length,
+                    )} `}
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: `45px` }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: `top`,
+                    horizontal: `right`,
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: `top`,
+                    horizontal: `right`,
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {settings.map((setting) => (
+                    <MenuItem key={setting} onClick={handleClickUserMenu}>
+                      <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </>
+            ) : (
+              <AlgoConnectButton />
+            )}
           </Box>
         </Toolbar>
       </Container>

@@ -1,59 +1,12 @@
 import { Asset } from '@/models/Asset';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PeraWalletConnect } from '@perawallet/connect';
+import { loadOwningAssets } from '@/utils/loadOwningAssets';
 
 const initialState = {
-  owningAssets: [
-    {
-      index: 12345,
-      name: `AW Card #1`,
-      decimals: 0,
-      unitName: `CARD`,
-      amount: 5,
-      offeringAmount: 0,
-      requestingAmount: 0,
-      imageUrl: `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`,
-    },
-    {
-      index: 12255,
-      name: `AW Card #2`,
-      decimals: 0,
-      unitName: `CARD`,
-      amount: 2,
-      offeringAmount: 0,
-      requestingAmount: 0,
-      imageUrl: `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`,
-    },
-    {
-      index: 12255,
-      name: `AW Card #2`,
-      decimals: 0,
-      unitName: `CARD`,
-      amount: 2,
-      offeringAmount: 0,
-      requestingAmount: 0,
-      imageUrl: `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`,
-    },
-    {
-      index: 12255,
-      name: `AW Card #2`,
-      decimals: 0,
-      unitName: `CARD`,
-      amount: 2,
-      offeringAmount: 0,
-      requestingAmount: 0,
-      imageUrl: `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`,
-    },
-    {
-      index: 12255,
-      name: `AW Card #2`,
-      decimals: 0,
-      unitName: `CARD`,
-      amount: 2,
-      offeringAmount: 0,
-      requestingAmount: 0,
-      imageUrl: `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`,
-    },
-  ] as Asset[],
+  owningAssets: [] as Asset[],
+  walletClient: undefined as PeraWalletConnect | undefined,
+  walletAddress: undefined as string | undefined,
   selectedOfferingAssets: [] as Asset[],
   selectedRequestingAssets: [] as Asset[],
 } as const;
@@ -62,6 +15,24 @@ export const userSlice = createSlice({
   name: `user`,
   initialState,
   reducers: {
+    setWalletClient: (state, action: PayloadAction<PeraWalletConnect>) => {
+      state.walletClient = action.payload;
+    },
+
+    logoutWalletClient: (state) => {
+      if (state.walletClient) {
+        state.walletClient.disconnect();
+      }
+
+      state.walletAddress = undefined;
+    },
+
+    setWalletAddress: (state, action: PayloadAction<string>) => {
+      state.walletAddress = action.payload;
+
+      state.owningAssets = loadOwningAssets(state.walletAddress);
+    },
+
     setOwningAssets: (state, action: PayloadAction<Asset[]>) => {
       state.owningAssets = action.payload;
     },
@@ -94,6 +65,9 @@ export const getOwningAssets = (state: { owningAssets: any }) =>
 
 // Reducers and actions
 export const {
+  setWalletAddress,
+  setWalletClient,
+  logoutWalletClient,
   setOfferingAssets,
   setOwningAssets,
   setRequestingAssets,

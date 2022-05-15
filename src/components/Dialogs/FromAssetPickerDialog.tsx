@@ -15,26 +15,38 @@ type Props = {
   onAssetSelected: (asset: Asset, amount: number) => void;
   onCancel: () => void;
   assets?: Asset[];
+  selectedAssets?: Asset[];
 };
 
-export const AssetPickerDialog = ({
+export const FromAssetPickerDialog = ({
   open,
   onAssetSelected,
   onCancel,
   assets,
+  selectedAssets,
 }: Props) => {
-  const [selectedAsset, setSelectedAsset] = useState<Asset>();
-  const [selectedAssetAmount, setSelectedAssetAmount] = useState<number>();
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>();
+  const [selectedAssetAmount, setSelectedAssetAmount] = useState<number>(1);
+  const maxAmount = useMemo(() => {
+    return selectedAsset ? selectedAsset.amount : 1;
+  }, [selectedAsset]);
+  const minAmount = 1;
 
   const searchedAssets = useMemo(() => {
     const unpackedAssets = assets ? assets : [];
+    const unpackedSelectedAssetIndexes = selectedAssets
+      ? selectedAssets.map((asset) => asset.index)
+      : [];
     const filtered = [
       ...unpackedAssets.filter((asset) => {
-        return asset.amount > 0;
+        return (
+          asset.amount > 0 &&
+          !unpackedSelectedAssetIndexes.includes(asset.index)
+        );
       }),
     ];
     return filtered;
-  }, [assets]);
+  }, [assets, selectedAssets]);
 
   return (
     <div>
@@ -46,15 +58,19 @@ export const AssetPickerDialog = ({
           </DialogContentText>
 
           <Autocomplete
-            id="tags-outlined"
+            id="owned-assets-picker"
             autoComplete
             sx={{ marginTop: 2 }}
+            isOptionEqualToValue={(option, value) =>
+              option.index === value.index
+            }
             options={searchedAssets}
-            getOptionLabel={(option) => option.name}
+            getOptionLabel={(option) => `${option.index}: ${option.name}`}
             filterSelectedOptions
             onChange={(_, value) => {
-              if (value) {
-                setSelectedAsset(value);
+              setSelectedAsset(value);
+              if (!value) {
+                setSelectedAssetAmount(minAmount);
               }
             }}
             renderInput={(params) => (
@@ -69,9 +85,28 @@ export const AssetPickerDialog = ({
           <TextField
             id="name"
             sx={{ marginTop: 2 }}
-            label="Offering asset amount"
+            label={
+              selectedAsset
+                ? `Offering asset amount (${selectedAsset.amount} available)`
+                : `Offering asset amount`
+            }
+            disabled={!selectedAsset}
+            InputProps={{
+              inputProps: {
+                type: `number`,
+                max: maxAmount,
+                min: minAmount,
+              },
+            }}
             onChange={(input) => {
-              setSelectedAssetAmount(Number(input.target.value));
+              let inputVal = Number(input.target.value);
+              inputVal = inputVal === 0 ? 1 : inputVal;
+
+              if (inputVal <= maxAmount && inputVal >= minAmount) {
+                setSelectedAssetAmount(inputVal);
+              } else {
+                setSelectedAssetAmount(minAmount);
+              }
             }}
             type="number"
             value={selectedAssetAmount}
@@ -82,8 +117,8 @@ export const AssetPickerDialog = ({
         <DialogActions>
           <Button
             onClick={() => {
-              setSelectedAsset(undefined);
-              setSelectedAssetAmount(undefined);
+              setSelectedAsset(null);
+              setSelectedAssetAmount(minAmount);
               onCancel();
             }}
           >
@@ -94,8 +129,8 @@ export const AssetPickerDialog = ({
             onClick={() => {
               if (selectedAsset && selectedAssetAmount) {
                 onAssetSelected(selectedAsset, selectedAssetAmount);
-                setSelectedAsset(undefined);
-                setSelectedAssetAmount(undefined);
+                setSelectedAsset(null);
+                setSelectedAssetAmount(minAmount);
               }
             }}
           >
