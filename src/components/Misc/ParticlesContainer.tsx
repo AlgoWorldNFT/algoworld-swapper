@@ -3,7 +3,6 @@ import { loadFull } from 'tsparticles';
 
 const ParticlesContainer = () => {
   const particlesInit = async (main: any) => {
-    console.log(main);
     await loadFull(main);
   };
 

@@ -1,4 +1,13 @@
-import { Card, CardHeader, CardContent, Stack, Button } from '@mui/material';
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Stack,
+  Button,
+  ButtonGroup,
+  Tab,
+  Tabs,
+} from '@mui/material';
 import { useAppSelector, useAppDispatch } from '@/redux/hooks';
 import { setOfferingAssets } from '@/redux/slices/userSlice';
 import { useState } from 'react';
@@ -54,30 +63,56 @@ const FromSwapCard = ({ cardTitle }: Props) => {
         />
         <CardContent>
           <Stack spacing={2}>
-            <Button
+            <ButtonGroup
+              fullWidth
               variant="outlined"
-              onClick={() => {
-                setPickerOpen(true);
-              }}
+              aria-label="outlined button group"
             >
-              Select Offering Asset
-            </Button>
+              <Button sx={{ marginRight: 1 }}>Algo</Button>
+              <Button sx={{ marginLeft: 1 }}>ASA</Button>
+            </ButtonGroup>
 
-            {offeringAssets.length > 0 && (
-              <AssetListView
-                assets={offeringAssets}
-                onAssetDeselected={(asset) => {
-                  dispatch(
-                    setOfferingAssets([
-                      ...offeringAssets.filter(
-                        (curAsset) => curAsset.index !== asset.index,
-                      ),
-                    ]),
-                  );
+            <Tabs
+              value={`value`}
+              variant="scrollable"
+              scrollButtons="auto"
+              aria-label="scrollable auto tabs example"
+            >
+              <Tab label="Item One" />
+              <Tab label="Item Two" />
+              <Tab label="Item Three" />
+              <Tab label="Item Four" />
+              <Tab label="Item Five" />
+              <Tab label="Item Six" />
+              <Tab label="Item Seven" />
+            </Tabs>
+
+            <Stack spacing={2}>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setPickerOpen(true);
                 }}
-                isOffering
-              />
-            )}
+              >
+                Select Offering Asset
+              </Button>
+
+              {offeringAssets.length > 0 && (
+                <AssetListView
+                  assets={offeringAssets}
+                  onAssetDeselected={(asset) => {
+                    dispatch(
+                      setOfferingAssets([
+                        ...offeringAssets.filter(
+                          (curAsset) => curAsset.index !== asset.index,
+                        ),
+                      ]),
+                    );
+                  }}
+                  isOffering
+                />
+              )}
+            </Stack>
           </Stack>
         </CardContent>
       </Card>

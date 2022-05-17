@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { setWalletAddress } from '@/redux/slices/userSlice';
+import { loadUserAssets, setWalletAddress } from '@/redux/slices/userSlice';
 import { Button, Menu, MenuItem } from '@mui/material';
 import { useState } from 'react';
 
@@ -7,6 +7,9 @@ export const AlgoConnectButton = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const walletClient = useAppSelector((state) => state.user.walletClient);
+  const walletAddress = useAppSelector(
+    (state) => state.user.walletAddress,
+  ) as string;
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
@@ -31,22 +34,24 @@ export const AlgoConnectButton = () => {
 
     walletClient.connector?.on(`disconnect`, handleDisconnectWallet);
     dispatch(setWalletAddress(newAccounts[0]));
+    dispatch<any>(loadUserAssets(newAccounts[0]));
   };
 
   const handleConnect = async () => {
-    if (!walletClient) {
-      return;
-    }
+    dispatch<any>(loadUserAssets(walletAddress));
+    // if (!walletClient) {
+    //   return;
+    // }
 
-    handleClose();
-    let response = undefined;
-    try {
-      response = await walletClient.reconnectSession();
-    } catch (error) {
-      response = await walletClient.connect();
-    }
+    // handleClose();
+    // let response = undefined;
+    // try {
+    //   response = await walletClient.reconnectSession();
+    // } catch (error) {
+    //   response = await walletClient.connect();
+    // }
 
-    handleSession(response);
+    // handleSession(response);
   };
 
   return (
@@ -56,9 +61,10 @@ export const AlgoConnectButton = () => {
         aria-controls={open ? `connect-wallet` : undefined}
         aria-haspopup="true"
         aria-expanded={open ? `true` : undefined}
-        onClick={(event) => {
-          setAnchorEl(event.currentTarget);
-        }}
+        // onClick={(event) => {
+        //   setAnchorEl(event.currentTarget);
+        // }}
+        onClick={handleConnect}
         title="Connect Wallet"
       >
         Connect Wallet

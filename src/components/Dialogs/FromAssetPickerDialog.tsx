@@ -67,6 +67,11 @@ export const FromAssetPickerDialog = ({
             options={searchedAssets}
             getOptionLabel={(option) => `${option.index}: ${option.name}`}
             filterSelectedOptions
+            noOptionsText={`${
+              assets && assets.length > 0
+                ? `No assets with non zero balance available`
+                : `No assets available`
+            }`}
             onChange={(_, value) => {
               setSelectedAsset(value);
               if (!value) {
