@@ -1,30 +1,23 @@
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  Stack,
-  Button,
-  ButtonGroup,
-  Tab,
-  Tabs,
-} from '@mui/material';
-import { useAppSelector, useAppDispatch } from '@/redux/hooks';
-import { setOfferingAssets } from '@/redux/slices/userSlice';
+import { Card, CardHeader, CardContent, Stack, Button } from '@mui/material';
+
 import { useState } from 'react';
 import { Asset } from '@/models/Asset';
 import { FromAssetPickerDialog } from '../Dialogs/FromAssetPickerDialog';
 import AssetListView from '../Lists/AssetListView';
+import { useAppSelector, useAppDispatch } from '@/redux/store/hooks';
+import { setOfferingAssets } from '@/redux/slices/walletConnectSlice';
 
 type Props = {
   cardTitle: string;
+  maxAssets: number;
 };
 
-const FromSwapCard = ({ cardTitle }: Props) => {
-  const owningAssets = useAppSelector((state) => state.user.owningAssets);
+const FromSwapCard = ({ cardTitle, maxAssets }: Props) => {
+  const assets = useAppSelector((state) => state.walletConnect.assets);
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
 
   const offeringAssets = useAppSelector(
-    (state) => state.user.selectedOfferingAssets,
+    (state) => state.walletConnect.selectedOfferingAssets,
   );
   const dispatch = useAppDispatch();
 
@@ -42,7 +35,7 @@ const FromSwapCard = ({ cardTitle }: Props) => {
           setPickerOpen(false);
         }}
         selectedAssets={offeringAssets}
-        assets={owningAssets}
+        assets={assets}
         onCancel={() => {
           setPickerOpen(false);
         }}
@@ -63,32 +56,9 @@ const FromSwapCard = ({ cardTitle }: Props) => {
         />
         <CardContent>
           <Stack spacing={2}>
-            <ButtonGroup
-              fullWidth
-              variant="outlined"
-              aria-label="outlined button group"
-            >
-              <Button sx={{ marginRight: 1 }}>Algo</Button>
-              <Button sx={{ marginLeft: 1 }}>ASA</Button>
-            </ButtonGroup>
-
-            <Tabs
-              value={`value`}
-              variant="scrollable"
-              scrollButtons="auto"
-              aria-label="scrollable auto tabs example"
-            >
-              <Tab label="Item One" />
-              <Tab label="Item Two" />
-              <Tab label="Item Three" />
-              <Tab label="Item Four" />
-              <Tab label="Item Five" />
-              <Tab label="Item Six" />
-              <Tab label="Item Seven" />
-            </Tabs>
-
             <Stack spacing={2}>
               <Button
+                disabled={offeringAssets.length >= maxAssets}
                 variant="outlined"
                 onClick={() => {
                   setPickerOpen(true);

@@ -13,10 +13,10 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Icon from '@mui/material/Icon';
 import Image from 'next/image';
-import { AlgoConnectButton } from '../Buttons/AlgoConnectButton';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { useMemo } from 'react';
-import { logoutWalletClient } from '@/redux/slices/userSlice';
+import { useContext, useState } from 'react';
+import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
+import { ConnectContext } from '@/redux/store/connector';
+import { useAppSelector } from '@/redux/store/hooks';
 
 const pages = [`Create`, `Browse`, `About`];
 const settings = [`My Swaps`, `Create Storefront`, `Logout`];
@@ -28,13 +28,29 @@ const NavBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   );
-  const walletAddress = useAppSelector((state) => state.user.walletAddress);
 
-  const dispatch = useAppDispatch();
+  const walletAddress = useAppSelector((state) => state.walletConnect.address);
 
-  const isConnected = useMemo(() => {
-    return walletAddress !== undefined;
-  }, [walletAddress]);
+  const connector = useContext(ConnectContext);
+
+  const connect = async () => {
+    if (connector.connected) return;
+    if (connector.pending) return QRCodeModal.open(connector.uri, null);
+    await connector.createSession();
+  };
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const menuOpen = Boolean(anchorEl);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const disconnect = () => {
+    connector
+      .killSession()
+      .catch((err: { message: any }) => console.error(err.message));
+  };
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -59,7 +75,7 @@ const NavBar = () => {
     }
 
     if (event.target.textContent === `Logout`) {
-      dispatch(logoutWalletClient());
+      disconnect();
     }
   };
 
@@ -171,7 +187,7 @@ const NavBar = () => {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            {!isConnected ? (
+            {connector && connector.connected ? (
               <>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -206,7 +222,30 @@ const NavBar = () => {
                 </Menu>
               </>
             ) : (
-              <AlgoConnectButton />
+              <>
+                <Button
+                  id="connect-wallet-button"
+                  aria-controls={menuOpen ? `connect-wallet` : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={menuOpen ? `true` : undefined}
+                  onClick={connect}
+                  title="Connect Wallet"
+                >
+                  Connect Wallet
+                </Button>
+                <Menu
+                  id="connect-wallet-menu"
+                  anchorEl={anchorEl}
+                  open={menuOpen}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    'aria-labelledby': `connect-wallet-button`,
+                  }}
+                >
+                  <MenuItem onClick={connect}>Pera Wallet</MenuItem>
+                  <MenuItem disabled>🚧 My Algo Wallet</MenuItem>
+                </Menu>
+              </>
             )}
           </Box>
         </Toolbar>

@@ -1,16 +1,25 @@
-import { Button, Container, Grid, Typography } from '@mui/material';
-import ToSwapCard from '@/components/Cards/ToSwapCard';
-import FromSwapCard from '@/components/Cards/FromSwapCard';
+import { Container, Stack, Typography } from '@mui/material';
 import ParticlesContainer from '@/components/Misc/ParticlesContainer';
-import { useAppSelector } from '@/redux/hooks';
+import SwapTypePickerCard from '@/components/Cards/SwapTypePickerCard';
+import { SwapType } from '@/models/Swap';
 
 export default function Dashboard() {
-  const offeringAssets = useAppSelector(
-    (state) => state.user.selectedOfferingAssets,
-  );
-  const requestingAssets = useAppSelector(
-    (state) => state.user.selectedRequestingAssets,
-  );
+  const pageContent = [
+    {
+      title: `ASA to ASA`,
+      description: `Secury & Simple 1 to 1 asset swaps with minimal fees.`,
+      type: SwapType.ASA_TO_ASA,
+      emoji: `🎴↔️🎴`,
+      swapPageUrl: `/swappers/asaToAsa`,
+    },
+    {
+      title: `Multi ASA to Algo`,
+      description: `Swap up to 5 Assets for desired Algo amount or vice versa`,
+      type: SwapType.MULTI_ASA_TO_ALGO,
+      emoji: `x🎴↔️💰`,
+      swapPageUrl: `/swappers/multiAsaToAlgo`,
+    },
+  ];
 
   return (
     <div>
@@ -40,34 +49,23 @@ export default function Dashboard() {
             component="p"
           >
             Create a safe atomic swap powered by Algorand Smart Signatures.
-            Currently supports ASA to ASA and multi ASA to multi ASA swaps.
+            Currently supports ASA to ASA and multi ASA to Algo swaps.
           </Typography>
         </Container>
         {/* End hero unit */}
 
-        <Container sx={{ textAlign: `center` }} component="main">
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <FromSwapCard cardTitle="From" />
-            </Grid>
-
-            <Grid item xs={6}>
-              <ToSwapCard cardTitle="To" />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Button
-                disabled={
-                  offeringAssets.length > 0 && requestingAssets.length > 0
-                }
-                fullWidth
-                variant="contained"
-                color="primary"
-              >
-                Swap
-              </Button>
-            </Grid>
-          </Grid>
+        <Container component="main">
+          <Stack justifyContent={`center`} direction={`row`} spacing={4}>
+            {pageContent.map((content, index) => (
+              <SwapTypePickerCard
+                key={`${content.title}-${index}`}
+                title={content.title}
+                description={content.description}
+                swapPageUrl={content.swapPageUrl}
+                emojiContent={content.emoji}
+              />
+            ))}
+          </Stack>
         </Container>
       </div>
     </div>

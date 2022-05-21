@@ -1,23 +1,25 @@
 import { Card, CardHeader, CardContent, Stack, Button } from '@mui/material';
-import { useAppSelector, useAppDispatch } from '@/redux/hooks';
-import {
-  setOfferingAssets,
-  setRequestingAssets,
-} from '@/redux/slices/userSlice';
+
 import { useState } from 'react';
 import { Asset } from '@/models/Asset';
 import { ToAssetPickerDialog } from '../Dialogs/ToAssetPickerDialog';
 import AssetListView from '../Lists/AssetListView';
+import {
+  setOfferingAssets,
+  setRequestingAssets,
+} from '@/redux/slices/walletConnectSlice';
+import { useAppSelector, useAppDispatch } from '@/redux/store/hooks';
 
 type Props = {
   cardTitle: string;
+  maxAssets: number;
 };
 
-const ToSwapCard = ({ cardTitle }: Props) => {
+const ToSwapCard = ({ cardTitle, maxAssets }: Props) => {
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
 
   const requestingAssets = useAppSelector(
-    (state) => state.user.selectedRequestingAssets,
+    (state) => state.walletConnect.selectedRequestingAssets,
   );
   const dispatch = useAppDispatch();
 
@@ -57,6 +59,7 @@ const ToSwapCard = ({ cardTitle }: Props) => {
           <Stack spacing={2}>
             <Button
               variant="outlined"
+              disabled={requestingAssets.length >= maxAssets}
               onClick={() => {
                 setPickerOpen(true);
               }}

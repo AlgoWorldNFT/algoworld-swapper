@@ -1,8 +1,6 @@
 import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
 import { Asset } from '@/models/Asset';
-import { indexerClient } from './algorand';
-import { ipfsToProxyUrl } from './ipfsToProxyUrl';
-
+import { ipfsToProxyUrl } from '@/utils/ipfsToProxyUrl';
 import algosdk from 'algosdk';
 
 export enum ChainType {
@@ -29,27 +27,6 @@ function clientForChain(chain: ChainType): algosdk.Algodv2 {
       return testNetClient;
     default:
       throw new Error(`Unknown chain type: ${chain}`);
-  }
-}
-
-async function waitForTransaction(
-  chain: ChainType,
-  txId: string,
-): Promise<number> {
-  const client = clientForChain(chain);
-
-  let lastStatus = await client.status().do();
-  let lastRound = lastStatus[`last-round`];
-  while (true) {
-    const status = await client.pendingTransactionInformation(txId).do();
-    if (status[`pool-error`]) {
-      throw new Error(`Transaction Pool Error: ${status[`pool-error`]}`);
-    }
-    if (status[`confirmed-round`]) {
-      return status[`confirmed-round`];
-    }
-    lastStatus = await client.statusAfterBlock(lastRound + 1).do();
-    lastRound = lastStatus[`last-round`];
   }
 }
 
@@ -136,6 +113,27 @@ export async function apiGetTxnParams(
   return params;
 }
 
+async function waitForTransaction(
+  chain: ChainType,
+  txId: string,
+): Promise<number> {
+  const client = clientForChain(chain);
+
+  let lastStatus = await client.status().do();
+  let lastRound = lastStatus[`last-round`];
+  while (true) {
+    const status = await client.pendingTransactionInformation(txId).do();
+    if (status[`pool-error`]) {
+      throw new Error(`Transaction Pool Error: ${status[`pool-error`]}`);
+    }
+    if (status[`confirmed-round`]) {
+      return status[`confirmed-round`];
+    }
+    lastStatus = await client.statusAfterBlock(lastRound + 1).do();
+    lastRound = lastStatus[`last-round`];
+  }
+}
+
 export async function apiSubmitTransactions(
   chain: ChainType,
   stxns: Uint8Array[],
@@ -143,36 +141,3 @@ export async function apiSubmitTransactions(
   const { txId } = await clientForChain(chain).sendRawTransaction(stxns).do();
   return await waitForTransaction(chain, txId);
 }
-
-const lookupAsset = async (index: number) => {
-  let loadedAsset = await indexerClient.lookupAssetByID(index).do();
-  loadedAsset = loadedAsset.asset;
-  const assetParams = loadedAsset[`params`];
-  console.log(assetParams);
-  const asset = {
-    index: loadedAsset[`index`],
-    name: assetParams.hasOwnProperty(`name`) ? assetParams[`name`] : ``,
-    imageUrl: assetParams.hasOwnProperty(`url`)
-      ? ipfsToProxyUrl(assetParams[`url`])
-      : EMPTY_ASSET_IMAGE_URL,
-    decimals: assetParams[`decimals`],
-    unitName: assetParams[`unit-name`],
-    amount: assetParams[`total`],
-    offeringAmount: 0,
-    requestingAmount: 0,
-  } as Asset;
-
-  return asset;
-};
-
-export const loadOwningAssets = async (address: string) => {
-  const response = await indexerClient.lookupAccountAssets(address).do();
-
-  const assets: Asset[] = await Promise.all(
-    response.assets.map((asset: Record<string, any>) => {
-      return lookupAsset(asset[`asset-id`]);
-    }),
-  );
-
-  return assets;
-};

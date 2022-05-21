@@ -7,7 +7,10 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import { Provider } from 'react-redux';
 import darkTheme from '../redux/theme/darkTheme';
 import createEmotionCache from '../utils/createEmotionCache';
-import { store } from '@/redux/store';
+
+import Layout from '@/components/Layouts/Layout';
+import store from '@/redux/store';
+import { ConnectContext, connector } from '@/redux/store/connector';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -19,17 +22,24 @@ interface MyAppProps extends AppProps {
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   return (
-    <Provider store={store}>
-      <CacheProvider value={emotionCache}>
-        <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-        </Head>
-        <ThemeProvider theme={darkTheme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          <Component {...pageProps} />
-        </ThemeProvider>
-      </CacheProvider>
-    </Provider>
+    <>
+      <Head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </Head>
+
+      <Provider store={store}>
+        <ConnectContext.Provider value={connector}>
+          <CacheProvider value={emotionCache}>
+            <ThemeProvider theme={darkTheme}>
+              {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+              <CssBaseline />
+              <Layout title="AlgoWorld Swapper">
+                <Component {...pageProps} />
+              </Layout>
+            </ThemeProvider>
+          </CacheProvider>
+        </ConnectContext.Provider>
+      </Provider>
+    </>
   );
 }
