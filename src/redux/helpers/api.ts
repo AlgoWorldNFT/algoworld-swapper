@@ -71,7 +71,8 @@ export async function apiGetAccountAssets(
         setTimeout(async () => {
           try {
             const assetResponse = await client.getAssetByID(asset.index).do();
-            const assetParams = assetResponse.asset[`params`];
+            console.log(assetResponse);
+            const assetParams = assetResponse[`params`];
             asset[`name`] = assetParams.hasOwnProperty(`name`)
               ? assetParams[`name`]
               : ``;

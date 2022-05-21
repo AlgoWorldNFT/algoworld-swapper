@@ -31,7 +31,6 @@ export default function MyApp(props: MyAppProps) {
         <ConnectContext.Provider value={connector}>
           <CacheProvider value={emotionCache}>
             <ThemeProvider theme={darkTheme}>
-              {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
               <CssBaseline />
               <Layout title="AlgoWorld Swapper">
                 <Component {...pageProps} />

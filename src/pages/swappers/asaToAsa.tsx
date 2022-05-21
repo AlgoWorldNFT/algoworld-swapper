@@ -2,7 +2,8 @@ import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import ToSwapCard from '@/components/Cards/ToSwapCard';
 import FromSwapCard from '@/components/Cards/FromSwapCard';
 import ParticlesContainer from '@/components/Misc/ParticlesContainer';
-import { useAppSelector } from '@/redux/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
+import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 
 export default function AsaToAsa() {
   const offeringAssets = useAppSelector(
@@ -12,6 +13,10 @@ export default function AsaToAsa() {
   const requestingAssets = useAppSelector(
     (state) => state.walletConnect.selectedRequestingAssets,
   );
+
+  const address = useAppSelector((state) => state.walletConnect.address);
+
+  const dispatch = useAppDispatch();
 
   return (
     <div>
@@ -59,16 +64,30 @@ export default function AsaToAsa() {
 
             <Grid item xs={12}>
               <Stack justifyContent={`center`} direction={`column`}>
-                <Button
-                  disabled={
-                    offeringAssets.length === 0 && requestingAssets.length === 0
-                  }
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                >
-                  Swap
-                </Button>
+                {address ? (
+                  <Button
+                    disabled={
+                      offeringAssets.length === 0 ||
+                      requestingAssets.length === 0
+                    }
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                  >
+                    Swap
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      dispatch(setIsWalletPopupOpen(true));
+                    }}
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                  >
+                    Connect Wallet
+                  </Button>
+                )}
               </Stack>
             </Grid>
           </Grid>

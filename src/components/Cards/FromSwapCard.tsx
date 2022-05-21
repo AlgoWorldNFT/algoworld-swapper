@@ -14,6 +14,7 @@ type Props = {
 
 const FromSwapCard = ({ cardTitle, maxAssets }: Props) => {
   const assets = useAppSelector((state) => state.walletConnect.assets);
+  const address = useAppSelector((state) => state.walletConnect.address);
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
 
   const offeringAssets = useAppSelector(
@@ -58,7 +59,7 @@ const FromSwapCard = ({ cardTitle, maxAssets }: Props) => {
           <Stack spacing={2}>
             <Stack spacing={2}>
               <Button
-                disabled={offeringAssets.length >= maxAssets}
+                disabled={offeringAssets.length >= maxAssets || !address}
                 variant="outlined"
                 onClick={() => {
                   setPickerOpen(true);

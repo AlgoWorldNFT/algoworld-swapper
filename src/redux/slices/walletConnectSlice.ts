@@ -81,7 +81,7 @@ export const walletConnectSlice = createSlice({
 
 export const selectAssets = createSelector(
   (state: RootState) => state.walletConnect.assets,
-  (assets) => assets.map((a) => ({ ...a, amount: BigInt(a.amount) })),
+  (assets) => assets.map((a) => ({ ...a, amount: a.amount })),
 );
 
 export const {
