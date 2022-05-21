@@ -3,3 +3,7 @@
 . "$(dirname "$0")/common.sh"
 
 yarn lint-staged
+
+poetry run isort api/**.py
+poetry run black api/**.py
+poetry export -f requirements.txt --output requirements.txt --without-hashes
