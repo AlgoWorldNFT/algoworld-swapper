@@ -4,6 +4,10 @@ import FromSwapCard from '@/components/Cards/FromSwapCard';
 import ParticlesContainer from '@/components/Misc/ParticlesContainer';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
+import { getAsaToAsaSwapCreateTxs } from '@/utils/swapper';
+import { getLogicSign } from '@/utils/accounts';
+import { useContext } from 'react';
+import { ConnectContext } from '@/redux/store/connector';
 
 export default function AsaToAsa() {
   const offeringAssets = useAppSelector(
@@ -14,9 +18,42 @@ export default function AsaToAsa() {
     (state) => state.walletConnect.selectedRequestingAssets,
   );
 
+  const connector = useContext(ConnectContext);
   const address = useAppSelector((state) => state.walletConnect.address);
+  const chain = useAppSelector((state) => state.walletConnect.chain);
 
   const dispatch = useAppDispatch();
+
+  const handleSwap = async () => {
+    const offeringAsset = offeringAssets[0];
+    const requestingAsset = requestingAssets[0];
+
+    fetch(
+      `/api/swappers/compile_swap?` +
+        new URLSearchParams({
+          creator_address: address,
+          offered_asa_id: String(offeringAsset.index),
+          offered_asa_amount: String(offeringAsset.offeringAmount),
+          requested_asa_id: String(requestingAsset.index),
+          requested_asa_amount: String(requestingAsset.requestingAmount),
+        }),
+    ).then(async (response) => {
+      console.log(response);
+      const data = await response.json();
+
+      const escrowLsig = getLogicSign(data);
+      const fundingFee = Math.round((0.1 + 0.1 + 0.01) * 1e6);
+
+      const txs = getAsaToAsaSwapCreateTxs(
+        chain,
+        address,
+        connector,
+        escrowLsig,
+        fundingFee,
+        offeringAsset,
+      );
+    });
+  };
 
   return (
     <div>
@@ -73,6 +110,9 @@ export default function AsaToAsa() {
                     fullWidth
                     variant="contained"
                     color="primary"
+                    onClick={() => {
+                      handleSwap();
+                    }}
                   >
                     Swap
                   </Button>
