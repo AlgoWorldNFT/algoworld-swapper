@@ -1,6 +1,8 @@
 import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
 import { Asset } from '@/models/Asset';
+import { getLogicSign } from '@/utils/accounts';
 import { ipfsToProxyUrl } from '@/utils/ipfsToProxyUrl';
+import { getCompiledSwapProxy } from '@/utils/swapper';
 import algosdk from 'algosdk';
 
 export enum ChainType {
@@ -19,7 +21,7 @@ const testNetClient = new algosdk.Algodv2(
   ``,
 );
 
-function clientForChain(chain: ChainType): algosdk.Algodv2 {
+const algodForChain = (chain: ChainType): algosdk.Algodv2 => {
   switch (chain) {
     case ChainType.MainNet:
       return mainNetClient;
@@ -28,13 +30,13 @@ function clientForChain(chain: ChainType): algosdk.Algodv2 {
     default:
       throw new Error(`Unknown chain type: ${chain}`);
   }
-}
+};
 
-export async function apiGetAccountAssets(
+export const apiGetAccountAssets = async (
   chain: ChainType,
   address: string,
-): Promise<Asset[]> {
-  const client = clientForChain(chain);
+): Promise<Asset[]> => {
+  const client = algodForChain(chain);
 
   const accountInfo = await client
     .accountInformation(address)
@@ -105,20 +107,20 @@ export async function apiGetAccountAssets(
   });
 
   return assets;
-}
+};
 
-export async function apiGetTxnParams(
+export const apiGetTxnParams = async (
   chain: ChainType,
-): Promise<algosdk.SuggestedParams> {
-  const params = await clientForChain(chain).getTransactionParams().do();
+): Promise<algosdk.SuggestedParams> => {
+  const params = await algodForChain(chain).getTransactionParams().do();
   return params;
-}
+};
 
-async function waitForTransaction(
+export const waitForTransaction = async (
   chain: ChainType,
   txId: string,
-): Promise<number> {
-  const client = clientForChain(chain);
+): Promise<number> => {
+  const client = algodForChain(chain);
 
   let lastStatus = await client.status().do();
   let lastRound = lastStatus[`last-round`];
@@ -133,12 +135,27 @@ async function waitForTransaction(
     lastStatus = await client.statusAfterBlock(lastRound + 1).do();
     lastRound = lastStatus[`last-round`];
   }
-}
+};
 
-export async function apiSubmitTransactions(
+export const apiSubmitTransactions = async (
   chain: ChainType,
   stxns: Uint8Array[],
-): Promise<number> {
-  const { txId } = await clientForChain(chain).sendRawTransaction(stxns).do();
+): Promise<number> => {
+  const { txId } = await algodForChain(chain).sendRawTransaction(stxns).do();
   return await waitForTransaction(chain, txId);
-}
+};
+
+export const apiLoadSwaps = async (chain: ChainType, address: string) => {
+  const compiledSwapProxy = await getCompiledSwapProxy({
+    swap_creator: address,
+  });
+  const data = await compiledSwapProxy.data;
+
+  const escrowLsig = getLogicSign(data[`result`]);
+
+  const client = algodForChain(chain);
+
+  // const accountInfo = await client
+  //   .setIntDecoding(algosdk.IntDecoding.BIGINT)
+  //   .do();
+};

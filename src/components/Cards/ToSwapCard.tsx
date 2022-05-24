@@ -4,10 +4,7 @@ import { useState } from 'react';
 import { Asset } from '@/models/Asset';
 import { ToAssetPickerDialog } from '../Dialogs/ToAssetPickerDialog';
 import AssetListView from '../Lists/AssetListView';
-import {
-  setOfferingAssets,
-  setRequestingAssets,
-} from '@/redux/slices/walletConnectSlice';
+import { setRequestingAssets } from '@/redux/slices/walletConnectSlice';
 import { useAppSelector, useAppDispatch } from '@/redux/store/hooks';
 
 type Props = {

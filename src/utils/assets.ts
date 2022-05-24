@@ -21,7 +21,7 @@ const testNetClient = new algosdk.Algodv2(
   ``,
 );
 
-function clientForChain(chain: ChainType): algosdk.Algodv2 {
+function algodForChain(chain: ChainType): algosdk.Algodv2 {
   switch (chain) {
     case ChainType.MainNet:
       return mainNetClient;
@@ -32,11 +32,15 @@ function clientForChain(chain: ChainType): algosdk.Algodv2 {
   }
 }
 
+function indexerForChain(chain: ChainType): algosdk.Indexer {
+  return indexerClient;
+}
+
 async function waitForTransaction(
   chain: ChainType,
   txId: string,
 ): Promise<number> {
-  const client = clientForChain(chain);
+  const client = algodForChain(chain);
 
   let lastStatus = await client.status().do();
   let lastRound = lastStatus[`last-round`];
@@ -57,7 +61,7 @@ export async function apiGetAccountAssets(
   chain: ChainType,
   address: string,
 ): Promise<Asset[]> {
-  const client = clientForChain(chain);
+  const client = algodForChain(chain);
 
   const accountInfo = await client
     .accountInformation(address)
@@ -132,7 +136,7 @@ export async function apiGetAccountAssets(
 export async function apiGetTxnParams(
   chain: ChainType,
 ): Promise<algosdk.SuggestedParams> {
-  const params = await clientForChain(chain).getTransactionParams().do();
+  const params = await algodForChain(chain).getTransactionParams().do();
   return params;
 }
 
@@ -140,7 +144,8 @@ export async function apiSubmitTransactions(
   chain: ChainType,
   stxns: Uint8Array[],
 ): Promise<number> {
-  const { txId } = await clientForChain(chain).sendRawTransaction(stxns).do();
+  const { txId } = await algodForChain(chain).sendRawTransaction(stxns).do();
+  console.log(txId);
   return await waitForTransaction(chain, txId);
 }
 
@@ -166,7 +171,12 @@ const lookupAsset = async (index: number) => {
 };
 
 export const loadOwningAssets = async (address: string) => {
-  const response = await indexerClient.lookupAccountAssets(address).do();
+  const noteEncoded = Buffer.from(`awe_`).toString(`base64`);
+
+  const response = await indexerClient
+    .lookupAccountTransactions(address)
+    .notePrefix(noteEncoded)
+    .do();
 
   const assets: Asset[] = await Promise.all(
     response.assets.map((asset: Record<string, any>) => {

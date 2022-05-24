@@ -4,10 +4,11 @@ import FromSwapCard from '@/components/Cards/FromSwapCard';
 import ParticlesContainer from '@/components/Misc/ParticlesContainer';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
-import { getAsaToAsaSwapCreateTxs } from '@/utils/swapper';
 import { getLogicSign } from '@/utils/accounts';
 import { useContext } from 'react';
 import { ConnectContext } from '@/redux/store/connector';
+import { getAsaToAsaInitSwapStxns, getCompiledSwap } from '@/utils/swapper';
+import { apiSubmitTransactions } from '@/utils/assets';
 
 export default function AsaToAsa() {
   const offeringAssets = useAppSelector(
@@ -28,31 +29,26 @@ export default function AsaToAsa() {
     const offeringAsset = offeringAssets[0];
     const requestingAsset = requestingAssets[0];
 
-    fetch(
-      `/api/swappers/compile_swap?` +
-        new URLSearchParams({
-          creator_address: address,
-          offered_asa_id: String(offeringAsset.index),
-          offered_asa_amount: String(offeringAsset.offeringAmount),
-          requested_asa_id: String(requestingAsset.index),
-          requested_asa_amount: String(requestingAsset.requestingAmount),
-        }),
-    ).then(async (response) => {
-      console.log(response);
-      const data = await response.json();
-
-      const escrowLsig = getLogicSign(data);
-      const fundingFee = Math.round((0.1 + 0.1 + 0.01) * 1e6);
-
-      const txs = getAsaToAsaSwapCreateTxs(
-        chain,
-        address,
-        connector,
-        escrowLsig,
-        fundingFee,
-        offeringAsset,
-      );
+    const response = await getCompiledSwap({
+      creator_address: address,
+      offered_asa_id: offeringAsset.index,
+      offered_asa_amount: offeringAsset.offeringAmount,
+      requested_asa_id: requestingAsset.index,
+      requested_asa_amount: requestingAsset.requestingAmount,
     });
+
+    const data = await response.data;
+    const escrowLsig = getLogicSign(data[`result`]);
+    const fundingFee = Math.round((0.1 + 0.1 + 0.01) * 1e6);
+    const stxns = await getAsaToAsaInitSwapStxns(
+      chain,
+      address,
+      connector,
+      escrowLsig,
+      fundingFee,
+      offeringAsset,
+    );
+    return apiSubmitTransactions(chain, stxns);
   };
 
   return (

@@ -29,8 +29,8 @@ class SwapQueryParams:
     creator_address: str
     offered_asa_id: int
     offered_asa_amount: int
-    requested_asa_id: str
-    requested_asa_amount: str
+    requested_asa_id: int
+    requested_asa_amount: int
 
 
 def compile_swapper(inputParams: SwapQueryParams):
@@ -52,12 +52,24 @@ def compile_swapper(inputParams: SwapQueryParams):
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         s = self.path
-        dic = SwapQueryParams(**dict(parse.parse_qsl(parse.urlsplit(s).query)))
+
+        raw_params = dict(parse.parse_qsl(parse.urlsplit(s).query))
+
+        params = SwapQueryParams(
+            **{
+                "creator_address": raw_params["creator_address"],
+                "offered_asa_id": int(raw_params["offered_asa_id"]),
+                "offered_asa_amount": int(raw_params["offered_asa_amount"]),
+                "requested_asa_id": int(raw_params["requested_asa_id"]),
+                "requested_asa_amount": int(raw_params["requested_asa_amount"]),
+            }
+        )
+
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
 
-        response = json.dumps(compile_swapper(dic))
+        response = json.dumps(compile_swapper(params))
 
         self.wfile.write(response.encode())
         return

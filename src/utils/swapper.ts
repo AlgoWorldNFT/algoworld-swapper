@@ -1,19 +1,44 @@
 import { Asset } from '@/models/Asset';
-import {
-  LsigTransactionToSign,
-  UserTransactionToSign,
-} from '@/models/Transaction';
 import { apiGetTxnParams } from '@/redux/helpers/api';
+import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
 import WalletConnect from '@walletconnect/client';
-import algosdk, { LogicSigAccount } from 'algosdk';
-import { LogicSig } from 'algosdk/dist/types/src/logicsig';
+import algosdk, { LogicSigAccount, Transaction } from 'algosdk';
+import axios from 'axios';
 import { ChainType } from './assets';
 
-export const getAsaToAsaSwapCreateTxs = async (
+const getWalletConnectTxn = (txn: Transaction, sign: boolean) => {
+  const encodedTxn = Buffer.from(
+    algosdk.encodeUnsignedTransaction(txn),
+  ).toString(`base64`);
+
+  return {
+    txn: encodedTxn,
+    message: `Description of transaction being signed`,
+    // Note: if the transaction does not need to be signed (because it's part of an atomic group
+    // that will be signed by another party), specify an empty singers array like so:
+    signers: sign ? undefined : [],
+  };
+};
+
+export const getCompiledSwap = (params: { [key: string]: string | number }) => {
+  return axios.get(`/api/swappers/compile_swap`, {
+    params: params,
+  });
+};
+
+export const getCompiledSwapProxy = (params: {
+  [key: string]: string | number;
+}) => {
+  return axios.get(`/api/swappers/compile_swap_proxy`, {
+    params: params,
+  });
+};
+
+export const getAsaToAsaInitSwapStxns = async (
   chain: ChainType,
   creatorAddress: string,
   creatorWallet: WalletConnect,
-  escrowLsig: LogicSigAccount | LogicSig,
+  escrowLsig: LogicSigAccount,
   fundingFee: number,
   offering: Asset,
 ) => {
@@ -34,7 +59,7 @@ export const getAsaToAsaSwapCreateTxs = async (
   const nftTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: escrowLsig.address(),
     to: escrowLsig.address(),
-    amount: 1e6,
+    amount: 0,
     assetIndex: offering.index,
     note: new Uint8Array(
       Buffer.from(
@@ -44,8 +69,32 @@ export const getAsaToAsaSwapCreateTxs = async (
     suggestedParams,
   });
 
-  return [
-    { transaction: feeTxn, signer: creatorWallet } as UserTransactionToSign,
-    { transaction: nftTxn, signer: escrowLsig } as LsigTransactionToSign,
-  ];
+  const txnGroup = algosdk.assignGroupID([feeTxn, nftTxn]);
+
+  const userRequest = formatJsonRpcRequest(`algo_signTxn`, [
+    [
+      getWalletConnectTxn(txnGroup[0], true),
+      getWalletConnectTxn(txnGroup[1], false),
+    ],
+  ]);
+
+  const signedUserTransactionsaResult = await creatorWallet.sendCustomRequest(
+    userRequest,
+  );
+  const signedUserTransactions = signedUserTransactionsaResult.map(
+    (element: string) => {
+      return element ? new Uint8Array(Buffer.from(element, `base64`)) : null;
+    },
+  );
+
+  console.log(signedUserTransactions);
+  const signedEscrowTx = algosdk.signLogicSigTransactionObject(
+    txnGroup[1],
+    escrowLsig,
+  );
+  console.log(signedEscrowTx);
+
+  const signedTxs = [signedUserTransactions[0], signedEscrowTx.blob];
+
+  return signedTxs;
 };
