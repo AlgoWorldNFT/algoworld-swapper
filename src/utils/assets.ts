@@ -4,6 +4,7 @@ import { indexerClient } from './algorand';
 import { ipfsToProxyUrl } from './ipfsToProxyUrl';
 
 import algosdk from 'algosdk';
+import { getLogicSign } from './accounts';
 
 export enum ChainType {
   MainNet = `mainnet`,
@@ -172,6 +173,7 @@ const lookupAsset = async (index: number) => {
 
 export const loadOwningAssets = async (address: string) => {
   const noteEncoded = Buffer.from(`awe_`).toString(`base64`);
+  const escrowLsig = getLogicSign(data[`result`]);
 
   const response = await indexerClient
     .lookupAccountTransactions(address)

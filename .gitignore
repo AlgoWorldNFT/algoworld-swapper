@@ -37,3 +37,5 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+/api/storage/node_modules
