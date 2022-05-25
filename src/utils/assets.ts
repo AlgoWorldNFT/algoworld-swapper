@@ -5,6 +5,7 @@ import { ipfsToProxyUrl } from './ipfsToProxyUrl';
 
 import algosdk from 'algosdk';
 import { getLogicSign } from './accounts';
+import { getCompiledSwapProxy } from './swapper';
 
 export enum ChainType {
   MainNet = `mainnet`,
@@ -169,22 +170,4 @@ const lookupAsset = async (index: number) => {
   } as Asset;
 
   return asset;
-};
-
-export const loadOwningAssets = async (address: string) => {
-  const noteEncoded = Buffer.from(`awe_`).toString(`base64`);
-  const escrowLsig = getLogicSign(data[`result`]);
-
-  const response = await indexerClient
-    .lookupAccountTransactions(address)
-    .notePrefix(noteEncoded)
-    .do();
-
-  const assets: Asset[] = await Promise.all(
-    response.assets.map((asset: Record<string, any>) => {
-      return lookupAsset(asset[`asset-id`]);
-    }),
-  );
-
-  return assets;
 };

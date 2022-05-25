@@ -145,17 +145,17 @@ export const apiSubmitTransactions = async (
   return await waitForTransaction(chain, txId);
 };
 
-// export const apiLoadSwaps = async (chain: ChainType, address: string) => {
-//   const compiledSwapProxy = await getCompiledSwapProxy({
-//     swap_creator: address,
-//   });
-//   const data = await compiledSwapProxy.data;
+export const apiLoadSwaps = async (chain: ChainType, address: string) => {
+  const compiledSwapProxy = await getCompiledSwapProxy({
+    swap_creator: address,
+  });
+  const data = await compiledSwapProxy.data;
 
-//   const escrowLsig = getLogicSign(data[`result`]);
+  const escrowLsig = getLogicSign(data[`result`]);
 
-//   const client = algodForChain(chain);
+  const client = algodForChain(chain);
 
-//   // const accountInfo = await client
-//   //   .setIntDecoding(algosdk.IntDecoding.BIGINT)
-//   //   .do();
-// };
+  // const accountInfo = await client
+  //   .setIntDecoding(algosdk.IntDecoding.BIGINT)
+  //   .do();
+};
