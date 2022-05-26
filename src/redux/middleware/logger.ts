@@ -23,6 +23,13 @@ const logger: Middleware =
       console.error(action.error.message);
     }
 
+    if (action.type === `walletConnect/getAccountSwaps/pending`) {
+      console.log(`loading swaps...`);
+    }
+    if (action.type === `walletConnect/getAccountSwaps/fulfilled`) {
+      console.log(`swaps sucessfully loaded`);
+    }
+
     const result = next(action);
     if (action.type === `walletConnect/reset`) {
       console.log(`reset state`, getState().walletConnect);

@@ -1,36 +1,12 @@
 import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
 import { Asset } from '@/models/Asset';
-import { getLogicSign } from '@/utils/accounts';
+import { ChainType } from '@/models/Chain';
+import { SwapConfiguration } from '@/models/Swap';
+import { accountExists, getLogicSign } from '@/utils/accounts';
+import { algodForChain, indexerForChain } from '@/utils/algorand';
 import { ipfsToProxyUrl } from '@/utils/ipfsToProxyUrl';
 import { getCompiledSwapProxy } from '@/utils/swapper';
 import algosdk from 'algosdk';
-
-export enum ChainType {
-  MainNet = `mainnet`,
-  TestNet = `testnet`,
-}
-
-const mainNetClient = new algosdk.Algodv2(
-  ``,
-  `https://mainnet-api.algonode.cloud`,
-  ``,
-);
-const testNetClient = new algosdk.Algodv2(
-  ``,
-  `https://testnet-api.algonode.cloud`,
-  ``,
-);
-
-const algodForChain = (chain: ChainType): algosdk.Algodv2 => {
-  switch (chain) {
-    case ChainType.MainNet:
-      return mainNetClient;
-    case ChainType.TestNet:
-      return testNetClient;
-    default:
-      throw new Error(`Unknown chain type: ${chain}`);
-  }
-};
 
 export const apiGetAccountAssets = async (
   chain: ChainType,
@@ -153,9 +129,27 @@ export const apiLoadSwaps = async (chain: ChainType, address: string) => {
 
   const escrowLsig = getLogicSign(data[`result`]);
 
-  const client = algodForChain(chain);
+  const client = indexerForChain(chain);
 
-  // const accountInfo = await client
-  //   .setIntDecoding(algosdk.IntDecoding.BIGINT)
-  //   .do();
+  const proxyExists = await accountExists(chain, escrowLsig.address());
+
+  if (!proxyExists) {
+    return [] as SwapConfiguration[];
+  }
+
+  const paymentTxns = await client
+    .lookupAccountTransactions(escrowLsig.address())
+    .do();
+
+  console.log(escrowLsig.address());
+
+  if (paymentTxns.transactions.length === 0) {
+    return [] as SwapConfiguration[];
+  }
+
+  const swapConfigTxn = paymentTxns.transactions[0];
+  console.log(swapConfigTxn);
+  console.log(`test`);
+  console.log(paymentTxns);
+  return [] as SwapConfiguration[];
 };

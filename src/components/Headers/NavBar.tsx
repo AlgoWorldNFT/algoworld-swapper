@@ -22,6 +22,7 @@ import {
   reset,
   getAccountAssets,
   selectAssets,
+  getAccountSwaps,
 } from '@/redux/slices/walletConnectSlice';
 import { formatBigNumWithDecimals } from '@/redux/helpers/utilities';
 import { Asset } from '@/models/Asset';
@@ -144,6 +145,7 @@ const NavBar = () => {
     if (address?.length > 0) {
       console.log(`chain: `, chain);
       dispatch(getAccountAssets({ chain, address }));
+      dispatch(getAccountSwaps({ chain, address }));
     }
   }, [dispatch, address, chain]);
 

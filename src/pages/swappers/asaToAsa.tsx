@@ -4,11 +4,19 @@ import FromSwapCard from '@/components/Cards/FromSwapCard';
 import ParticlesContainer from '@/components/Misc/ParticlesContainer';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
-import { getLogicSign } from '@/utils/accounts';
+import { accountExists, getLogicSign } from '@/utils/accounts';
 import { useContext } from 'react';
 import { ConnectContext } from '@/redux/store/connector';
-import { getAsaToAsaInitSwapStxns, getCompiledSwap } from '@/utils/swapper';
+import {
+  getAsaToAsaInitSwapStxns,
+  getCompiledSwap,
+  getCompiledSwapProxy,
+  getStoreSwapConfigurationTxns,
+  storeSwapConfiguration,
+} from '@/utils/swapper';
 import { apiSubmitTransactions } from '@/utils/assets';
+import { SWAP_PROXY_VERSION } from '@/common/constants';
+import { SwapConfiguration, SwapType } from '@/models/Swap';
 
 export default function AsaToAsa() {
   const offeringAssets = useAppSelector(
@@ -48,7 +56,38 @@ export default function AsaToAsa() {
       fundingFee,
       offeringAsset,
     );
-    return apiSubmitTransactions(chain, stxns);
+
+    const submitResponse = await apiSubmitTransactions(chain, stxns);
+    console.log(submitResponse);
+
+    const compiledSwapProxy = await getCompiledSwapProxy({
+      swap_creator: address,
+      version: SWAP_PROXY_VERSION,
+    });
+    const proxyData = await compiledSwapProxy.data;
+    const proxyLsig = getLogicSign(proxyData[`result`]);
+    const proxyExists = await accountExists(chain, proxyLsig.address());
+
+    const cidResponse = await storeSwapConfiguration({
+      version: SWAP_PROXY_VERSION,
+      type: SwapType.ASA_TO_ASA,
+      offering: [offeringAsset],
+      requesting: [requestingAsset],
+      creator: address,
+      escrow: proxyLsig.address(),
+    } as SwapConfiguration);
+    const cidData = await cidResponse.data;
+
+    const proxyStxns = await getStoreSwapConfigurationTxns(
+      chain,
+      address,
+      connector,
+      proxyLsig,
+      proxyExists ? 10_000 : 110_000,
+      cidData,
+    );
+
+    const submitProxyResponse = await apiSubmitTransactions(chain, proxyStxns);
   };
 
   return (

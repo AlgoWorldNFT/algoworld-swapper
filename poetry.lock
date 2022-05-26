@@ -1,7 +1,7 @@
 [[package]]
 name = "algoworld-contracts"
-version = "1.2.1"
-description = "AlgoWorld Smart Contracts and Signature"
+version = "1.2.2"
+description = "AlgoWorld Smart Contracts and Signatures"
 category = "main"
 optional = false
 python-versions = "^3.9"
@@ -16,7 +16,7 @@ PyYAML = "6.0"
 type = "git"
 url = "https://github.com/algoworldnft/algoworld-contracts"
 reference = "feature/swap_proxy"
-resolved_reference = "30b7027838de1afd82e6c9f105eab8a7248e75ea"
+resolved_reference = "dbbdb7d5b909831afef7a4b40d16062043e64668"
 
 [[package]]
 name = "black"

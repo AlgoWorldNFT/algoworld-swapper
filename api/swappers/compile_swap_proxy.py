@@ -29,10 +29,13 @@ indexer = IndexerClient("", INDEXER_URL, headers={"User-Agent": "algosdk"})
 @dataclass
 class SwapProxyConfig:
     swap_creator: str
+    version: str
 
 
 def compile_swapper_proxy(cfg: SwapProxyConfig):
-    swapper = contracts.get_swapper_proxy_teal(swap_creator=cfg.swap_creator)
+    swapper = contracts.get_swapper_proxy_teal(
+        swap_creator=cfg.swap_creator, version=cfg.version
+    )
     response = algod.compile(swapper)
     return response
 

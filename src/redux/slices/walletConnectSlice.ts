@@ -1,12 +1,14 @@
 import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
 import { Asset } from '@/models/Asset';
+import { ChainType } from '@/models/Chain';
+import { SwapConfiguration } from '@/models/Swap';
 import {
   createAsyncThunk,
   createSelector,
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { apiGetAccountAssets, ChainType } from '../helpers/api';
+import { apiGetAccountAssets, apiLoadSwaps } from '../helpers/api';
 import { RootState } from '../store';
 
 interface WalletConnectState {
@@ -15,6 +17,7 @@ interface WalletConnectState {
   address: string;
   assets: Asset[];
   fetching: boolean;
+  swaps: SwapConfiguration[];
   selectedOfferingAssets: Asset[];
   selectedRequestingAssets: Asset[];
 }
@@ -39,6 +42,7 @@ const initialState = {
   selectedOfferingAssets: [],
   selectedRequestingAssets: [],
   chain: ChainType.TestNet,
+  swaps: [],
   fetching: false,
 } as WalletConnectState;
 
@@ -46,6 +50,13 @@ export const getAccountAssets = createAsyncThunk(
   `walletConnect/getAccountAssets`,
   async ({ chain, address }: { chain: ChainType; address: string }) => {
     return await apiGetAccountAssets(chain, address);
+  },
+);
+
+export const getAccountSwaps = createAsyncThunk(
+  `walletConnect/getAccountSwaps`,
+  async ({ chain, address }: { chain: ChainType; address: string }) => {
+    return await apiLoadSwaps(chain, address);
   },
 );
 
@@ -74,6 +85,15 @@ export const walletConnectSlice = createSlice({
       state.assets = action.payload;
     });
     builder.addCase(getAccountAssets.pending, (state) => {
+      state.fetching = true;
+    });
+
+    builder.addCase(getAccountSwaps.fulfilled, (state, action) => {
+      state.fetching = false;
+      state.swaps = action.payload;
+    });
+
+    builder.addCase(getAccountSwaps.pending, (state) => {
       state.fetching = true;
     });
   },

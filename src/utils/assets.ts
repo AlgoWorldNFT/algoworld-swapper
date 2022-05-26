@@ -1,42 +1,10 @@
 import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
 import { Asset } from '@/models/Asset';
-import { indexerClient } from './algorand';
 import { ipfsToProxyUrl } from './ipfsToProxyUrl';
 
 import algosdk from 'algosdk';
-import { getLogicSign } from './accounts';
-import { getCompiledSwapProxy } from './swapper';
-
-export enum ChainType {
-  MainNet = `mainnet`,
-  TestNet = `testnet`,
-}
-
-const mainNetClient = new algosdk.Algodv2(
-  ``,
-  `https://mainnet-api.algonode.cloud`,
-  ``,
-);
-const testNetClient = new algosdk.Algodv2(
-  ``,
-  `https://testnet-api.algonode.cloud`,
-  ``,
-);
-
-function algodForChain(chain: ChainType): algosdk.Algodv2 {
-  switch (chain) {
-    case ChainType.MainNet:
-      return mainNetClient;
-    case ChainType.TestNet:
-      return testNetClient;
-    default:
-      throw new Error(`Unknown chain type: ${chain}`);
-  }
-}
-
-function indexerForChain(chain: ChainType): algosdk.Indexer {
-  return indexerClient;
-}
+import { ChainType } from '@/models/Chain';
+import { algodForChain } from './algorand';
 
 async function waitForTransaction(
   chain: ChainType,
@@ -151,23 +119,23 @@ export async function apiSubmitTransactions(
   return await waitForTransaction(chain, txId);
 }
 
-const lookupAsset = async (index: number) => {
-  let loadedAsset = await indexerClient.lookupAssetByID(index).do();
-  loadedAsset = loadedAsset.asset;
-  const assetParams = loadedAsset[`params`];
-  console.log(assetParams);
-  const asset = {
-    index: loadedAsset[`index`],
-    name: assetParams.hasOwnProperty(`name`) ? assetParams[`name`] : ``,
-    imageUrl: assetParams.hasOwnProperty(`url`)
-      ? ipfsToProxyUrl(assetParams[`url`])
-      : EMPTY_ASSET_IMAGE_URL,
-    decimals: assetParams[`decimals`],
-    unitName: assetParams[`unit-name`],
-    amount: assetParams[`total`],
-    offeringAmount: 0,
-    requestingAmount: 0,
-  } as Asset;
+// const lookupAsset = async (index: number) => {
+//   let loadedAsset = await indexerClient.lookupAssetByID(index).do();
+//   loadedAsset = loadedAsset.asset;
+//   const assetParams = loadedAsset[`params`];
+//   console.log(assetParams);
+//   const asset = {
+//     index: loadedAsset[`index`],
+//     name: assetParams.hasOwnProperty(`name`) ? assetParams[`name`] : ``,
+//     imageUrl: assetParams.hasOwnProperty(`url`)
+//       ? ipfsToProxyUrl(assetParams[`url`])
+//       : EMPTY_ASSET_IMAGE_URL,
+//     decimals: assetParams[`decimals`],
+//     unitName: assetParams[`unit-name`],
+//     amount: assetParams[`total`],
+//     offeringAmount: 0,
+//     requestingAmount: 0,
+//   } as Asset;
 
-  return asset;
-};
+//   return asset;
+// };
