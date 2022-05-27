@@ -7,6 +7,17 @@ export const getLogicSign = (compiledContract: string) => {
   return new LogicSigAccount(program, []);
 };
 
+export const getAccountInfo = async (chain: ChainType, account: string) => {
+  try {
+    const response = await indexerForChain(chain)
+      .lookupAccountByID(account)
+      .do();
+    return response;
+  } catch (e) {
+    return undefined;
+  }
+};
+
 export const accountExists = async (chain: ChainType, account: string) => {
   try {
     await indexerForChain(chain).lookupAccountByID(account).do();

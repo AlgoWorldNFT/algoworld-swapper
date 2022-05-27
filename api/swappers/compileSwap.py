@@ -33,7 +33,7 @@ class SwapQueryParams:
     requested_asa_amount: int
 
 
-def compile_swapper(inputParams: SwapQueryParams):
+def compileSwap(inputParams: SwapQueryParams):
 
     swapper = contracts.get_swapper_teal(
         inputParams.creator_address,
@@ -69,7 +69,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/plain")
         self.end_headers()
 
-        response = json.dumps(compile_swapper(params))
+        response = json.dumps(compileSwap(params))
 
         self.wfile.write(response.encode())
         return

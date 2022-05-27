@@ -32,7 +32,7 @@ class SwapProxyConfig:
     version: str
 
 
-def compile_swapper_proxy(cfg: SwapProxyConfig):
+def compileSwapProxy(cfg: SwapProxyConfig):
     swapper = contracts.get_swapper_proxy_teal(
         swap_creator=cfg.swap_creator, version=cfg.version
     )
@@ -43,12 +43,18 @@ def compile_swapper_proxy(cfg: SwapProxyConfig):
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         s = self.path
-        dic = SwapProxyConfig(**dict(parse.parse_qsl(parse.urlsplit(s).query)))
+        raw_params = dict(parse.parse_qsl(parse.urlsplit(s).query))
+        dic = SwapProxyConfig(
+            **{
+                "swap_creator": raw_params["swap_creator"],
+                "version": raw_params["version"],
+            }
+        )
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
 
-        response = json.dumps(compile_swapper_proxy(dic))
+        response = json.dumps(compileSwapProxy(dic))
 
         self.wfile.write(response.encode())
         return

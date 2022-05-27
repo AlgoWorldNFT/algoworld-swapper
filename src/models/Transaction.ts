@@ -12,3 +12,8 @@ export interface TransactionToSign {
   signer: WalletConnect | LogicSigAccount;
   type: TransactionToSignType;
 }
+
+export type SubmitTransactionResponse = {
+  txId: string;
+  confirmedRound: number;
+};

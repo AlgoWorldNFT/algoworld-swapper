@@ -1,4 +1,4 @@
-import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
+import { EMPTY_ASSET_IMAGE_URL, SWAP_PROXY_VERSION } from '@/common/constants';
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import { SwapConfiguration } from '@/models/Swap';
@@ -49,7 +49,6 @@ export const apiGetAccountAssets = async (
         setTimeout(async () => {
           try {
             const assetResponse = await client.getAssetByID(asset.index).do();
-            console.log(assetResponse);
             const assetParams = assetResponse[`params`];
             asset[`name`] = assetParams.hasOwnProperty(`name`)
               ? assetParams[`name`]
@@ -124,6 +123,7 @@ export const apiSubmitTransactions = async (
 export const apiLoadSwaps = async (chain: ChainType, address: string) => {
   const compiledSwapProxy = await getCompiledSwapProxy({
     swap_creator: address,
+    version: SWAP_PROXY_VERSION,
   });
   const data = await compiledSwapProxy.data;
 
@@ -141,15 +141,14 @@ export const apiLoadSwaps = async (chain: ChainType, address: string) => {
     .lookupAccountTransactions(escrowLsig.address())
     .do();
 
-  console.log(escrowLsig.address());
-
   if (paymentTxns.transactions.length === 0) {
     return [] as SwapConfiguration[];
   }
 
+  console.log(paymentTxns.transactions);
+
   const swapConfigTxn = paymentTxns.transactions[0];
   console.log(swapConfigTxn);
-  console.log(`test`);
-  console.log(paymentTxns);
+
   return [] as SwapConfiguration[];
 };

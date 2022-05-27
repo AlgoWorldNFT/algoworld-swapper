@@ -5,6 +5,7 @@ import { ipfsToProxyUrl } from './ipfsToProxyUrl';
 import algosdk from 'algosdk';
 import { ChainType } from '@/models/Chain';
 import { algodForChain } from './algorand';
+import { SubmitTransactionResponse } from '@/models/Transaction';
 
 async function waitForTransaction(
   chain: ChainType,
@@ -78,9 +79,7 @@ export async function apiGetAccountAssets(
             asset[`decimals`] = assetParams[`decimals`];
             asset[`unitName`] = assetParams[`unit-name`];
             asset[`creator`] = assetParams[`creator`];
-          } catch (error) {
-            console.error(`asset:`, asset.index, error);
-          }
+          } catch (error) {}
           resolve();
         }, 25 * i);
       });
@@ -113,17 +112,20 @@ export async function apiGetTxnParams(
 export async function apiSubmitTransactions(
   chain: ChainType,
   stxns: Uint8Array[],
-): Promise<number> {
+): Promise<SubmitTransactionResponse> {
   const { txId } = await algodForChain(chain).sendRawTransaction(stxns).do();
-  console.log(txId);
-  return await waitForTransaction(chain, txId);
+
+  return {
+    confirmedRound: await waitForTransaction(chain, txId),
+    txId: txId,
+  } as SubmitTransactionResponse;
 }
 
 // const lookupAsset = async (index: number) => {
 //   let loadedAsset = await indexerClient.lookupAssetByID(index).do();
 //   loadedAsset = loadedAsset.asset;
 //   const assetParams = loadedAsset[`params`];
-//   console.log(assetParams);
+//
 //   const asset = {
 //     index: loadedAsset[`index`],
 //     name: assetParams.hasOwnProperty(`name`) ? assetParams[`name`] : ``,

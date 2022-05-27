@@ -22,7 +22,7 @@ const getWalletConnectTxn = (txn: Transaction, sign: boolean) => {
 };
 
 export const getCompiledSwap = (params: { [key: string]: string | number }) => {
-  return axios.get(`/api/swappers/compile_swap`, {
+  return axios.get(`/api/swappers/compileSwap`, {
     params: params,
   });
 };
@@ -30,7 +30,7 @@ export const getCompiledSwap = (params: { [key: string]: string | number }) => {
 export const getCompiledSwapProxy = (params: {
   [key: string]: string | number;
 }) => {
-  return axios.get(`/api/swappers/compile_swap_proxy`, {
+  return axios.get(`/api/swappers/compileSwapProxy`, {
     params: params,
   });
 };
@@ -88,12 +88,10 @@ export const getAsaToAsaInitSwapStxns = async (
     },
   );
 
-  console.log(signedUserTransactions);
   const signedEscrowTx = algosdk.signLogicSigTransactionObject(
     txnGroup[1],
     escrowLsig,
   );
-  console.log(signedEscrowTx);
 
   const signedTxs = [signedUserTransactions[0], signedEscrowTx.blob];
 
@@ -101,7 +99,7 @@ export const getAsaToAsaInitSwapStxns = async (
 };
 
 export const storeSwapConfiguration = (configuration: SwapConfiguration) => {
-  return axios.post(`/api/swappers/compile_swap_proxy`, configuration);
+  return axios.post(`/api/storage/storeConfiguration`, configuration);
 };
 
 export const getStoreSwapConfigurationTxns = async (
@@ -152,14 +150,74 @@ export const getStoreSwapConfigurationTxns = async (
     },
   );
 
-  console.log(signedUserTransactions);
   const signedEscrowTx = algosdk.signLogicSigTransactionObject(
     txnGroup[1],
     proxyLsig,
   );
-  console.log(signedEscrowTx);
 
   const signedTxs = [signedUserTransactions[0], signedEscrowTx.blob];
 
   return signedTxs;
+};
+
+export const getSwapDepositTxns = async (
+  chain: ChainType,
+  creatorAddress: string,
+  creatorWallet: WalletConnect,
+  escrow: LogicSigAccount,
+  offeringAsset: Asset,
+  fundingFee: number,
+) => {
+  const suggestedParams = await apiGetTxnParams(chain);
+
+  const txns = [];
+
+  if (offeringAsset.amount > fundingFee) {
+    const feeTxn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+      from: creatorAddress,
+      to: escrow.address(),
+      amount: Math.abs(fundingFee - offeringAsset.amount),
+      note: new Uint8Array(
+        Buffer.from(
+          `I am a fee transaction for configuring algoworld swapper escrow min balance, thank you for using AlgoWorld Swapper :-)`,
+        ),
+      ),
+      suggestedParams,
+    });
+    txns.push(feeTxn);
+  }
+
+  const depositTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+    from: creatorAddress,
+    to: escrow.address(),
+    amount: offeringAsset.offeringAmount,
+    assetIndex: offeringAsset.index,
+    note: new Uint8Array(
+      Buffer.from(
+        `Transcation for the depositing asset ${
+          offeringAsset.index
+        } to swapper ${escrow.address()}, thank you for using AlgoWorld Swapper :-)`,
+      ),
+    ),
+    suggestedParams,
+  });
+  txns.push(depositTxn);
+
+  const txnGroup = algosdk.assignGroupID(txns);
+
+  const userRequest = formatJsonRpcRequest(`algo_signTxn`, [
+    [
+      ...txnGroup.map((txn) => {
+        return getWalletConnectTxn(txn, true);
+      }),
+    ],
+  ]);
+
+  const signedUserTransactionsaResult = await creatorWallet.sendCustomRequest(
+    userRequest,
+  );
+
+  return signedUserTransactionsaResult.map((element: string) => {
+    return element ? new Uint8Array(Buffer.from(element, `base64`)) : null;
+  });
 };
