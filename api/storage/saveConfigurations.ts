@@ -21,11 +21,11 @@ function makeStorageClient() {
 const makeFileObjects = (configuration: any) => {
   const buffer = Buffer.from(JSON.stringify(configuration));
 
-  const files = [new File([buffer], `hello.json`)];
+  const files = [new File([buffer], `aw_swaps.json`)];
   return files;
 };
 
-const storeConfiguration = async (
+const saveConfigurations = async (
   request: VercelRequest,
   response: VercelResponse,
 ) => {
@@ -39,4 +39,4 @@ const storeConfiguration = async (
   }
 };
 
-export default storeConfiguration;
+export default saveConfigurations;

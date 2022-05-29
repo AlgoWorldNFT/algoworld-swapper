@@ -5,6 +5,8 @@ import { LogicSigAccount } from 'algosdk/dist/types/src/logicsig';
 export enum TransactionToSignType {
   UserTransaction,
   LsigTransaction,
+  UserFeeTransaction,
+  LsigFeeTransaction,
 }
 
 export interface TransactionToSign {

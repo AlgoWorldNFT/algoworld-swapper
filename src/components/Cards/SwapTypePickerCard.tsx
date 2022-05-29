@@ -3,7 +3,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { CardActionArea, Grid } from '@mui/material';
-import { SwapType } from '@/models/Swap';
 
 type Props = {
   title: string;

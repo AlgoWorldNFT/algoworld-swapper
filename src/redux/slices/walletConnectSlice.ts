@@ -2,13 +2,15 @@ import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import { SwapConfiguration } from '@/models/Swap';
+import getAssetsForAccount from '@/utils/api/accounts/getAssetsForAccount';
+import loadSwapConfigurations from '@/utils/api/swaps/loadSwapConfigurations';
 import {
   createAsyncThunk,
   createSelector,
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { apiGetAccountAssets, apiLoadSwaps } from '../helpers/api';
+import { LogicSigAccount } from 'algosdk';
 import { RootState } from '../store';
 
 interface WalletConnectState {
@@ -25,6 +27,7 @@ interface WalletConnectState {
 const initialState = {
   accounts: [],
   address: ``,
+  proxy: {} as LogicSigAccount,
   assets: [
     {
       index: 0,
@@ -49,14 +52,14 @@ const initialState = {
 export const getAccountAssets = createAsyncThunk(
   `walletConnect/getAccountAssets`,
   async ({ chain, address }: { chain: ChainType; address: string }) => {
-    return await apiGetAccountAssets(chain, address);
+    return await getAssetsForAccount(chain, address);
   },
 );
 
 export const getAccountSwaps = createAsyncThunk(
   `walletConnect/getAccountSwaps`,
   async ({ chain, address }: { chain: ChainType; address: string }) => {
-    return await apiLoadSwaps(chain, address);
+    return await loadSwapConfigurations(chain, address);
   },
 );
 
@@ -92,7 +95,6 @@ export const walletConnectSlice = createSlice({
       state.fetching = false;
       state.swaps = action.payload;
     });
-
     builder.addCase(getAccountSwaps.pending, (state) => {
       state.fetching = true;
     });

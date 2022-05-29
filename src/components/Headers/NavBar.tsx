@@ -29,6 +29,7 @@ import { Asset } from '@/models/Asset';
 import ConnectWalletDialog from '../Dialogs/ConnectWalletDialog';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { WalletClient, WalletType } from '@/models/Wallet';
+import { useRouter } from 'next/router';
 
 const pages = [`Create`, `Browse`, `About`];
 const settings = [`My Swaps`, `Create Storefront`, `Logout`];
@@ -40,6 +41,7 @@ const NavBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   );
+  const router = useRouter();
 
   const assets = useAppSelector(selectAssets);
 
@@ -89,6 +91,10 @@ const NavBar = () => {
 
     if (!event || !event.target) {
       return;
+    }
+
+    if (event.target.textContent === `My Swaps`) {
+      router.push(`/swappers/mySwaps`);
     }
 
     if (event.target.textContent === `Logout`) {

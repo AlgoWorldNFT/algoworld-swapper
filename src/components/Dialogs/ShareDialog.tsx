@@ -4,7 +4,9 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  Tooltip,
 } from '@mui/material';
+import { useCopyToClipboard } from 'react-use';
 
 type Props = {
   title: string;
@@ -12,9 +14,19 @@ type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
   onConfirm: () => void;
+  contentToCopy?: string;
 };
 
-const ShareDialog = ({ title, children, open, setOpen, onConfirm }: Props) => {
+const ShareDialog = ({
+  title,
+  children,
+  open,
+  setOpen,
+  onConfirm,
+  contentToCopy = undefined,
+}: Props) => {
+  const [, copyToClipboard] = useCopyToClipboard();
+
   return (
     <Dialog
       open={open}
@@ -29,7 +41,18 @@ const ShareDialog = ({ title, children, open, setOpen, onConfirm }: Props) => {
           onClick={() => setOpen(false)}
           color="secondary"
         >
-          No
+          Close
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => {
+            if (contentToCopy) {
+              copyToClipboard(contentToCopy);
+            }
+          }}
+          color="secondary"
+        >
+          Copy URL
         </Button>
         <Button
           variant="contained"
@@ -38,7 +61,7 @@ const ShareDialog = ({ title, children, open, setOpen, onConfirm }: Props) => {
             onConfirm();
           }}
         >
-          Yes
+          Manage Swap
         </Button>
       </DialogActions>
     </Dialog>

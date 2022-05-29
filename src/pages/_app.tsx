@@ -7,6 +7,7 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import { Provider } from 'react-redux';
 import darkTheme from '../redux/theme/darkTheme';
 import createEmotionCache from '../utils/createEmotionCache';
+import { SnackbarProvider } from 'notistack';
 
 import Layout from '@/components/Layouts/Layout';
 import store from '@/redux/store';
@@ -31,10 +32,12 @@ export default function MyApp(props: MyAppProps) {
         <ConnectContext.Provider value={connector}>
           <CacheProvider value={emotionCache}>
             <ThemeProvider theme={darkTheme}>
-              <CssBaseline />
-              <Layout title="AlgoWorld Swapper">
-                <Component {...pageProps} />
-              </Layout>
+              <SnackbarProvider maxSnack={3}>
+                <CssBaseline />
+                <Layout title="AlgoWorld Swapper">
+                  <Component {...pageProps} />
+                </Layout>
+              </SnackbarProvider>
             </ThemeProvider>
           </CacheProvider>
         </ConnectContext.Provider>

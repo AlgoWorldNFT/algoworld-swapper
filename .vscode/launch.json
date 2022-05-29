@@ -14,14 +14,14 @@
     },
     {
       "type": "node",
-      "request": "launch",
+      "request": "attach",
       "name": "Next: Node",
-      "program": "${workspaceFolder}/node_modules/.bin/next",
-      "args": ["dev"],
+      // "program": "${workspaceFolder}/node_modules/.bin/next",
+      // "args": ["dev"],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
-      "skipFiles": ["<node_internals>/**"],
-      "console": "integratedTerminal"
+      "skipFiles": ["<node_internals>/**"]
+      // "console": "integratedTerminal"
     }
   ],
   "compounds": [

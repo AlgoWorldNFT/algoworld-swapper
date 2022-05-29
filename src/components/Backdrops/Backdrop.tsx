@@ -6,13 +6,28 @@ type Props = {
   open: boolean;
   setOpen?: (open: boolean) => void;
   loadingText?: string;
+  noCircularProgress?: boolean;
+  closeAfter?: number | undefined;
 };
 
 const LoadingBackdrop = ({
   open = false,
   setOpen,
   loadingText = `Loading...`,
+  noCircularProgress = false,
+  closeAfter = undefined,
 }: Props) => {
+  React.useEffect(() => {
+    if (closeAfter) {
+      const timeout = setTimeout(() => {
+        if (setOpen) {
+          setOpen(false);
+        }
+      }, closeAfter);
+      clearTimeout(timeout);
+    }
+  });
+
   return (
     <div>
       <Backdrop
@@ -24,7 +39,7 @@ const LoadingBackdrop = ({
           }
         }}
       >
-        <CircularProgress color="inherit" />
+        {!noCircularProgress && <CircularProgress color="inherit" />}
         {loadingText && <div>{loadingText}</div>}
       </Backdrop>
     </div>
