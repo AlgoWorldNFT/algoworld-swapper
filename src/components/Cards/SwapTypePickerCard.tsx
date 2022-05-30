@@ -21,7 +21,6 @@ const SwapTypePickerCard = ({
     <Card
       sx={{
         maxWidth: 345,
-        bgcolor: `black`,
       }}
     >
       <CardActionArea href={swapPageUrl}>

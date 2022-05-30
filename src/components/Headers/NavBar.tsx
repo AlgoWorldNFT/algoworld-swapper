@@ -177,9 +177,9 @@ const NavBar = () => {
       <AppBar position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <Icon
+            <IconButton
               sx={{ display: { xs: `none`, md: `flex` }, mr: 1 }}
-              fontSize="large"
+              href="/"
             >
               <Image
                 src="/algoworld_logo.svg"
@@ -187,22 +187,7 @@ const NavBar = () => {
                 height={40}
                 width={40}
               />
-            </Icon>
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              href="/"
-              sx={{
-                mr: 2,
-                display: { xs: `none`, md: `flex` },
-                fontWeight: 700,
-                color: `inherit`,
-                textDecoration: `none`,
-              }}
-            >
-              SWAPPER
-            </Typography>
+            </IconButton>
 
             <Box sx={{ flexGrow: 1, display: { xs: `flex`, md: `none` } }}>
               <IconButton

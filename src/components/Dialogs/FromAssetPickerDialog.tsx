@@ -28,7 +28,9 @@ export const FromAssetPickerDialog = ({
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>();
   const [selectedAssetAmount, setSelectedAssetAmount] = useState<number>(1);
   const maxAmount = useMemo(() => {
-    return selectedAsset ? selectedAsset.amount : 1;
+    return selectedAsset
+      ? selectedAsset.amount / Math.pow(10, selectedAsset.decimals)
+      : 1;
   }, [selectedAsset]);
   const minAmount = 1;
 
@@ -92,7 +94,9 @@ export const FromAssetPickerDialog = ({
             sx={{ marginTop: 2 }}
             label={
               selectedAsset
-                ? `Offering asset amount (${selectedAsset.amount} available)`
+                ? `Offering asset amount (${
+                    selectedAsset.amount / Math.pow(10, selectedAsset.decimals)
+                  } available)`
                 : `Offering asset amount`
             }
             disabled={!selectedAsset}
