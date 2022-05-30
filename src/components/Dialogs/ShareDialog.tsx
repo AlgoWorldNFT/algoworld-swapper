@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Tooltip,
 } from '@mui/material';
 import { useCopyToClipboard } from 'react-use';
 
@@ -13,6 +12,7 @@ type Props = {
   children: React.ReactNode;
   open: boolean;
   setOpen: (open: boolean) => void;
+  onClose: () => void;
   onConfirm: () => void;
   contentToCopy?: string;
 };
@@ -22,6 +22,7 @@ const ShareDialog = ({
   children,
   open,
   setOpen,
+  onClose,
   onConfirm,
   contentToCopy = undefined,
 }: Props) => {
@@ -38,7 +39,10 @@ const ShareDialog = ({
       <DialogActions>
         <Button
           variant="contained"
-          onClick={() => setOpen(false)}
+          onClick={() => {
+            setOpen(false);
+            onClose();
+          }}
           color="secondary"
         >
           Close

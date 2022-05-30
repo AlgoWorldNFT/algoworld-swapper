@@ -3,10 +3,7 @@ import { indexerForChain } from '../algorand';
 
 export default async function accountExists(chain: ChainType, account: string) {
   try {
-    const response = await indexerForChain(chain)
-      .lookupAccountByID(account)
-      .do();
-    console.log(response);
+    await indexerForChain(chain).lookupAccountByID(account).do();
     return true;
   } catch (e) {
     return false;

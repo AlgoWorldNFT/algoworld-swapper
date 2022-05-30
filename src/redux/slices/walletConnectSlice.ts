@@ -3,7 +3,7 @@ import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import { SwapConfiguration } from '@/models/Swap';
 import getAssetsForAccount from '@/utils/api/accounts/getAssetsForAccount';
-import loadSwapConfigurations from '@/utils/api/swaps/loadSwapConfigurations';
+import getSwapConfigurationsForAccount from '@/utils/api/accounts/getSwapConfigurationsForAccount';
 import {
   createAsyncThunk,
   createSelector,
@@ -59,7 +59,7 @@ export const getAccountAssets = createAsyncThunk(
 export const getAccountSwaps = createAsyncThunk(
   `walletConnect/getAccountSwaps`,
   async ({ chain, address }: { chain: ChainType; address: string }) => {
-    return await loadSwapConfigurations(chain, address);
+    return await getSwapConfigurationsForAccount(chain, address);
   },
 );
 

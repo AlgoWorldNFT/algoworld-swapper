@@ -1,6 +1,7 @@
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import { TransactionToSignType } from '@/models/Transaction';
+import WalletConnect from '@walletconnect/client';
 import algosdk, { LogicSigAccount } from 'algosdk';
 import createTransactionToSign from '../transactions/createTransactionToSign';
 import getTransactionParams from '../transactions/getTransactionParams';
@@ -8,6 +9,7 @@ import getTransactionParams from '../transactions/getTransactionParams';
 export default async function createInitSwapTxns(
   chain: ChainType,
   creatorAddress: string,
+  creatorWallet: WalletConnect,
   escrowLsig: LogicSigAccount,
   fundingFee: number,
   offering: Asset,
@@ -26,6 +28,7 @@ export default async function createInitSwapTxns(
       ),
       suggestedParams,
     }),
+    creatorWallet,
     TransactionToSignType.UserFeeTransaction,
   );
 
@@ -37,11 +40,12 @@ export default async function createInitSwapTxns(
       assetIndex: Number(offering.index),
       note: new Uint8Array(
         Buffer.from(
-          ` I am an asset opt-in transaction for algoworld swapper escrow, thank you for using AlgoWorld Swapper :-)`,
+          ` I am an asset opt-in transaction for algoworld swapper escrow, thank you for using AlgoWorld Swapper (☞ ͡° ͜ʖ ͡°)☞`,
         ),
       ),
       suggestedParams,
     }),
+    escrowLsig,
     TransactionToSignType.LsigTransaction,
   );
 

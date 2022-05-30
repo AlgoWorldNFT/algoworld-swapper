@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
 import AccountBalanceWalletOutlined from '@mui/icons-material/AccountBalanceWalletOutlined';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
@@ -30,9 +31,10 @@ import ConnectWalletDialog from '../Dialogs/ConnectWalletDialog';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
+import { Grid } from '@mui/material';
 
 const pages = [`Create`, `Browse`, `About`];
-const settings = [`My Swaps`, `Create Storefront`, `Logout`];
+const settings = [`My Swaps`, `Logout`];
 
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -281,25 +283,36 @@ const NavBar = () => {
             <Box sx={{ flexGrow: 0 }}>
               {address ? (
                 <>
-                  <Tooltip title="Open settings">
-                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Grid container alignItems={`center`} spacing={2}>
+                    <Grid item xs>
                       {!loading && (
-                        <span>
-                          {formatBigNumWithDecimals(
-                            BigInt(nativeCurrency.amount),
-                            nativeCurrency.decimals,
-                          )}
-                          {` `}
-                          {nativeCurrency.unitName || `units`}
-                        </span>
+                        <Tooltip title="Available balance">
+                          <span>
+                            {formatBigNumWithDecimals(
+                              BigInt(nativeCurrency.amount),
+                              nativeCurrency.decimals,
+                            )}
+                            {` `}
+                            {nativeCurrency.unitName || `units`}
+                          </span>
+                        </Tooltip>
                       )}
-                      <AccountBalanceWalletOutlined />
-                      {`${address?.slice(0, 4)}...${address?.slice(
-                        address.length - 4,
-                        address.length,
-                      )} `}
-                    </IconButton>
-                  </Tooltip>
+                    </Grid>
+                    <Grid item xs>
+                      <Tooltip title="Open settings">
+                        <IconButton
+                          onClick={handleOpenUserMenu}
+                          sx={{ p: 0, borderRadius: 1 }}
+                        >
+                          <AccountBalanceWalletOutlined />
+                          {`${address?.slice(0, 4)}...${address?.slice(
+                            address.length - 4,
+                            address.length,
+                          )} `}
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
                   <Menu
                     sx={{ mt: `45px` }}
                     id="menu-appbar"

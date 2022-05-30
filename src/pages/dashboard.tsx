@@ -1,5 +1,4 @@
 import { Container, Stack, Typography } from '@mui/material';
-import ParticlesContainer from '@/components/Misc/ParticlesContainer';
 import SwapTypePickerCard from '@/components/Cards/SwapTypePickerCard';
 import { SwapType } from '@/models/Swap';
 
@@ -23,8 +22,6 @@ export default function Dashboard() {
 
   return (
     <div>
-      <ParticlesContainer />
-
       <div>
         {/* Hero unit */}
         <Container

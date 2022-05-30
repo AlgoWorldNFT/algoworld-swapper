@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import Head from 'next/head';
 import NavBar from '../Headers/NavBar';
+import ParticlesContainer from '../Misc/ParticlesContainer';
 
 type Props = {
   children?: ReactNode;
@@ -17,7 +18,12 @@ const Layout = ({ children, title = `This is the default title` }: Props) => (
     <header>
       <NavBar />
     </header>
-    <main>{children}</main>
+    <main>
+      <>
+        <ParticlesContainer />
+        {children}
+      </>
+    </main>
   </div>
 );
 

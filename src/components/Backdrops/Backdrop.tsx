@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Typography } from '@mui/material';
 
 type Props = {
   open: boolean;
@@ -40,7 +41,7 @@ const LoadingBackdrop = ({
         }}
       >
         {!noCircularProgress && <CircularProgress color="inherit" />}
-        {loadingText && <div>{loadingText}</div>}
+        {loadingText && <Typography variant="h5">{loadingText}</Typography>}
       </Backdrop>
     </div>
   );

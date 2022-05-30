@@ -27,6 +27,7 @@ export default async function createSaveSwapConfigTxns(
       ),
       suggestedParams,
     }),
+    creatorWallet,
     TransactionToSignType.UserFeeTransaction,
   );
 
@@ -38,6 +39,7 @@ export default async function createSaveSwapConfigTxns(
       note: new Uint8Array(Buffer.from(`ipfs://${swapConfigurationCID}`)),
       suggestedParams,
     }),
+    proxyLsig,
     TransactionToSignType.LsigTransaction,
   );
 

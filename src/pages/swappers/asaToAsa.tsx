@@ -1,7 +1,6 @@
 import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import ToSwapCard from '@/components/Cards/ToSwapCard';
 import FromSwapCard from '@/components/Cards/FromSwapCard';
-import ParticlesContainer from '@/components/Misc/ParticlesContainer';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 
@@ -30,11 +29,11 @@ import saveSwapConfigurations from '@/utils/api/swaps/saveSwapConfigurations';
 import getCompiledProxy from '@/utils/api/swaps/getCompiledProxy';
 import createSwapDepositTxns from '@/utils/api/swaps/createSwapDepositTxns';
 import { useSnackbar } from 'notistack';
-import { ChainType } from '@/models/Chain';
 import {
   setOfferingAssets,
   setRequestingAssets,
 } from '@/redux/slices/walletConnectSlice';
+import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
 
 const ASA_TO_ASA_FUNDING_FEE = Math.round((0.1 + 0.1 + 0.01) * 1e6);
 
@@ -91,14 +90,6 @@ export default function AsaToAsa() {
     const data = await response.data;
     const logicSig = getLogicSign(data[`result`]);
 
-    console.log({
-      creator_address: address,
-      offered_asa_id: offeringAsset.index,
-      offered_asa_amount: offeringAsset.offeringAmount,
-      requested_asa_id: requestingAsset.index,
-      requested_asa_amount: requestingAsset.requestingAmount,
-    });
-    console.log(`escrow: ` + logicSig.address());
     return logicSig;
   }, [address, offeringAssets, requestingAssets]);
 
@@ -145,20 +136,19 @@ export default function AsaToAsa() {
     const initSwapTxns = await createInitSwapTxns(
       chain,
       address,
+      connector,
       escrow,
       ASA_TO_ASA_FUNDING_FEE,
       offeringAsset,
     );
 
-    console.log(initSwapTxns);
     const signedInitSwapTxns = await signTransactions(initSwapTxns, connector);
 
-    console.log(`shouldnt be here`);
     const initSwapResponse = await submitTransactions(
       chain,
       signedInitSwapTxns,
     );
-    console.log(initSwapResponse);
+
     return initSwapResponse.txId;
   };
 
@@ -177,7 +167,7 @@ export default function AsaToAsa() {
       address,
       connector,
       proxy,
-      ASA_TO_ASA_FUNDING_FEE,
+      (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
       cidData,
     );
     const signedSaveSwapConfigTxns = await signTransactions(
@@ -189,7 +179,7 @@ export default function AsaToAsa() {
       chain,
       signedSaveSwapConfigTxns,
     );
-    console.log(saveSwapConfigResponse);
+
     return saveSwapConfigResponse.txId;
   };
 
@@ -215,14 +205,14 @@ export default function AsaToAsa() {
       chain,
       signedSwapDepositTxns,
     );
-    console.log(signedSwapDepositResponse);
+
     return signedSwapDepositResponse.txId;
   };
 
   const handleSwap = async () => {
     setLoadingIndicators({
       loading: true,
-      loadingText: `Initiating swap creation...`,
+      loadingText: `Setting up swap, please sign initialization transactions...`,
     });
 
     if (escrowState.error || proxyState.error) {
@@ -234,16 +224,18 @@ export default function AsaToAsa() {
     const escrow = escrowState.value as LogicSigAccount;
     const proxy = proxyState.value as LogicSigAccount;
 
-    console.log(escrow.address());
-
     if (await accountExists(chain, escrow.address())) {
       setLoadingIndicators({
         loading: true,
         loadingText: `Swap already exists.`,
         closeAfter: 2000,
       });
+      setLoadingIndicators({
+        loading: false,
+      });
 
       setShareSwapDialogOpen(true);
+      return;
     }
 
     const swapInitTxnId = await signAndSendSwapInitTxns(escrow);
@@ -251,17 +243,16 @@ export default function AsaToAsa() {
     enqueueSnackbar(`Swap initiation transactions signed...`, {
       variant: `success`,
       action: () => (
-        <Button
-          href={`https://${
-            chain === ChainType.TestNet ? `testnet` : ``
-          }.algoexplorer.io/tx/${swapInitTxnId}`}
-        >
-          View on AlgoExplorer
-        </Button>
+        <ViewOnAlgoExplorerButton chain={chain} txId={swapInitTxnId} />
       ),
     });
 
     if (!swapExists(escrow.address(), existingSwaps) && swapConfiguration) {
+      setLoadingIndicators({
+        loading: true,
+        loadingText: `Setting up swap, please sign transactions to store your new swap configuration...`,
+      });
+
       const saveSwapTxnId = await signAndSendSaveSwapConfigTxns(
         proxy,
         swapConfiguration,
@@ -270,16 +261,15 @@ export default function AsaToAsa() {
       enqueueSnackbar(`New swap configuration saved...`, {
         variant: `success`,
         action: () => (
-          <Button
-            href={`https://${
-              chain === ChainType.TestNet ? `testnet` : ``
-            }.algoexplorer.io/tx/${saveSwapTxnId}`}
-          >
-            View on AlgoExplorer
-          </Button>
+          <ViewOnAlgoExplorerButton chain={chain} txId={saveSwapTxnId} />
         ),
       });
     }
+
+    setLoadingIndicators({
+      loading: true,
+      loadingText: `Setting up swap, please sign transaction to deposit offering asset and activate swap...`,
+    });
 
     const depositTxnId = await signAndSendDepositSwapAssetTxns(
       escrow,
@@ -289,16 +279,13 @@ export default function AsaToAsa() {
     enqueueSnackbar(`Deposit of offering asset performed...`, {
       variant: `success`,
       action: () => (
-        <Button
-          href={`https://${
-            chain === ChainType.TestNet ? `testnet` : ``
-          }.algoexplorer.io/tx/${depositTxnId}`}
-        >
-          View on AlgoExplorer
-        </Button>
+        <ViewOnAlgoExplorerButton chain={chain} txId={depositTxnId} />
       ),
     });
 
+    setLoadingIndicators({
+      loading: false,
+    });
     setShareSwapDialogOpen(true);
   };
 
@@ -311,9 +298,7 @@ export default function AsaToAsa() {
   };
 
   return (
-    <div>
-      <ParticlesContainer />
-
+    <>
       <div>
         {/* Hero unit */}
         <Container
@@ -344,51 +329,57 @@ export default function AsaToAsa() {
         </Container>
         {/* End hero unit */}
 
-        <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
-          <Grid container spacing={2}>
-            <Grid item md={6} xs={12}>
-              <FromSwapCard cardTitle="From" maxAssets={1} />
-            </Grid>
+        {!loadingIndicators.loading && (
+          <Container
+            maxWidth="sm"
+            sx={{ textAlign: `center` }}
+            component="main"
+          >
+            <Grid container spacing={2}>
+              <Grid item md={6} xs={12}>
+                <FromSwapCard cardTitle="From" maxAssets={1} />
+              </Grid>
 
-            <Grid item md={6} xs={12}>
-              <ToSwapCard cardTitle="To" maxAssets={1} />
-            </Grid>
+              <Grid item md={6} xs={12}>
+                <ToSwapCard cardTitle="To" maxAssets={1} />
+              </Grid>
 
-            <Grid item xs={12}>
-              <Stack justifyContent={`center`} direction={`column`}>
-                {address ? (
-                  <Button
-                    disabled={
-                      offeringAssets.length === 0 ||
-                      requestingAssets.length === 0 ||
-                      escrowState.loading ||
-                      proxyState.loading
-                    }
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                      setConfirmSwapDialogOpen(true);
-                    }}
-                  >
-                    Swap
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      dispatch(setIsWalletPopupOpen(true));
-                    }}
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                  >
-                    Connect Wallet
-                  </Button>
-                )}
-              </Stack>
+              <Grid item xs={12}>
+                <Stack justifyContent={`center`} direction={`column`}>
+                  {address ? (
+                    <Button
+                      disabled={
+                        offeringAssets.length === 0 ||
+                        requestingAssets.length === 0 ||
+                        escrowState.loading ||
+                        proxyState.loading
+                      }
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        setConfirmSwapDialogOpen(true);
+                      }}
+                    >
+                      Swap
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        dispatch(setIsWalletPopupOpen(true));
+                      }}
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                    >
+                      Connect Wallet
+                    </Button>
+                  )}
+                </Stack>
+              </Grid>
             </Grid>
-          </Grid>
-        </Container>
+          </Container>
+        )}
       </div>
 
       <ConfirmDialog
@@ -409,6 +400,9 @@ export default function AsaToAsa() {
           `https://localhost:3000/swappers/` + swapConfiguration?.escrow
         }
         setOpen={setShareSwapDialogOpen}
+        onClose={() => {
+          resetStates();
+        }}
         onConfirm={() => {
           resetStates();
         }}
@@ -420,13 +414,10 @@ export default function AsaToAsa() {
 
       <LoadingBackdrop
         open={loadingIndicators.loading}
-        setOpen={(state) => {
-          setLoadingIndicators({ ...loadingIndicators, loading: state });
-        }}
         loadingText={loadingIndicators.loadingText}
         noCircularProgress={loadingIndicators.showLoading}
         closeAfter={loadingIndicators.closeAfter}
       />
-    </div>
+    </>
   );
 }
