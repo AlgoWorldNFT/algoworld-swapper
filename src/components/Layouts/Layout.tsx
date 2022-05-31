@@ -3,6 +3,7 @@ import Head from 'next/head';
 import NavBar from '../Headers/NavBar';
 import ParticlesContainer from '../Misc/ParticlesContainer';
 import Footer from '../Footers/Footer';
+import { Box } from '@mui/material';
 
 type Props = {
   children?: ReactNode;
@@ -10,7 +11,13 @@ type Props = {
 };
 
 const Layout = ({ children, title = `This is the default title` }: Props) => (
-  <div className="flex flex-col h-screen justify-between">
+  <Box
+    sx={{
+      display: `flex`,
+      flexDirection: `column`,
+      minHeight: `100vh`,
+    }}
+  >
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />
@@ -25,10 +32,8 @@ const Layout = ({ children, title = `This is the default title` }: Props) => (
         {children}
       </>
     </main>
-    <footer>
-      <Footer />
-    </footer>
-  </div>
+    <Footer />
+  </Box>
 );
 
 export default Layout;

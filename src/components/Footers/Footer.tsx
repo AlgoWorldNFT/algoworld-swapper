@@ -1,4 +1,4 @@
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Container, Link, Typography } from '@mui/material';
 
 function Copyright() {
   return (
@@ -14,28 +14,25 @@ function Copyright() {
 const Footer = () => (
   <Box
     sx={{
-      bgcolor: `background.paper`,
-      textAlign: `center`,
-      p: 1,
-      position: `sticky`,
-      left: 0,
-      bottom: 0,
-      height: `60px`,
-      width: `100%`,
+      py: 3,
+      px: 2,
+      mt: `auto`,
     }}
     alignItems="center"
     justifyContent="center"
     component="footer"
   >
-    <Typography
-      variant="subtitle1"
-      align="center"
-      color="text.secondary"
-      component="p"
-    >
-      Powered by Algorand ❤️
-    </Typography>
-    <Copyright />
+    <Container maxWidth="sm">
+      <Typography
+        variant="subtitle1"
+        align="center"
+        color="text.secondary"
+        component="p"
+      >
+        Powered by Algorand ❤️
+      </Typography>
+      <Copyright />
+    </Container>
   </Box>
 );
 
