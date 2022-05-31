@@ -32,7 +32,10 @@ import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
 import { Grid } from '@mui/material';
 
-const pages = [`Home`, `Browse`, `About`];
+const pages = [
+  { title: `Home`, url: `/` },
+  { title: `About`, url: `/about` },
+];
 const settings = [`My Swaps`, `Logout`];
 
 const NavBar = () => {
@@ -220,8 +223,8 @@ const NavBar = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">{page}</Typography>
+                  <MenuItem key={page.title} onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">{page.title}</Typography>
                   </MenuItem>
                 ))}
               </Menu>
@@ -230,11 +233,12 @@ const NavBar = () => {
             <Box sx={{ flexGrow: 1, display: { xs: `none`, md: `flex` } }}>
               {pages.map((page) => (
                 <Button
-                  key={page}
+                  key={page.title}
+                  href={page.url}
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: `white`, display: `block` }}
                 >
-                  {page}
+                  {page.title}
                 </Button>
               ))}
             </Box>

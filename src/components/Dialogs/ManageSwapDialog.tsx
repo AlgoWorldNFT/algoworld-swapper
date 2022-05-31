@@ -241,7 +241,11 @@ const ManageSwapDialog = ({
       <DialogTitle id="confirm-dialog">{title}</DialogTitle>
       <DialogContent>
         <Stack spacing={1}>
-          <Chip color={`primary`} label={`Algo Balance: ${swapAlgoBalance}`} />
+          <Chip
+            variant="outlined"
+            color="primary"
+            label={`Algo Balance: ${swapAlgoBalance}`}
+          />
           {swapAccountAssets.map(
             (asset: {
               [x: string]: Key | null | undefined;
@@ -250,8 +254,9 @@ const ManageSwapDialog = ({
             }) => {
               return (
                 <Chip
+                  variant="outlined"
+                  color="primary"
                   key={asset[`asset-id`]}
-                  color={`primary`}
                   label={`${asset[`asset-id`]}'s balance: ${asset.amount}`}
                 />
               );
@@ -265,7 +270,7 @@ const ManageSwapDialog = ({
                 onClose();
               }}
               loading={depositLoading}
-              variant="outlined"
+              variant="contained"
               fullWidth
             >
               Deposit Asset
@@ -275,7 +280,7 @@ const ManageSwapDialog = ({
             <LoadingButton
               loading={deleteLoading}
               color="error"
-              variant="outlined"
+              variant="contained"
               fullWidth
               onClick={async () => {
                 await manageDeleteSwap();
