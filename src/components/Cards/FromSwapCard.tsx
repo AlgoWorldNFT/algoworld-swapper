@@ -45,15 +45,7 @@ const FromSwapCard = ({ cardTitle, maxAssets }: Props) => {
         <CardHeader
           title={cardTitle}
           titleTypographyProps={{ align: `center` }}
-          subheaderTypographyProps={{
-            align: `center`,
-          }}
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === `light`
-                ? theme.palette.grey[200]
-                : theme.palette.grey[700],
-          }}
+          sx={{}}
         />
         <CardContent>
           <Stack spacing={2}>

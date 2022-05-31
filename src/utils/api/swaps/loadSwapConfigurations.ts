@@ -26,6 +26,7 @@ export default async function loadSwapConfigurations(
     `utf-8`,
   );
 
+  console.log(configFileUrl);
   if (configFileUrl.includes(`ipfs`)) {
     const configFile = await axios
       .get(

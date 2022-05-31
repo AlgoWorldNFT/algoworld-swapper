@@ -11,5 +11,6 @@ export type SwapConfiguration = {
   offering: Asset[];
   requesting: Asset[];
   creator: string;
+  proxy: string;
   escrow: string;
 };

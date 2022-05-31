@@ -9,7 +9,10 @@ const store = configureStore({
     application: applicationReducer,
   },
   preloadedState: {},
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(logger),
 });
 
 export type StoreGetSate = typeof store.getState;

@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import Head from 'next/head';
 import NavBar from '../Headers/NavBar';
 import ParticlesContainer from '../Misc/ParticlesContainer';
+import Footer from '../Footers/Footer';
 
 type Props = {
   children?: ReactNode;
@@ -24,6 +25,9 @@ const Layout = ({ children, title = `This is the default title` }: Props) => (
         {children}
       </>
     </main>
+    <footer>
+      <Footer />
+    </footer>
   </div>
 );
 

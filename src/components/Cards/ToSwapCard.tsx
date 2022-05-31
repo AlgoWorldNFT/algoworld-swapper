@@ -46,12 +46,6 @@ const ToSwapCard = ({ cardTitle, maxAssets }: Props) => {
           subheaderTypographyProps={{
             align: `center`,
           }}
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === `light`
-                ? theme.palette.grey[200]
-                : theme.palette.grey[700],
-          }}
         />
         <CardContent>
           <Stack spacing={2}>

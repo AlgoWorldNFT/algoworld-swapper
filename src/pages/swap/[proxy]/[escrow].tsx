@@ -1,14 +1,13 @@
 import PerformSwapAssetsViewCard, {
   PerformSwapCardType,
 } from '@/components/Cards/PerformSwapAssetsViewCard';
-import { SwapConfiguration } from '@/models/Swap';
 import { useAppSelector } from '@/redux/store/hooks';
 import loadSwapConfigurations from '@/utils/api/swaps/loadSwapConfigurations';
 import swapExists from '@/utils/api/swaps/swapExists';
 import { Container, Grid, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
-import { useAsync, useAsyncFn } from 'react-use';
+import { useEffect, useMemo } from 'react';
+import { useAsyncFn } from 'react-use';
 
 const PerformSwap = () => {
   const router = useRouter();

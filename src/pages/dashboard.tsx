@@ -25,10 +25,11 @@ export default function Dashboard() {
       <div>
         {/* Hero unit */}
         <Container
-          disableGutters
-          maxWidth="sm"
           component="main"
-          sx={{ pt: 8, pb: 6 }}
+          sx={{
+            pt: 8,
+            pb: 6,
+          }}
         >
           <Typography
             component="h1"
@@ -37,7 +38,7 @@ export default function Dashboard() {
             color="text.primary"
             gutterBottom
           >
-            ⚡️ Create Swap
+            🏠 Dashboard
           </Typography>
           <Typography
             variant="h6"
@@ -45,13 +46,13 @@ export default function Dashboard() {
             color="text.secondary"
             component="p"
           >
-            Create a safe atomic swap powered by Algorand Smart Signatures.
-            Currently supports ASA to ASA and multi ASA to Algo swaps.
+            Create atomic swaps powered by Algorand Smart Signatures. Currently
+            supports ASA to ASA and multi ASA to Algo swaps.
           </Typography>
         </Container>
         {/* End hero unit */}
 
-        <Container component="main">
+        <Container component="main" sx={{ pt: 5 }}>
           <Stack justifyContent={`center`} direction={`row`} spacing={4}>
             {pageContent.map((content, index) => (
               <SwapTypePickerCard

@@ -20,15 +20,11 @@ const Footer = () => (
       bottom: 0,
       left: 0,
       right: 0,
-      backgroundColor: `grey.900`,
     }}
     alignItems="center"
     justifyContent="center"
     component="footer"
   >
-    {/* <Typography variant="h6" align="center" gutterBottom>
-      Footer
-    </Typography> */}
     <Typography
       variant="subtitle1"
       align="center"

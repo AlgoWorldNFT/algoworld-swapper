@@ -1,9 +1,11 @@
-import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
+import { EMPTY_ASSET_IMAGE_URL, SWAP_PROXY_VERSION } from '@/common/constants';
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import { SwapConfiguration } from '@/models/Swap';
 import getAssetsForAccount from '@/utils/api/accounts/getAssetsForAccount';
+import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import getSwapConfigurationsForAccount from '@/utils/api/accounts/getSwapConfigurationsForAccount';
+import getCompiledProxy from '@/utils/api/swaps/getCompiledProxy';
 import {
   createAsyncThunk,
   createSelector,
@@ -19,6 +21,7 @@ interface WalletConnectState {
   address: string;
   assets: Asset[];
   fetching: boolean;
+  proxy: LogicSigAccount;
   swaps: SwapConfiguration[];
   selectedOfferingAssets: Asset[];
   selectedRequestingAssets: Asset[];
@@ -56,6 +59,25 @@ export const getAccountAssets = createAsyncThunk(
   },
 );
 
+export const getProxy = createAsyncThunk(
+  `walletConnect/getProxy`,
+  async ({
+    address,
+    version = SWAP_PROXY_VERSION,
+  }: {
+    address: string;
+    version?: string;
+  }) => {
+    const response = await getCompiledProxy({
+      swap_creator: address,
+      version: version,
+    });
+
+    const data = await response.data;
+    return getLogicSign(data[`result`]);
+  },
+);
+
 export const getAccountSwaps = createAsyncThunk(
   `walletConnect/getAccountSwaps`,
   async ({ chain, address }: { chain: ChainType; address: string }) => {
@@ -88,6 +110,14 @@ export const walletConnectSlice = createSlice({
       state.assets = action.payload;
     });
     builder.addCase(getAccountAssets.pending, (state) => {
+      state.fetching = true;
+    });
+
+    builder.addCase(getProxy.fulfilled, (state, action) => {
+      state.fetching = false;
+      state.proxy = action.payload;
+    });
+    builder.addCase(getProxy.pending, (state) => {
       state.fetching = true;
     });
 

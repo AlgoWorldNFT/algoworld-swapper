@@ -15,7 +15,7 @@ const AssetListView = ({
   isOffering = true,
 }: Props) => {
   return (
-    <Paper sx={{ bgcolor: `black` }}>
+    <Paper sx={{ bgcolor: `background.default` }}>
       <List sx={{ width: `100%` }}>
         {assets.map((asset, index) => (
           <ListItem
@@ -28,12 +28,12 @@ const AssetListView = ({
                   onAssetDeselected(asset);
                 }}
               >
-                <DeleteIcon />
+                <DeleteIcon sx={{ color: `secondary.main` }} />
               </IconButton>
             }
           >
             <ListItemText
-              sx={{ textAlign: `center` }}
+              sx={{ textAlign: `center`, color: `primary.main` }}
               primary={
                 isOffering
                   ? `${asset.name} (${

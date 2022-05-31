@@ -23,6 +23,13 @@ const logger: Middleware =
       console.error(action.error.message);
     }
 
+    if (action.type === `walletConnect/getProxy/pending`) {
+      console.log(`loading proxy...`);
+    }
+    if (action.type === `walletConnect/getProxy/fulfilled`) {
+      console.log(`proxy sucessfully loaded`);
+    }
+
     if (action.type === `walletConnect/getAccountSwaps/pending`) {
       console.log(`loading swaps...`);
     }

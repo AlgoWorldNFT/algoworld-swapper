@@ -36,10 +36,10 @@ const ParticlesContainer = () => {
         },
         particles: {
           color: {
-            value: `#ffffff`,
+            value: `#ff80bf`,
           },
           links: {
-            color: `#ffffff`,
+            color: `#ff80bf`,
             distance: 150,
             enable: true,
             opacity: 0.2,
@@ -52,7 +52,7 @@ const ParticlesContainer = () => {
             direction: `none`,
             enable: true,
             outMode: `bounce`,
-            random: false,
+            random: true,
             speed: 2,
             straight: false,
           },
@@ -67,7 +67,7 @@ const ParticlesContainer = () => {
             value: 0.2,
           },
           shape: {
-            type: `circle`,
+            type: `square`,
           },
           size: {
             random: true,

@@ -7,12 +7,10 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
 import AccountBalanceWalletOutlined from '@mui/icons-material/AccountBalanceWalletOutlined';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import Icon from '@mui/material/Icon';
 import Image from 'next/image';
 import { useContext, useEffect } from 'react';
 import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
@@ -24,6 +22,7 @@ import {
   getAccountAssets,
   selectAssets,
   getAccountSwaps,
+  getProxy,
 } from '@/redux/slices/walletConnectSlice';
 import { formatBigNumWithDecimals } from '@/redux/helpers/utilities';
 import { Asset } from '@/models/Asset';
@@ -33,7 +32,7 @@ import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
 import { Grid } from '@mui/material';
 
-const pages = [`Create`, `Browse`, `About`];
+const pages = [`Home`, `Browse`, `About`];
 const settings = [`My Swaps`, `Logout`];
 
 const NavBar = () => {
@@ -152,7 +151,9 @@ const NavBar = () => {
     // Retrieve assets info
     if (address?.length > 0) {
       console.log(`chain: `, chain);
+
       dispatch(getAccountAssets({ chain, address }));
+      dispatch(getProxy({ address }));
       dispatch(getAccountSwaps({ chain, address }));
     }
   }, [dispatch, address, chain]);
