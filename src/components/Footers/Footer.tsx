@@ -15,11 +15,13 @@ const Footer = () => (
   <Box
     sx={{
       bgcolor: `background.paper`,
-      p: 2,
-      position: `fixed`,
-      bottom: 0,
+      textAlign: `center`,
+      p: 1,
+      position: `sticky`,
       left: 0,
-      right: 0,
+      bottom: 0,
+      height: `60px`,
+      width: `100%`,
     }}
     alignItems="center"
     justifyContent="center"

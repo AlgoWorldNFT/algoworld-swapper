@@ -1,26 +1,27 @@
 import PerformSwapAssetsViewCard, {
   PerformSwapCardType,
 } from '@/components/Cards/PerformSwapAssetsViewCard';
-import { useAppSelector } from '@/redux/store/hooks';
+import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import loadSwapConfigurations from '@/utils/api/swaps/loadSwapConfigurations';
 import swapExists from '@/utils/api/swaps/swapExists';
-import { Container, Grid, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo } from 'react';
-import { useAsyncFn } from 'react-use';
+import { useMemo } from 'react';
+import { useAsync } from 'react-use';
 
 const PerformSwap = () => {
   const router = useRouter();
   const { proxy, escrow } = router.query;
   const chain = useAppSelector((state) => state.walletConnect.chain);
+  const address = useAppSelector((state) => state.walletConnect.address);
 
-  const [swapConfigsState, doLoadSwapConfigs] = useAsyncFn(async () => {
+  const dispatch = useAppDispatch();
+
+  const swapConfigsState = useAsync(async () => {
     return await loadSwapConfigurations(chain, proxy as string);
   }, []);
-
-  useEffect(() => {
-    doLoadSwapConfigs();
-  }, [doLoadSwapConfigs]);
 
   const performSwapPageContent = useMemo(() => {
     if (swapConfigsState.loading) {
@@ -36,26 +37,67 @@ const PerformSwap = () => {
     const swapConfigurations = swapConfigsState.value ?? [];
     console.log(swapConfigurations + `heehehe`);
 
-    if (swapExists(escrow as string, swapConfigurations)) {
+    const swapConfigExists = swapExists(escrow as string, swapConfigurations);
+
+    if (swapConfigExists) {
       const swapConfiguration = swapConfigurations.filter(
         (config) => config.escrow === escrow,
       )[0];
       console.log(`exists` + swapConfiguration);
       return (
-        <Grid container spacing={2}>
-          <Grid item md={6} xs={12}>
-            <PerformSwapAssetsViewCard
-              title="You receive"
-              type={PerformSwapCardType.Offering}
-              assets={swapConfiguration.offering}
-            />
+        <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
+          <Grid container spacing={2}>
+            <Grid item md={6} xs={12}>
+              <PerformSwapAssetsViewCard
+                title="You receive"
+                type={PerformSwapCardType.Offering}
+                assets={swapConfiguration.offering}
+              />
+            </Grid>
+            <Grid item md={6} xs={12}>
+              <PerformSwapAssetsViewCard
+                title="You provide"
+                type={PerformSwapCardType.Requesting}
+                assets={swapConfiguration.requesting}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Stack justifyContent={`center`} direction={`column`}>
+                {address ? (
+                  <LoadingButton
+                    disabled={
+                      swapConfiguration.offering.length === 0 ||
+                      swapConfiguration.requesting.length === 0
+                    }
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                  >
+                    Perform Swap
+                  </LoadingButton>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      dispatch(setIsWalletPopupOpen(true));
+                    }}
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                  >
+                    Connect Wallet
+                  </Button>
+                )}
+              </Stack>
+            </Grid>
           </Grid>
-        </Grid>
+        </Container>
       );
     } else {
       return <Typography>Swap is deactivated...</Typography>;
     }
   }, [
+    address,
+    dispatch,
     escrow,
     swapConfigsState.error,
     swapConfigsState.loading,
@@ -90,8 +132,7 @@ const PerformSwap = () => {
             Perform a swap created created by other AlgoWorld Swapper users.
             Completing the swap will transfer your requested asset directly to
             swap creator, and you will receive the offering asset from the
-            swap&apos;s escrow account. Everything is performed in a single
-            atomic transaction ensuring speed and safety.
+            swap&apos;s escrow account.
           </Typography>
         </Container>
         {/* End hero unit */}
