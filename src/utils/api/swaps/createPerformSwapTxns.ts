@@ -58,5 +58,9 @@ export default async function createPerformSwapTxns(
     TransactionToSignType.UserFeeTransaction,
   );
 
+  console.log(`requestedAsaXferTxn`, requestedAsaXferTxn.transaction.txID());
+  console.log(`offeredAsaXferTxn`, offeredAsaXferTxn.transaction.txID());
+  console.log(`incentiveFeeTxn`, incentiveFeeTxn.transaction.txID());
+
   return [offeredAsaXferTxn, requestedAsaXferTxn, incentiveFeeTxn];
 }

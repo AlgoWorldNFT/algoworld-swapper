@@ -63,26 +63,6 @@ const PerformSwap = () => {
     swapConfigsState.error,
   ]);
 
-  const errorLabelsContent = useMemo(() => {
-    if (swapConfiguration && swapConfiguration.creator === address) {
-      return (
-        <Typography variant="h6" color={`warning.main`}>
-          You can not perorm the swap since you are the creator...
-        </Typography>
-      );
-    } else if (swapConfigsState.loading) {
-      return (
-        <Typography color={`info.main`}>Loading, please wait...</Typography>
-      );
-    } else
-      return (
-        <Typography color={`error.main`}>
-          Swap is unavailable, creator must have deactivated it, try again
-          later...
-        </Typography>
-      );
-  }, [address, swapConfigsState.loading, swapConfiguration]);
-
   const escrowState = useAsync(async () => {
     if (
       !swapConfiguration ||
@@ -110,6 +90,53 @@ const PerformSwap = () => {
     console.log(logicSig.address());
     return logicSig;
   }, [swapConfiguration]);
+
+  const errorLabelsContent = useMemo(() => {
+    if (swapConfiguration) {
+      if (swapConfiguration.creator === address) {
+        return (
+          <Typography variant="h6" color={`warning.main`}>
+            You can not perorm the swap since you are the creator...
+          </Typography>
+        );
+      } else {
+        return (
+          <LoadingButton
+            disabled={
+              swapConfiguration.offering.length === 0 ||
+              swapConfiguration.requesting.length === 0
+            }
+            fullWidth
+            variant="contained"
+            color="primary"
+            loading={escrowState.loading}
+            onClick={() => {
+              setConfirmSwapDialogOpen(true);
+            }}
+          >
+            Perform Swap
+          </LoadingButton>
+        );
+      }
+    } else if (swapConfigsState.loading) {
+      return (
+        <Typography color={`info.main`}>Loading, please wait...</Typography>
+      );
+    } else if (swapConfigsState.error) {
+      return (
+        <Typography color={`error.main`}>
+          Swap is unavailable, creator must have deactivated it, try again
+          later...
+        </Typography>
+      );
+    }
+  }, [
+    address,
+    escrowState.loading,
+    swapConfigsState.error,
+    swapConfigsState.loading,
+    swapConfiguration,
+  ]);
 
   const signAndSendSwapPerformTxns = async (
     swapConfiguration: SwapConfiguration,
@@ -198,73 +225,59 @@ const PerformSwap = () => {
         {/* End hero unit */}
       </div>
       <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
-        {swapConfiguration ? (
-          <Grid container spacing={2}>
-            <Grid item md={6} xs={12}>
-              <Card>
-                <CardHeader
-                  title={`You provide`}
-                  titleTypographyProps={{ align: `center` }}
-                  sx={{}}
-                />
-                <CardContent>
-                  <AssetListView
-                    assets={swapConfiguration.requesting}
-                    isOffering={false}
+        {swapConfiguration && (
+          <>
+            <Grid container spacing={2}>
+              <Grid item md={6} xs={12}>
+                <Card>
+                  <CardHeader
+                    title={`You provide`}
+                    titleTypographyProps={{ align: `center` }}
+                    sx={{}}
                   />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <Card>
-                <CardHeader
-                  title={`You receive`}
-                  titleTypographyProps={{ align: `center` }}
-                  sx={{}}
-                />
-                <CardContent>
-                  <AssetListView
-                    assets={swapConfiguration.offering}
-                    isOffering={true}
+                  <CardContent>
+                    <AssetListView
+                      assets={swapConfiguration.requesting}
+                      isOffering={false}
+                    />
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <Card>
+                  <CardHeader
+                    title={`You receive`}
+                    titleTypographyProps={{ align: `center` }}
+                    sx={{}}
                   />
-                </CardContent>
-              </Card>
+                  <CardContent>
+                    <AssetListView
+                      assets={swapConfiguration.offering}
+                      isOffering={true}
+                    />
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12}>
+                <Stack justifyContent={`center`} direction={`column`}>
+                  {address ? (
+                    <>{errorLabelsContent}</>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        dispatch(setIsWalletPopupOpen(true));
+                      }}
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                    >
+                      Connect Wallet
+                    </Button>
+                  )}
+                </Stack>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Stack justifyContent={`center`} direction={`column`}>
-                {address ? (
-                  <LoadingButton
-                    disabled={
-                      swapConfiguration.offering.length === 0 ||
-                      swapConfiguration.requesting.length === 0
-                    }
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    loading={escrowState.loading}
-                    onClick={() => {
-                      setConfirmSwapDialogOpen(true);
-                    }}
-                  >
-                    Perform Swap
-                  </LoadingButton>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      dispatch(setIsWalletPopupOpen(true));
-                    }}
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                  >
-                    Connect Wallet
-                  </Button>
-                )}
-              </Stack>
-            </Grid>
-          </Grid>
-        ) : (
-          <>{errorLabelsContent}</>
+          </>
         )}
       </Container>
 
