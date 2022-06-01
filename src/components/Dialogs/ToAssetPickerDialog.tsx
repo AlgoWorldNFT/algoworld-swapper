@@ -29,7 +29,9 @@ export const ToAssetPickerDialog = ({
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>();
   const [selectedAssetAmount, setSelectedAssetAmount] = useState<number>(1);
   const maxAmount = 100e6;
-  const minAmount = 1;
+  const minAmount = useMemo(() => {
+    return selectedAsset ? Math.pow(10, -1 * selectedAsset.decimals) : 1;
+  }, [selectedAsset]);
 
   const [searchContent, setSearchContent] = useState(``);
   const [autocompleteOpen, setAutocompleteOpen] = useState(false);
@@ -106,6 +108,9 @@ export const ToAssetPickerDialog = ({
             }}
             onChange={(_, value) => {
               setSelectedAsset(value);
+              if (!value) {
+                setSelectedAssetAmount(minAmount);
+              }
             }}
             renderInput={(params) => (
               <TextField

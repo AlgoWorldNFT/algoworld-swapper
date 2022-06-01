@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 
 type Props = {
   assets: Asset[];
-  onAssetDeselected: (asset: Asset) => void;
+  onAssetDeselected?: (asset: Asset) => void;
   isOffering?: boolean;
 };
 
@@ -21,26 +21,28 @@ const AssetListView = ({
           <ListItem
             key={index}
             secondaryAction={
-              <IconButton
-                edge="end"
-                aria-label="delete"
-                onClick={() => {
-                  onAssetDeselected(asset);
-                }}
-              >
-                <DeleteIcon sx={{ color: `secondary.main` }} />
-              </IconButton>
+              onAssetDeselected && (
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={() => {
+                    onAssetDeselected(asset);
+                  }}
+                >
+                  <DeleteIcon sx={{ color: `secondary.main` }} />
+                </IconButton>
+              )
             }
           >
             <ListItemText
-              sx={{ textAlign: `center`, color: `primary.main` }}
+              sx={{ textAlign: `center`, maxWidth: 1, color: `primary.main` }}
               primary={
                 isOffering
-                  ? `${asset.name} (${
-                      `x` + asset.offeringAmount + ` offering`
+                  ? `${index + 1}. ${asset.index}: ${asset.name} (${
+                      `x` + asset.offeringAmount
                     })`
-                  : `${asset.name} (${
-                      `x` + asset.requestingAmount + ` requesting`
+                  : `${index + 1}. ${asset.index}: ${asset.name} (${
+                      `x` + asset.requestingAmount
                     })`
               }
             />

@@ -4,44 +4,22 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
 
 type Props = {
-  open: boolean;
-  setOpen?: (open: boolean) => void;
-  loadingText?: string;
-  noCircularProgress?: boolean;
-  closeAfter?: number | undefined;
+  isLoading: boolean;
+  message?: string;
 };
 
 const LoadingBackdrop = ({
-  open = false,
-  setOpen,
-  loadingText = `Loading...`,
-  noCircularProgress = false,
-  closeAfter = undefined,
+  isLoading = false,
+  message = `Loading...`,
 }: Props) => {
-  React.useEffect(() => {
-    if (closeAfter) {
-      const timeout = setTimeout(() => {
-        if (setOpen) {
-          setOpen(false);
-        }
-      }, closeAfter);
-      clearTimeout(timeout);
-    }
-  });
-
   return (
     <div>
       <Backdrop
         sx={{ color: `#fff`, zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-        onClick={() => {
-          if (setOpen) {
-            setOpen(false);
-          }
-        }}
+        open={isLoading}
       >
-        {!noCircularProgress && <CircularProgress color="inherit" />}
-        {loadingText && <Typography variant="h5">{loadingText}</Typography>}
+        {<CircularProgress color="inherit" />}
+        {message && <Typography variant="h5">{message}</Typography>}
       </Backdrop>
     </div>
   );

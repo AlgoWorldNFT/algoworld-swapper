@@ -12,11 +12,9 @@ import { SwapConfiguration, SwapType } from '@/models/Swap';
 import { useAsync } from 'react-use';
 import { LogicSigAccount } from 'algosdk/dist/types/src/logicsig';
 import ConfirmDialog from '@/components/Dialogs/ConfirmDialog';
-import LoadingBackdrop from '@/components/Backdrops/Backdrop';
 import getCompiledSwap from '@/utils/api/swaps/getCompiledSwap';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import swapExists from '@/utils/api/swaps/swapExists';
-import { LoadingIndicators } from '@/models/LoadingIndicators';
 import accountExists from '@/utils/api/accounts/accountExists';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import createInitSwapTxns from '@/utils/api/swaps/createInitSwapTxns';
@@ -35,6 +33,7 @@ import {
 import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
 import ShareSwapDialog from '@/components/Dialogs/ShareSwapDialog';
 import { LoadingButton } from '@mui/lab';
+import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
 
 export default function AsaToAsa() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
@@ -42,15 +41,6 @@ export default function AsaToAsa() {
 
   const [shareSwapDialogOpen, setShareSwapDialogOpen] =
     useState<boolean>(false);
-
-  const [loadingIndicators, setLoadingIndicators] = useState<LoadingIndicators>(
-    {
-      loading: false,
-      loadingText: `Loading`,
-      showLoading: false,
-      closeAfter: undefined,
-    },
-  );
 
   const connector = useContext(ConnectContext);
   const proxy = useAppSelector((state) => state.walletConnect.proxy);
@@ -65,6 +55,8 @@ export default function AsaToAsa() {
   const chain = useAppSelector((state) => state.walletConnect.chain);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
+
+  const { setLoading, resetLoading } = useLoadingIndicator();
 
   const escrowState = useAsync(async () => {
     if (offeringAssets.length === 0 && requestingAssets.length === 0) {
@@ -200,28 +192,16 @@ export default function AsaToAsa() {
   };
 
   const handleSwap = async () => {
-    setLoadingIndicators({
-      loading: true,
-      loadingText: `Setting up swap, please sign initialization transactions...`,
-    });
+    setLoading(`Setting up swap, please sign initialization transactions...`);
 
     if (escrowState.error) {
-      setLoadingIndicators({
-        loading: false,
-      });
+      resetLoading();
       return;
     }
     const escrow = escrowState.value as LogicSigAccount;
 
     if (await accountExists(chain, escrow.address())) {
-      setLoadingIndicators({
-        loading: true,
-        loadingText: `Swap already exists.`,
-        closeAfter: 2000,
-      });
-      setLoadingIndicators({
-        loading: false,
-      });
+      resetLoading();
 
       setShareSwapDialogOpen(true);
       return;
@@ -237,10 +217,9 @@ export default function AsaToAsa() {
     });
 
     if (!swapExists(escrow.address(), existingSwaps) && swapConfiguration) {
-      setLoadingIndicators({
-        loading: true,
-        loadingText: `Setting up swap, please sign transactions to store your new swap configuration...`,
-      });
+      setLoading(
+        `Setting up swap, please sign transactions to store your new swap configuration...`,
+      );
 
       const saveSwapTxnId = await signAndSendSaveSwapConfigTxns(
         proxy,
@@ -255,10 +234,9 @@ export default function AsaToAsa() {
       });
     }
 
-    setLoadingIndicators({
-      loading: true,
-      loadingText: `Setting up swap, please sign transaction to deposit offering asset and activate swap...`,
-    });
+    setLoading(
+      `Setting up swap, please sign transaction to deposit offering asset and activate swap...`,
+    );
 
     const depositTxnId = await signAndSendDepositSwapAssetTxns(
       escrow,
@@ -272,9 +250,7 @@ export default function AsaToAsa() {
       ),
     });
 
-    setLoadingIndicators({
-      loading: false,
-    });
+    resetLoading();
     setShareSwapDialogOpen(true);
   };
 
@@ -282,7 +258,7 @@ export default function AsaToAsa() {
     dispatch(getAccountSwaps({ chain, address }));
     setConfirmSwapDialogOpen(false);
     setShareSwapDialogOpen(false);
-    setLoadingIndicators({ loading: false });
+    resetLoading();
     dispatch(setOfferingAssets([]));
     dispatch(setRequestingAssets([]));
   };
@@ -391,13 +367,6 @@ export default function AsaToAsa() {
           swapConfiguration?.escrow,
         )} is initialized!`}
       </ShareSwapDialog>
-
-      <LoadingBackdrop
-        open={loadingIndicators.loading}
-        loadingText={loadingIndicators.loadingText}
-        noCircularProgress={loadingIndicators.showLoading}
-        closeAfter={loadingIndicators.closeAfter}
-      />
     </>
   );
 }

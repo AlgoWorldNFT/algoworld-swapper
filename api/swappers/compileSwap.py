@@ -19,6 +19,8 @@ ALGOD_URL = (
     if LEDGER_TYPE.lower() == "testnet"
     else "https://node.algoexplorerapi.io"
 )
+INCENTIVE_WALLET = "RJVRGSPGSPOG7W3V7IMZZ2BAYCABW3YC5MWGKEOPAEEI5ZK5J2GSF6Y26A"
+INCENTIVE_FEE = 500_000
 
 algod = AlgodClient("", ALGOD_URL, headers={"User-Agent": "algosdk"})
 indexer = IndexerClient("", INDEXER_URL, headers={"User-Agent": "algosdk"})
@@ -41,8 +43,8 @@ def compileSwap(inputParams: SwapQueryParams):
         inputParams.offered_asa_amount,
         inputParams.requested_asa_id,
         inputParams.requested_asa_amount,
-        inputParams.creator_address,
-        0,
+        INCENTIVE_WALLET,
+        INCENTIVE_FEE,
     )
 
     response = algod.compile(swapper)

@@ -61,24 +61,13 @@ const ShareSwapDialog = ({
           onClick={() => {
             if (swapConfiguration)
               copyToClipboard(
-                `https://localhost:3000/swap/${swapConfiguration.proxy}/${swapConfiguration.escrow}`,
+                `${window.location.origin}/swap/${swapConfiguration.proxy}/${swapConfiguration.escrow}`,
               );
           }}
           color="secondary"
         >
           Copy URL
         </Button>
-        {showManageSwapBtn && (
-          <Button
-            variant="contained"
-            onClick={() => {
-              if (setOpen) setOpen(false);
-              if (onConfirm) onConfirm();
-            }}
-          >
-            Manage Swap
-          </Button>
-        )}
       </DialogActions>
     </Dialog>
   );

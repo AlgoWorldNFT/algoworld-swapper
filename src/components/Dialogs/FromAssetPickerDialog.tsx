@@ -26,13 +26,16 @@ export const FromAssetPickerDialog = ({
   selectedAssets,
 }: Props) => {
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>();
-  const [selectedAssetAmount, setSelectedAssetAmount] = useState<number>(1);
   const maxAmount = useMemo(() => {
     return selectedAsset
       ? selectedAsset.amount / Math.pow(10, selectedAsset.decimals)
       : 1;
   }, [selectedAsset]);
-  const minAmount = 1;
+  const minAmount = useMemo(() => {
+    return selectedAsset ? Math.pow(10, -1 * selectedAsset.decimals) : 1;
+  }, [selectedAsset]);
+  const [selectedAssetAmount, setSelectedAssetAmount] =
+    useState<number>(minAmount);
 
   const searchedAssets = useMemo(() => {
     const unpackedAssets = assets ? assets : [];
@@ -108,14 +111,8 @@ export const FromAssetPickerDialog = ({
               },
             }}
             onChange={(input) => {
-              let inputVal = Number(input.target.value);
-              inputVal = inputVal === 0 ? 1 : inputVal;
-
-              if (inputVal <= maxAmount && inputVal >= minAmount) {
-                setSelectedAssetAmount(inputVal);
-              } else {
-                setSelectedAssetAmount(minAmount);
-              }
+              const inputVal = Number(input.target.value);
+              setSelectedAssetAmount(inputVal);
             }}
             type="number"
             value={selectedAssetAmount}
