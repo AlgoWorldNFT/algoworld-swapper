@@ -16,6 +16,7 @@ import {
 import { LogicSigAccount } from 'algosdk';
 import { RootState } from '../store';
 import optInAssetsForAccount from '@/utils/api/accounts/optInAssetsForAccount';
+import WalletConnect from '@walletconnect/client';
 
 interface WalletConnectState {
   chain: ChainType;
@@ -91,19 +92,28 @@ export const getAccountSwaps = createAsyncThunk(
   },
 );
 
-// export const optInAssets = createAsyncThunk(
-//   `walletConnect/optInAssets`,
-//   async ({ assetIndexes }: { assetIndexes: number[] }, { getState }) => {
-//     const state = getState() as WalletConnectState;
-//     console.log(state);
-//     return await optInAssetsForAccount(
-//       state.chain,
-//       assetIndexes,
-//       undefined,
-//       state.address,
-//     );
-//   },
-// );
+export const optInAssets = createAsyncThunk(
+  `walletConnect/optInAssets`,
+  async (
+    {
+      assetIndexes,
+      connector,
+    }: { assetIndexes: number[]; connector: WalletConnect },
+    { getState, dispatch },
+  ) => {
+    let state = getState() as any;
+    state = state.walletConnect as WalletConnect;
+
+    console.log(state);
+    return await optInAssetsForAccount(
+      state.chain,
+      assetIndexes,
+      connector,
+      state.address,
+      dispatch,
+    );
+  },
+);
 
 export const walletConnectSlice = createSlice({
   name: `walletConnect`,

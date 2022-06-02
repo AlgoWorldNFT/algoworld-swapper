@@ -6,19 +6,21 @@ import createTransactionToSign from '../transactions/createTransactionToSign';
 import getTransactionParams from '../transactions/getTransactionParams';
 import signTransactions from '../transactions/signTransactions';
 import submitTransactions from '../transactions/submitTransactions';
-import store from '@/redux/store';
+
 import { setLoadingIndicator } from '@/redux/slices/applicationSlice';
+import { Dispatch } from '@reduxjs/toolkit';
 
 export default async function optInAssets(
   chain: ChainType,
   assetIndexes: number[],
   creatorWallet: WalletConnect,
   creatorAddress: string,
+  dispatch: Dispatch,
 ) {
   const optInTxns = [];
   const suggestedParams = await getTransactionParams(chain);
 
-  store.dispatch(
+  dispatch(
     setLoadingIndicator({
       isLoading: true,
       message: `Creating opt-in transactions...`,
@@ -41,12 +43,12 @@ export default async function optInAssets(
           suggestedParams,
         }),
         creatorWallet,
-        TransactionToSignType.LsigTransaction,
+        TransactionToSignType.UserTransaction,
       ),
     );
   }
 
-  store.dispatch(
+  dispatch(
     setLoadingIndicator({
       isLoading: true,
       message: `Signing transactions...`,
@@ -57,14 +59,16 @@ export default async function optInAssets(
     optInTxns,
     creatorWallet,
   ).catch(() => {
+    dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
     return undefined;
   });
 
   if (!signedSaveSwapConfigTxns) {
+    dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
     return undefined;
   }
 
-  store.dispatch(
+  dispatch(
     setLoadingIndicator({
       isLoading: true,
       message: `Submitting opt-in transactions, please wait...`,
@@ -76,7 +80,7 @@ export default async function optInAssets(
     signedSaveSwapConfigTxns,
   );
 
-  store.dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
+  dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
 
   return saveSwapConfigResponse.txId;
 }

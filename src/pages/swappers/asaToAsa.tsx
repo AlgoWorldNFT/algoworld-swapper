@@ -31,6 +31,7 @@ import createSwapDepositTxns from '@/utils/api/swaps/createSwapDepositTxns';
 import { useSnackbar } from 'notistack';
 import {
   getAccountSwaps,
+  optInAssets,
   setOfferingAssets,
   setRequestingAssets,
 } from '@/redux/slices/walletConnectSlice';
@@ -50,6 +51,9 @@ export default function AsaToAsa() {
   const proxy = useAppSelector((state) => state.walletConnect.proxy);
   const offeringAssets = useAppSelector(
     (state) => state.walletConnect.selectedOfferingAssets,
+  );
+  const existingAssetIds = useAppSelector((state) =>
+    state.walletConnect.assets.map((asset) => asset.index),
   );
   const requestingAssets = useAppSelector(
     (state) => state.walletConnect.selectedRequestingAssets,
@@ -119,6 +123,22 @@ export default function AsaToAsa() {
     offeringAssets,
     requestingAssets,
   ]);
+
+  const assetsToOptIn = useMemo(() => {
+    const indexes = [...offeringAssets, ...requestingAssets].map(
+      (asset) => asset.index,
+    );
+
+    const indexesToOptIn = [];
+
+    for (const index of indexes) {
+      if (!existingAssetIds.includes(index)) {
+        indexesToOptIn.push(index);
+      }
+    }
+
+    return indexesToOptIn;
+  }, [existingAssetIds, offeringAssets, requestingAssets]);
 
   const signAndSendSwapInitTxns = async (escrow: LogicSigAccount) => {
     const offeringAsset = offeringAssets[0];
@@ -375,7 +395,7 @@ export default function AsaToAsa() {
 
             <Grid item xs={12}>
               <Stack justifyContent={`center`} direction={`column`}>
-                {address ? (
+                {address && assetsToOptIn.length === 0 ? (
                   <LoadingButton
                     disabled={
                       offeringAssets.length === 0 ||
@@ -392,16 +412,36 @@ export default function AsaToAsa() {
                     Swap
                   </LoadingButton>
                 ) : (
-                  <Button
-                    onClick={() => {
-                      dispatch(setIsWalletPopupOpen(true));
-                    }}
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                  >
-                    Connect Wallet
-                  </Button>
+                  <>
+                    {address && assetsToOptIn.length > 0 ? (
+                      <LoadingButton
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                          dispatch(
+                            optInAssets({
+                              assetIndexes: assetsToOptIn,
+                              connector,
+                            }),
+                          );
+                        }}
+                      >
+                        Opt-In
+                      </LoadingButton>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          dispatch(setIsWalletPopupOpen(true));
+                        }}
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                      >
+                        Connect Wallet
+                      </Button>
+                    )}
+                  </>
                 )}
               </Stack>
             </Grid>

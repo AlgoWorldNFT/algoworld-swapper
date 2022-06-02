@@ -53,7 +53,11 @@ export default function Dashboard() {
         {/* End hero unit */}
 
         <Container component="main" sx={{ pt: 5 }}>
-          <Stack justifyContent={`center`} direction={`row`} spacing={4}>
+          <Stack
+            justifyContent={`center`}
+            direction={{ xs: `column`, sm: `row` }}
+            spacing={4}
+          >
             {pageContent.map((content, index) => (
               <SwapTypePickerCard
                 key={`${content.title}-${index}`}
