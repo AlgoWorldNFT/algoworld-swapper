@@ -48,8 +48,7 @@ export default async function createSwapDepositTxns(
     algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
       from: creatorAddress,
       to: escrow.address(),
-      amount:
-        offeringAsset.offeringAmount * Math.pow(10, offeringAsset.decimals),
+      amount: offeringAsset.offeringAmount,
       assetIndex: offeringAsset.index,
       note: new Uint8Array(
         Buffer.from(

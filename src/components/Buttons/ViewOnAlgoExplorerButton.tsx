@@ -1,6 +1,8 @@
 import { Button } from '@mui/material';
 
 import { ChainType } from '@/models/Chain';
+import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
+import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
 
 type Props = {
   txId: string;
@@ -11,9 +13,7 @@ const ViewOnAlgoExplorerButton = ({ txId, chain }: Props) => {
   return (
     <Button
       target={`_blank`}
-      href={`https://${
-        chain === ChainType.TestNet ? `testnet` : ``
-      }.algoexplorer.io/tx/${txId}`}
+      href={createAlgoExplorerUrl(chain, txId, AlgoExplorerUrlType.Transaction)}
     >
       View on AlgoExplorer
     </Button>

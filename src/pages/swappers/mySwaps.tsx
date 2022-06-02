@@ -8,10 +8,13 @@ import {
 } from '@/redux/slices/applicationSlice';
 import { getAccountSwaps } from '@/redux/slices/walletConnectSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
-import { Container, Typography } from '@mui/material';
+import { Box, Container, LinearProgress, Typography } from '@mui/material';
 
 export default function MySwaps() {
   const swaps = useAppSelector((state) => state.walletConnect.swaps);
+  const fetchingSwaps = useAppSelector(
+    (state) => state.walletConnect.fetchingSwaps,
+  );
   const dispatch = useAppDispatch();
   const selectedManageSwap = useAppSelector(
     (state) => state.application.selectedManageSwap,
@@ -84,7 +87,13 @@ export default function MySwaps() {
       {/* End hero unit */}
 
       <Container maxWidth="md" sx={{ textAlign: `center` }} component="main">
-        <MySwapsTable swapConfigurations={swaps}></MySwapsTable>
+        {fetchingSwaps ? (
+          <Box sx={{ width: `100%` }}>
+            <LinearProgress />
+          </Box>
+        ) : (
+          <MySwapsTable swapConfigurations={swaps}></MySwapsTable>
+        )}
       </Container>
     </>
   );

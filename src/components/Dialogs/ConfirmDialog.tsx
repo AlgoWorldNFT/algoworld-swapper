@@ -30,21 +30,16 @@ const ConfirmDialog = ({
       <DialogTitle id="confirm-dialog">{title}</DialogTitle>
       <DialogContent>{children}</DialogContent>
       <DialogActions>
-        <Button
-          variant="contained"
-          onClick={() => setOpen(false)}
-          color="secondary"
-        >
-          No
+        <Button onClick={() => setOpen(false)} color="secondary">
+          Cancel
         </Button>
         <Button
-          variant="contained"
           onClick={() => {
             setOpen(false);
             onConfirm();
           }}
         >
-          Yes
+          Proceed
         </Button>
       </DialogActions>
     </Dialog>

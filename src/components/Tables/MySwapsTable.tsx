@@ -3,7 +3,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { SwapConfiguration } from '@/models/Swap';
 import { SwapType } from '@/models/Swap';
 import { Asset } from '@/models/Asset';
-import { Box, Button, Tooltip } from '@mui/material';
+import { Box, Button, Stack, Tooltip } from '@mui/material';
 import store from '@/redux/store';
 import {
   setIsManageSwapPopupOpen,
@@ -140,7 +140,6 @@ const columns: GridColDef[] = [
           onClick={() => {
             store.dispatch(setSelectedManageSwap(params.row));
             store.dispatch(setIsManageSwapPopupOpen(true));
-            console.log(params);
           }}
         >
           Manage
@@ -158,7 +157,6 @@ const MySwapsTable = ({ swapConfigurations }: Props) => {
   return (
     <Box
       sx={{
-        height: 420,
         width: 1,
         '& .super-app-theme--header': {
           backgroundColor: `background.paper`,
@@ -172,6 +170,15 @@ const MySwapsTable = ({ swapConfigurations }: Props) => {
       <DataGrid
         rows={swapConfigurations}
         columns={columns}
+        hideFooter={swapConfigurations.length === 0}
+        components={{
+          NoRowsOverlay: () => (
+            <Stack height="100%" alignItems="center" justifyContent="center">
+              😔 No swaps available for your account
+            </Stack>
+          ),
+        }}
+        autoHeight
         getRowId={(row) => row.escrow}
         pageSize={10}
         rowsPerPageOptions={[10]}

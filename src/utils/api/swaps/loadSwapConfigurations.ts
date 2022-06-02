@@ -26,7 +26,6 @@ export default async function loadSwapConfigurations(
     `utf-8`,
   );
 
-  console.log(configFileUrl);
   if (configFileUrl.includes(`ipfs`)) {
     const configFile = await axios
       .get(
@@ -35,7 +34,7 @@ export default async function loadSwapConfigurations(
         }.ipfs.cf-ipfs.com/aw_swaps.json`,
       )
       .then((res) => res.data);
-    console.log(`config` + configFile);
+
     return configFile as SwapConfiguration[];
   } else {
     return [] as SwapConfiguration[];

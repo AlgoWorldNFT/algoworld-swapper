@@ -2,6 +2,7 @@ import { Asset } from '@/models/Asset';
 import { IconButton, List, ListItem, ListItemText, Paper } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import formatAmount from '@/utils/formatAmount';
 
 type Props = {
   assets: Asset[];
@@ -35,14 +36,19 @@ const AssetListView = ({
             }
           >
             <ListItemText
-              sx={{ textAlign: `center`, maxWidth: 1, color: `primary.main` }}
+              sx={{
+                textAlign: `left`,
+                color: `primary.main`,
+                textOverflow: `ellipsis`,
+                overflow: `hidden`,
+              }}
               primary={
                 isOffering
                   ? `${index + 1}. ${asset.index}: ${asset.name} (${
-                      `x` + asset.offeringAmount
+                      `x` + formatAmount(asset.offeringAmount, asset.decimals)
                     })`
                   : `${index + 1}. ${asset.index}: ${asset.name} (${
-                      `x` + asset.requestingAmount
+                      `x` + formatAmount(asset.requestingAmount, asset.decimals)
                     })`
               }
             />

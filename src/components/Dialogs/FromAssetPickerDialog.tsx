@@ -9,6 +9,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Asset } from '@/models/Asset';
 import { useMemo, useState } from 'react';
 import { Autocomplete } from '@mui/material';
+import CryptoTextField, {
+  CryptoTextFieldType,
+} from '../TextFields/CryptoTextField';
+import formatAmount from '@/utils/formatAmount';
 
 type Props = {
   open: boolean;
@@ -25,31 +29,27 @@ export const FromAssetPickerDialog = ({
   assets,
   selectedAssets,
 }: Props) => {
-  const [selectedAsset, setSelectedAsset] = useState<Asset | null>();
-  const maxAmount = useMemo(() => {
-    return selectedAsset
-      ? selectedAsset.amount / Math.pow(10, selectedAsset.decimals)
-      : 1;
-  }, [selectedAsset]);
-  const minAmount = useMemo(() => {
-    return selectedAsset ? Math.pow(10, -1 * selectedAsset.decimals) : 1;
-  }, [selectedAsset]);
-  const [selectedAssetAmount, setSelectedAssetAmount] =
-    useState<number>(minAmount);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>();
+  const [selectedAssetAmount, setSelectedAssetAmount] = useState<
+    number | undefined
+  >(undefined);
 
   const searchedAssets = useMemo(() => {
     const unpackedAssets = assets ? assets : [];
     const unpackedSelectedAssetIndexes = selectedAssets
       ? selectedAssets.map((asset) => asset.index)
       : [];
+    console.log(unpackedAssets);
     const filtered = [
       ...unpackedAssets.filter((asset) => {
         return (
           asset.amount > 0 &&
-          !unpackedSelectedAssetIndexes.includes(asset.index)
+          !unpackedSelectedAssetIndexes.includes(asset.index) &&
+          asset.index !== 0
         );
       }),
     ];
+    console.log(filtered);
     return filtered;
   }, [assets, selectedAssets]);
 
@@ -78,10 +78,8 @@ export const FromAssetPickerDialog = ({
                 : `No assets available`
             }`}
             onChange={(_, value) => {
-              setSelectedAsset(value);
-              if (!value) {
-                setSelectedAssetAmount(minAmount);
-              }
+              setSelectedAssetAmount(1);
+              setSelectedAsset(value ?? undefined);
             }}
             renderInput={(params) => (
               <TextField
@@ -92,39 +90,34 @@ export const FromAssetPickerDialog = ({
             )}
           />
 
-          <TextField
-            id="name"
-            sx={{ marginTop: 2 }}
+          <CryptoTextField
             label={
               selectedAsset
-                ? `Offering asset amount (${
-                    selectedAsset.amount / Math.pow(10, selectedAsset.decimals)
-                  } available)`
+                ? `Offering asset amount (${formatAmount(
+                    selectedAsset.amount,
+                    selectedAsset.decimals,
+                  )} available)`
                 : `Offering asset amount`
             }
+            sx={{ marginTop: 2 }}
             disabled={!selectedAsset}
-            InputProps={{
-              inputProps: {
-                type: `number`,
-                max: maxAmount,
-                min: minAmount,
-              },
-            }}
-            onChange={(input) => {
-              const inputVal = Number(input.target.value);
-              setSelectedAssetAmount(inputVal);
-            }}
-            type="number"
             value={selectedAssetAmount}
-            fullWidth
-            variant="outlined"
-          />
+            onChange={(value) => {
+              console.log(value);
+              setSelectedAssetAmount(value);
+            }}
+            coinType={CryptoTextFieldType.ASA}
+            decimals={selectedAsset?.decimals ?? 0}
+            maxValue={
+              formatAmount(selectedAsset?.amount, selectedAsset?.decimals) ?? 1
+            }
+          ></CryptoTextField>
         </DialogContent>
         <DialogActions>
           <Button
             onClick={() => {
-              setSelectedAsset(null);
-              setSelectedAssetAmount(minAmount);
+              setSelectedAsset(undefined);
+              setSelectedAssetAmount(undefined);
               onCancel();
             }}
           >
@@ -132,11 +125,12 @@ export const FromAssetPickerDialog = ({
           </Button>
 
           <Button
+            disabled={!selectedAssetAmount}
             onClick={() => {
               if (selectedAsset && selectedAssetAmount) {
                 onAssetSelected(selectedAsset, selectedAssetAmount);
-                setSelectedAsset(null);
-                setSelectedAssetAmount(minAmount);
+                setSelectedAsset(undefined);
+                setSelectedAssetAmount(undefined);
               }
             }}
           >

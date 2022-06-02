@@ -6,6 +6,7 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useCopyToClipboard } from 'react-use';
 
 type Props = {
@@ -26,10 +27,11 @@ const ShareSwapDialog = ({
   swapConfiguration,
   setOpen,
   onClose,
-  onConfirm,
-  showManageSwapBtn = true,
 }: Props) => {
-  const [, copyToClipboard] = useCopyToClipboard();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_result, copyToClipboard] = useCopyToClipboard();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <Dialog
@@ -43,7 +45,6 @@ const ShareSwapDialog = ({
       <DialogContent>{children}</DialogContent>
       <DialogActions>
         <Button
-          variant="contained"
           onClick={() => {
             if (setOpen) {
               setOpen(false);
@@ -52,19 +53,20 @@ const ShareSwapDialog = ({
               onClose();
             }
           }}
-          color="secondary"
         >
           Close
         </Button>
         <Button
-          variant="contained"
           onClick={() => {
             if (swapConfiguration)
               copyToClipboard(
                 `${window.location.origin}/swap/${swapConfiguration.proxy}/${swapConfiguration.escrow}`,
               );
+
+            enqueueSnackbar(`Copied to clipboard...`, {
+              variant: `success`,
+            });
           }}
-          color="secondary"
         >
           Copy URL
         </Button>

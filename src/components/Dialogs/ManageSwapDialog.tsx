@@ -1,10 +1,8 @@
 import { ASA_TO_ASA_FUNDING_FEE } from '@/common/constants';
 import { connector } from '@/redux/store/connector';
 import { useAppSelector } from '@/redux/store/hooks';
-import getAccountInfo from '@/utils/api/accounts/getAccountInfo';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import createSwapDepositTxns from '@/utils/api/swaps/createSwapDepositTxns';
-import getCompiledSwap from '@/utils/api/swaps/getCompiledSwap';
 import LoadingButton from '@mui/lab/LoadingButton';
 import signTransactions from '@/utils/api/transactions/signTransactions';
 import submitTransactions from '@/utils/api/transactions/submitTransactions';
@@ -14,33 +12,30 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Stack,
-  Chip,
   Divider,
+  Typography,
 } from '@mui/material';
 import { LogicSigAccount } from 'algosdk';
 import { useSnackbar } from 'notistack';
-import { Key, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
 import ViewOnAlgoExplorerButton from '../Buttons/ViewOnAlgoExplorerButton';
 import createSwapDeactivateTxns from '@/utils/api/swaps/createSwapDeactivateTxns';
 import accountExists from '@/utils/api/accounts/accountExists';
 import createSaveSwapConfigTxns from '@/utils/api/swaps/createSaveSwapConfigTxns';
 import saveSwapConfigurations from '@/utils/api/swaps/saveSwapConfigurations';
+import getAssetsForAccount from '@/utils/api/accounts/getAssetsForAccount';
+import { Asset } from '@/models/Asset';
+import { ellipseAddress } from '@/redux/helpers/utilities';
+import AssetsTable from '../Tables/AssetsTable';
 
 type Props = {
   open: boolean;
   onClose: () => void;
   onShare: () => void;
-  title?: string;
 };
 
-const ManageSwapDialog = ({
-  open,
-  onClose,
-  onShare,
-  title = `Manage Swap`,
-}: Props) => {
+const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
   const selectedManageSwap = useAppSelector(
     (state) => state.application.selectedManageSwap,
   );
@@ -52,44 +47,46 @@ const ManageSwapDialog = ({
   const [depositLoading, setDepositLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
-  const swapAccountInfoState = useAsync(async () => {
+  const swapAssetsState = useAsync(async () => {
     if (!selectedManageSwap) {
       return undefined;
     }
 
-    return await getAccountInfo(chain, selectedManageSwap.escrow);
+    return await getAssetsForAccount(chain, selectedManageSwap.escrow);
   }, [selectedManageSwap]);
 
-  const escrowState = useAsync(async () => {
+  const swapAssets = useMemo(() => {
+    if (swapAssetsState.loading || swapAssetsState.error) {
+      return [];
+    }
+
+    return swapAssetsState.value ?? [];
+  }, [swapAssetsState.error, swapAssetsState.loading, swapAssetsState.value]);
+
+  const swapAlgoBalance = useMemo(() => {
+    return swapAssets.length > 0 ? swapAssets[0].amount / 1e6 : 0;
+  }, [swapAssets]);
+
+  const swapZeroBalanceAssets = useMemo(() => {
+    return swapAssets.filter(
+      (asset: Asset) => asset.amount === 0 || asset.index === 0,
+    );
+  }, [swapAssets]);
+
+  const escrow = useMemo(() => {
     if (!selectedManageSwap) {
       return;
     }
 
-    const offeringAsset = selectedManageSwap.offering[0];
-    const requestingAsset = selectedManageSwap.requesting[0];
-
-    const response = await getCompiledSwap({
-      creator_address: selectedManageSwap.creator,
-      offered_asa_id: offeringAsset.index,
-      offered_asa_amount: offeringAsset.offeringAmount,
-      requested_asa_id: requestingAsset.index,
-      requested_asa_amount: requestingAsset.requestingAmount,
-    });
-
-    const data = await response.data;
-    const logicSig = getLogicSign(data[`result`]);
-
-    return logicSig;
+    return getLogicSign(selectedManageSwap.contract) as LogicSigAccount;
   }, [selectedManageSwap]);
 
   const manageDepositSwap = async () => {
-    if (!selectedManageSwap) {
+    if (!selectedManageSwap || !escrow) {
       return;
     }
     setDepositLoading(true);
 
-    const escrow = escrowState.value as LogicSigAccount;
-    console.log(escrow);
     const swapDepositTxns = await createSwapDepositTxns(
       chain,
       selectedManageSwap.creator,
@@ -122,13 +119,11 @@ const ManageSwapDialog = ({
   };
 
   const manageDeleteSwap = async () => {
-    if (!selectedManageSwap) {
+    if (!selectedManageSwap || !escrow) {
       return;
     }
     setDeleteLoading(true);
 
-    const escrow = escrowState.value as LogicSigAccount;
-    console.log(escrow);
     const swapDeactivateTxns = await createSwapDeactivateTxns(
       chain,
       selectedManageSwap.creator,
@@ -195,103 +190,33 @@ const ManageSwapDialog = ({
     return deactivateTxnId;
   };
 
-  const swapAlgoBalance = useMemo(() => {
-    if (swapAccountInfoState.loading || swapAccountInfoState.error) {
-      return 0;
-    }
-
-    const swapAccountInfo = swapAccountInfoState.value;
-
-    return swapAccountInfo && `account` in swapAccountInfo
-      ? swapAccountInfo[`account`][`amount`] / 1e6
-      : 0;
-  }, [
-    swapAccountInfoState.error,
-    swapAccountInfoState.loading,
-    swapAccountInfoState.value,
-  ]);
-
-  const swapAccountAssets = useMemo(() => {
-    if (swapAccountInfoState.loading || swapAccountInfoState.error) {
-      return [];
-    }
-
-    const swapAccountInfo = swapAccountInfoState.value;
-
-    return swapAccountInfo &&
-      `account` in swapAccountInfo &&
-      `assets` in swapAccountInfo[`account`]
-      ? swapAccountInfo[`account`][`assets`]
-      : [];
-  }, [
-    swapAccountInfoState.error,
-    swapAccountInfoState.loading,
-    swapAccountInfoState.value,
-  ]);
-
-  const swapAccountZeroBalanceAssets = useMemo(() => {
-    console.log(swapAccountAssets);
-    return swapAccountAssets.filter(
-      (asset: { amount: number }) => asset.amount === 0,
-    );
-  }, [swapAccountAssets]);
-
   return (
     <Dialog open={open} aria-labelledby="confirm-dialog">
-      <DialogTitle id="confirm-dialog">{title}</DialogTitle>
-      <DialogContent>
-        <Stack spacing={1}>
-          <Chip
-            variant="outlined"
-            color="primary"
-            label={`Algo Balance: ${swapAlgoBalance}`}
-          />
-          {swapAccountAssets.map(
-            (asset: {
-              [x: string]: Key | null | undefined;
-              name: any;
-              amount: any;
-            }) => {
-              return (
-                <Chip
-                  variant="outlined"
-                  color="primary"
-                  key={asset[`asset-id`]}
-                  label={`${asset[`asset-id`]}'s balance: ${asset.amount}`}
-                />
-              );
-            },
-          )}
-          <Divider></Divider>
-          {swapAccountZeroBalanceAssets.length > 0 && swapAlgoBalance > 0 && (
-            <LoadingButton
-              onClick={async () => {
-                await manageDepositSwap();
-                onClose();
-              }}
-              loading={depositLoading}
-              variant="contained"
-              fullWidth
+      {selectedManageSwap && (
+        <>
+          <DialogTitle>
+            <Typography textAlign={`center`} variant="h5" component="div">
+              {ellipseAddress(selectedManageSwap?.escrow)}
+            </Typography>
+            <Typography
+              textAlign={`center`}
+              sx={{ mb: 1.5 }}
+              color="text.secondary"
             >
-              Deposit Asset
-            </LoadingButton>
-          )}
-          {swapAccountZeroBalanceAssets.length >= 0 && swapAlgoBalance > 0 && (
-            <LoadingButton
-              loading={deleteLoading}
-              color="error"
-              variant="contained"
-              fullWidth
-              onClick={async () => {
-                await manageDeleteSwap();
-                onClose();
-              }}
-            >
-              Delete Swap
-            </LoadingButton>
-          )}
-        </Stack>
-      </DialogContent>
+              Balance: {swapAlgoBalance} Algos
+            </Typography>
+          </DialogTitle>
+
+          <DialogContent>
+            <AssetsTable
+              assets={[
+                ...selectedManageSwap.offering,
+                ...selectedManageSwap.requesting,
+              ]}
+            />
+          </DialogContent>
+        </>
+      )}
       <Divider></Divider>
       <DialogActions>
         <Button
@@ -307,6 +232,32 @@ const ManageSwapDialog = ({
         >
           Share
         </Button>
+        {swapZeroBalanceAssets.length >= 0 && swapAlgoBalance > 0 && (
+          <LoadingButton
+            loading={deleteLoading}
+            disabled={depositLoading || deleteLoading}
+            color="error"
+            onClick={async () => {
+              await manageDeleteSwap();
+              onClose();
+            }}
+          >
+            Delete
+          </LoadingButton>
+        )}
+        {swapZeroBalanceAssets.length === 0 && (
+          <LoadingButton
+            onClick={async () => {
+              await manageDepositSwap();
+              onClose();
+            }}
+            disabled={depositLoading || deleteLoading}
+            loading={depositLoading}
+            color="info"
+          >
+            Deposit
+          </LoadingButton>
+        )}
       </DialogActions>
     </Dialog>
   );

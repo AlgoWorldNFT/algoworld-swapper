@@ -7,7 +7,11 @@ import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { useContext, useMemo, useState } from 'react';
 import { ConnectContext } from '@/redux/store/connector';
 
-import { ASA_TO_ASA_FUNDING_FEE, SWAP_PROXY_VERSION } from '@/common/constants';
+import {
+  ASA_TO_ASA_FUNDING_FEE,
+  SWAP_PROXY_VERSION,
+  TXN_SIGNING_CANCELLED_MESSAGE,
+} from '@/common/constants';
 import { SwapConfiguration, SwapType } from '@/models/Swap';
 import { useAsync } from 'react-use';
 import { LogicSigAccount } from 'algosdk/dist/types/src/logicsig';
@@ -66,6 +70,8 @@ export default function AsaToAsa() {
     const offeringAsset = offeringAssets[0];
     const requestingAsset = requestingAssets[0];
 
+    console.log(offeringAsset);
+
     const response = await getCompiledSwap({
       creator_address: address,
       offered_asa_id: offeringAsset.index,
@@ -76,8 +82,7 @@ export default function AsaToAsa() {
 
     const data = await response.data;
     const logicSig = getLogicSign(data[`result`]);
-
-    return logicSig;
+    return { logicSig, compiledProgram: data[`result`] };
   }, [address, offeringAssets, requestingAssets]);
 
   const swapConfiguration = useMemo(() => {
@@ -85,12 +90,13 @@ export default function AsaToAsa() {
       offeringAssets.length !== 1 ||
       requestingAssets.length !== 1 ||
       escrowState.loading ||
-      escrowState.error
+      escrowState.error ||
+      !escrowState.value
     ) {
       return undefined;
     }
 
-    const escrow = escrowState.value as LogicSigAccount;
+    const escrow = escrowState.value.logicSig as LogicSigAccount;
     const offeringAsset = offeringAssets[0];
     const requestingAsset = requestingAssets[0];
 
@@ -101,6 +107,7 @@ export default function AsaToAsa() {
       requesting: [requestingAsset],
       creator: address,
       escrow: escrow.address(),
+      contract: escrowState.value.compiledProgram,
       proxy: proxy.address(),
     } as SwapConfiguration;
   }, [
@@ -124,7 +131,19 @@ export default function AsaToAsa() {
       offeringAsset,
     );
 
-    const signedInitSwapTxns = await signTransactions(initSwapTxns, connector);
+    const signedInitSwapTxns = await signTransactions(
+      initSwapTxns,
+      connector,
+    ).catch(() => {
+      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+        variant: `error`,
+      });
+      return undefined;
+    });
+
+    if (!signedInitSwapTxns) {
+      return undefined;
+    }
 
     const initSwapResponse = await submitTransactions(
       chain,
@@ -155,7 +174,16 @@ export default function AsaToAsa() {
     const signedSaveSwapConfigTxns = await signTransactions(
       saveSwapConfigTxns,
       connector,
-    );
+    ).catch(() => {
+      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+        variant: `error`,
+      });
+      return undefined;
+    });
+
+    if (!signedSaveSwapConfigTxns) {
+      return undefined;
+    }
 
     const saveSwapConfigResponse = await submitTransactions(
       chain,
@@ -181,7 +209,16 @@ export default function AsaToAsa() {
     const signedSwapDepositTxns = await signTransactions(
       swapDepositTxns,
       connector,
-    );
+    ).catch(() => {
+      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+        variant: `error`,
+      });
+      return undefined;
+    });
+
+    if (!signedSwapDepositTxns) {
+      return undefined;
+    }
 
     const signedSwapDepositResponse = await submitTransactions(
       chain,
@@ -191,48 +228,12 @@ export default function AsaToAsa() {
     return signedSwapDepositResponse.txId;
   };
 
-  const handleSwap = async () => {
-    setLoading(`Setting up swap, please sign initialization transactions...`);
-
-    if (escrowState.error) {
+  const handleDepositSwap = async () => {
+    if (escrowState.error || !escrowState.value) {
       resetLoading();
       return;
     }
-    const escrow = escrowState.value as LogicSigAccount;
-
-    if (await accountExists(chain, escrow.address())) {
-      resetLoading();
-
-      setShareSwapDialogOpen(true);
-      return;
-    }
-
-    const swapInitTxnId = await signAndSendSwapInitTxns(escrow);
-
-    enqueueSnackbar(`Swap initiation transactions signed...`, {
-      variant: `success`,
-      action: () => (
-        <ViewOnAlgoExplorerButton chain={chain} txId={swapInitTxnId} />
-      ),
-    });
-
-    if (!swapExists(escrow.address(), existingSwaps) && swapConfiguration) {
-      setLoading(
-        `Setting up swap, please sign transactions to store your new swap configuration...`,
-      );
-
-      const saveSwapTxnId = await signAndSendSaveSwapConfigTxns(
-        proxy,
-        swapConfiguration,
-      );
-
-      enqueueSnackbar(`New swap configuration saved...`, {
-        variant: `success`,
-        action: () => (
-          <ViewOnAlgoExplorerButton chain={chain} txId={saveSwapTxnId} />
-        ),
-      });
-    }
+    const escrow = escrowState.value.logicSig as LogicSigAccount;
 
     setLoading(
       `Setting up swap, please sign transaction to deposit offering asset and activate swap...`,
@@ -242,6 +243,10 @@ export default function AsaToAsa() {
       escrow,
       offeringAssets[0],
     );
+    if (!depositTxnId) {
+      resetLoading();
+      return;
+    }
 
     enqueueSnackbar(`Deposit of offering asset performed...`, {
       variant: `success`,
@@ -252,6 +257,70 @@ export default function AsaToAsa() {
 
     resetLoading();
     setShareSwapDialogOpen(true);
+  };
+
+  const handleStoreConfiguration = async () => {
+    if (!swapConfiguration) {
+      return;
+    }
+
+    setLoading(
+      `Setting up swap, please sign transactions to store your new swap configuration...`,
+    );
+
+    const saveSwapTxnId = await signAndSendSaveSwapConfigTxns(
+      proxy,
+      swapConfiguration,
+    );
+    if (!saveSwapTxnId) {
+      resetLoading();
+      return;
+    }
+
+    enqueueSnackbar(`New swap configuration saved...`, {
+      variant: `success`,
+      action: () => (
+        <ViewOnAlgoExplorerButton chain={chain} txId={saveSwapTxnId} />
+      ),
+    });
+  };
+
+  const handleSwap = async () => {
+    setLoading(`Setting up swap, please sign initialization transactions...`);
+
+    if (escrowState.error || !escrowState.value) {
+      resetLoading();
+      return;
+    }
+    const escrow = escrowState.value.logicSig as LogicSigAccount;
+
+    if (await accountExists(chain, escrow.address())) {
+      if (!swapExists(escrow.address(), existingSwaps) && swapConfiguration) {
+        await handleStoreConfiguration();
+      }
+
+      await handleDepositSwap();
+      return;
+    }
+
+    const swapInitTxnId = await signAndSendSwapInitTxns(escrow);
+    if (!swapInitTxnId) {
+      resetLoading();
+      return;
+    }
+
+    enqueueSnackbar(`Swap initiation transactions signed...`, {
+      variant: `success`,
+      action: () => (
+        <ViewOnAlgoExplorerButton chain={chain} txId={swapInitTxnId} />
+      ),
+    });
+
+    if (!swapExists(escrow.address(), existingSwaps) && swapConfiguration) {
+      await handleStoreConfiguration();
+    }
+
+    await handleDepositSwap();
   };
 
   const resetStates = () => {

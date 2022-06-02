@@ -12,6 +12,7 @@ import { SnackbarProvider } from 'notistack';
 import Layout from '@/components/Layouts/Layout';
 import store from '@/redux/store';
 import { ConnectContext, connector } from '@/redux/store/connector';
+import { Slide } from '@mui/material';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -32,7 +33,14 @@ export default function MyApp(props: MyAppProps) {
         <ConnectContext.Provider value={connector}>
           <CacheProvider value={emotionCache}>
             <ThemeProvider theme={darkTheme}>
-              <SnackbarProvider maxSnack={3}>
+              <SnackbarProvider
+                maxSnack={3}
+                anchorOrigin={{
+                  vertical: `bottom`,
+                  horizontal: `center`,
+                }}
+                TransitionComponent={Slide}
+              >
                 <CssBaseline />
                 <Layout title="AlgoWorld Swapper">
                   <Component {...pageProps} />

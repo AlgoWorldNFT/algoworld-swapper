@@ -10,7 +10,6 @@ import { connector } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import createPerformSwapTxns from '@/utils/api/swaps/createPerformSwapTxns';
-import getCompiledSwap from '@/utils/api/swaps/getCompiledSwap';
 import loadSwapConfigurations from '@/utils/api/swaps/loadSwapConfigurations';
 import signTransactions from '@/utils/api/transactions/signTransactions';
 import submitTransactions from '@/utils/api/transactions/submitTransactions';
@@ -29,7 +28,7 @@ import { LogicSigAccount } from 'algosdk';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useMemo, useState } from 'react';
-import { useAsync } from 'react-use';
+import { useAsyncRetry } from 'react-use';
 
 const PerformSwap = () => {
   const router = useRouter();
@@ -46,57 +45,35 @@ const PerformSwap = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { setLoading, resetLoading } = useLoadingIndicator();
 
-  const swapConfigsState = useAsync(async () => {
+  const swapConfigsState = useAsyncRetry(async () => {
     return await loadSwapConfigurations(chain, proxy as string);
   }, [proxy]);
 
   const swapConfiguration = useMemo(() => {
     if (swapConfigsState.loading || swapConfigsState.error) return;
 
+    console.log(swapConfigsState.value);
     const allConfigs = swapConfigsState.value ?? [];
 
     return allConfigs.filter((config) => config.escrow === escrow)[0];
   }, [
-    escrow,
-    swapConfigsState.value,
     swapConfigsState.loading,
     swapConfigsState.error,
+    swapConfigsState.value,
+    escrow,
   ]);
 
-  const escrowState = useAsync(async () => {
-    if (
-      !swapConfiguration ||
-      !swapConfiguration.requesting ||
-      !swapConfiguration.offering
-    ) {
-      return;
-    }
-
-    const offeringAsset = swapConfiguration.offering[0];
-    const requestingAsset = swapConfiguration.requesting[0];
-
-    const response = await getCompiledSwap({
-      creator_address: swapConfiguration.creator,
-      offered_asa_id: offeringAsset.index,
-      offered_asa_amount: offeringAsset.offeringAmount,
-      requested_asa_id: requestingAsset.index,
-      requested_asa_amount: requestingAsset.requestingAmount,
-    });
-
-    const data = await response.data;
-    console.log(data);
-    const logicSig = getLogicSign(data[`result`]);
-
-    console.log(logicSig.address());
-    return logicSig;
+  const escrowAccount = useMemo(() => {
+    if (!swapConfiguration) return;
+    return getLogicSign(swapConfiguration.contract);
   }, [swapConfiguration]);
 
   const errorLabelsContent = useMemo(() => {
-    if (swapConfiguration) {
+    if (swapConfiguration && address) {
       if (swapConfiguration.creator === address) {
         return (
           <Typography variant="h6" color={`warning.main`}>
-            You can not perorm the swap since you are the creator...
+            You can not perform the swap since you are the creator...
           </Typography>
         );
       } else {
@@ -109,7 +86,6 @@ const PerformSwap = () => {
             fullWidth
             variant="contained"
             color="primary"
-            loading={escrowState.loading}
             onClick={() => {
               setConfirmSwapDialogOpen(true);
             }}
@@ -132,7 +108,6 @@ const PerformSwap = () => {
     }
   }, [
     address,
-    escrowState.loading,
     swapConfigsState.error,
     swapConfigsState.loading,
     swapConfiguration,
@@ -155,7 +130,16 @@ const PerformSwap = () => {
     const signedPerformSwapTxns = await signTransactions(
       performSwapTxns,
       connector,
-    );
+    ).catch(() => {
+      enqueueSnackbar(`You have cancelled transactions signing...`, {
+        variant: `error`,
+      });
+      return undefined;
+    });
+
+    if (!signedPerformSwapTxns) {
+      return undefined;
+    }
 
     const performSwapResponse = await submitTransactions(
       chain,
@@ -171,23 +155,29 @@ const PerformSwap = () => {
       !swapConfiguration.creator ||
       !swapConfiguration.offering ||
       !swapConfiguration.requesting ||
-      escrowState.loading ||
-      escrowState.error ||
-      !escrowState.value
+      !escrow ||
+      !escrowAccount
     )
       return;
 
-    const escrow = escrowState.value as LogicSigAccount;
-    console.log(escrow);
+    setLoading(`Performing swap, please sign transactions...`);
 
-    setLoading(`Performing swap, please sign initialization transactions...`);
+    const txId = await signAndSendSwapPerformTxns(
+      swapConfiguration,
+      escrowAccount,
+    );
 
-    const txId = await signAndSendSwapPerformTxns(swapConfiguration, escrow);
+    if (!txId) {
+      resetLoading();
+      return;
+    }
 
     enqueueSnackbar(`Swap performed successfully...`, {
       variant: `success`,
       action: () => <ViewOnAlgoExplorerButton chain={chain} txId={txId} />,
     });
+
+    setShareSwapDialogOpen(true);
     resetLoading();
   };
 
@@ -225,7 +215,7 @@ const PerformSwap = () => {
         {/* End hero unit */}
       </div>
       <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
-        {swapConfiguration && (
+        {swapConfiguration ? (
           <>
             <Grid container spacing={2}>
               <Grid item md={6} xs={12}>
@@ -278,6 +268,19 @@ const PerformSwap = () => {
               </Grid>
             </Grid>
           </>
+        ) : (
+          <>
+            <Button
+              onClick={() => {
+                swapConfigsState.retry();
+              }}
+              fullWidth
+              variant="contained"
+              color="primary"
+            >
+              Click to retry loading
+            </Button>
+          </>
         )}
       </Container>
 
@@ -292,22 +295,24 @@ const PerformSwap = () => {
         {`Proceeding with swap will perform transaction to send offering assets from swap's escrow to your wallet and will transfer requested asset to creator of the swap within a single atomic group. Additionally, platform charges a small 0.5 ALGO fee to keep the platform running and incentivise further development and support ❤️`}
       </ConfirmDialog>
 
-      <ShareSwapDialog
-        title="Share AlgoWorld Swap"
-        open={shareSwapDialogOpen}
-        swapConfiguration={swapConfiguration}
-        setOpen={setShareSwapDialogOpen}
-        onClose={() => {
-          router.replace(`/`);
-        }}
-        onConfirm={() => {
-          router.replace(`/`);
-        }}
-      >
-        {`Success! Swap ${ellipseAddress(
-          swapConfiguration?.escrow,
-        )} was performed!`}
-      </ShareSwapDialog>
+      {swapConfiguration && (
+        <ShareSwapDialog
+          title="Share AlgoWorld Swap"
+          open={shareSwapDialogOpen}
+          swapConfiguration={swapConfiguration}
+          setOpen={setShareSwapDialogOpen}
+          onClose={() => {
+            router.replace(`/`);
+          }}
+          onConfirm={() => {
+            router.replace(`/`);
+          }}
+        >
+          {`Success! Swap ${ellipseAddress(
+            swapConfiguration?.escrow,
+          )} was performed!`}
+        </ShareSwapDialog>
+      )}
     </>
   );
 };

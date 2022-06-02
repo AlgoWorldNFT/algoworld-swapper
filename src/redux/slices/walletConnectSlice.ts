@@ -6,6 +6,7 @@ import getAssetsForAccount from '@/utils/api/accounts/getAssetsForAccount';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import getSwapConfigurationsForAccount from '@/utils/api/accounts/getSwapConfigurationsForAccount';
 import getCompiledProxy from '@/utils/api/swaps/getCompiledProxy';
+
 import {
   createAsyncThunk,
   createSelector,
@@ -14,6 +15,7 @@ import {
 } from '@reduxjs/toolkit';
 import { LogicSigAccount } from 'algosdk';
 import { RootState } from '../store';
+import optInAssetsForAccount from '@/utils/api/accounts/optInAssetsForAccount';
 
 interface WalletConnectState {
   chain: ChainType;
@@ -21,6 +23,8 @@ interface WalletConnectState {
   address: string;
   assets: Asset[];
   fetching: boolean;
+  optingIn: boolean;
+  fetchingSwaps: boolean;
   proxy: LogicSigAccount;
   swaps: SwapConfiguration[];
   selectedOfferingAssets: Asset[];
@@ -50,6 +54,8 @@ const initialState = {
   chain: ChainType.TestNet,
   swaps: [],
   fetching: false,
+  fetchingSwaps: false,
+  optingIn: false,
 } as WalletConnectState;
 
 export const getAccountAssets = createAsyncThunk(
@@ -84,6 +90,20 @@ export const getAccountSwaps = createAsyncThunk(
     return await getSwapConfigurationsForAccount(chain, address);
   },
 );
+
+// export const optInAssets = createAsyncThunk(
+//   `walletConnect/optInAssets`,
+//   async ({ assetIndexes }: { assetIndexes: number[] }, { getState }) => {
+//     const state = getState() as WalletConnectState;
+//     console.log(state);
+//     return await optInAssetsForAccount(
+//       state.chain,
+//       assetIndexes,
+//       undefined,
+//       state.address,
+//     );
+//   },
+// );
 
 export const walletConnectSlice = createSlice({
   name: `walletConnect`,
@@ -122,11 +142,18 @@ export const walletConnectSlice = createSlice({
     });
 
     builder.addCase(getAccountSwaps.fulfilled, (state, action) => {
-      state.fetching = false;
+      state.fetchingSwaps = false;
       state.swaps = action.payload;
     });
     builder.addCase(getAccountSwaps.pending, (state) => {
-      state.fetching = true;
+      state.fetchingSwaps = true;
+    });
+
+    builder.addCase(optInAssets.fulfilled, (state) => {
+      state.optingIn = false;
+    });
+    builder.addCase(optInAssets.pending, (state) => {
+      state.optingIn = true;
     });
   },
 });

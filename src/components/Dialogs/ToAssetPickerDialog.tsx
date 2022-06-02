@@ -12,6 +12,9 @@ import { Autocomplete, CircularProgress } from '@mui/material';
 import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
 import { ALGOEXPLORER_INDEXER_URL, axiosFetcher } from '@/common/api';
 import useSWR from 'swr';
+import CryptoTextField, {
+  CryptoTextFieldType,
+} from '../TextFields/CryptoTextField';
 
 type Props = {
   open: boolean;
@@ -26,12 +29,10 @@ export const ToAssetPickerDialog = ({
   onCancel,
   selectedAssets,
 }: Props) => {
-  const [selectedAsset, setSelectedAsset] = useState<Asset | null>();
-  const [selectedAssetAmount, setSelectedAssetAmount] = useState<number>(1);
-  const maxAmount = 100e6;
-  const minAmount = useMemo(() => {
-    return selectedAsset ? Math.pow(10, -1 * selectedAsset.decimals) : 1;
-  }, [selectedAsset]);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>();
+  const [selectedAssetAmount, setSelectedAssetAmount] = useState<
+    number | undefined
+  >(undefined);
 
   const [searchContent, setSearchContent] = useState(``);
   const [autocompleteOpen, setAutocompleteOpen] = useState(false);
@@ -107,10 +108,8 @@ export const ToAssetPickerDialog = ({
               setSearchContent(value);
             }}
             onChange={(_, value) => {
-              setSelectedAsset(value);
-              if (!value) {
-                setSelectedAssetAmount(minAmount);
-              }
+              setSelectedAssetAmount(1);
+              setSelectedAsset(value ?? undefined);
             }}
             renderInput={(params) => (
               <TextField
@@ -132,39 +131,25 @@ export const ToAssetPickerDialog = ({
             )}
           />
 
-          <TextField
-            id="name"
-            sx={{ marginTop: 2 }}
+          <CryptoTextField
             label={`Requesting asset amount`}
+            sx={{ marginTop: 2 }}
             disabled={!selectedAsset}
-            InputProps={{
-              inputProps: {
-                type: `number`,
-                max: maxAmount,
-                min: minAmount,
-              },
-            }}
-            onChange={(input) => {
-              let inputVal = Number(input.target.value);
-              inputVal = inputVal === 0 ? 1 : inputVal;
-
-              if (inputVal <= maxAmount && inputVal >= minAmount) {
-                setSelectedAssetAmount(inputVal);
-              } else {
-                setSelectedAssetAmount(minAmount);
-              }
-            }}
-            type="number"
             value={selectedAssetAmount}
-            fullWidth
-            variant="outlined"
-          />
+            onChange={(value) => {
+              console.log(value);
+              setSelectedAssetAmount(value);
+            }}
+            coinType={CryptoTextFieldType.ASA}
+            decimals={selectedAsset?.decimals ?? 0}
+            maxValue={1e14}
+          ></CryptoTextField>
         </DialogContent>
         <DialogActions>
           <Button
             onClick={() => {
-              setSelectedAsset(null);
-              setSelectedAssetAmount(minAmount);
+              setSelectedAsset(undefined);
+              setSelectedAssetAmount(undefined);
               onCancel();
             }}
           >
@@ -175,8 +160,8 @@ export const ToAssetPickerDialog = ({
             onClick={() => {
               if (selectedAsset && selectedAssetAmount) {
                 onAssetSelected(selectedAsset, selectedAssetAmount);
-                setSelectedAsset(null);
-                setSelectedAssetAmount(minAmount);
+                setSelectedAsset(undefined);
+                setSelectedAssetAmount(undefined);
               }
             }}
           >

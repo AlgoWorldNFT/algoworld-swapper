@@ -29,7 +29,10 @@ const ToSwapCard = ({ cardTitle, maxAssets }: Props) => {
           dispatch(
             setRequestingAssets([
               ...requestingAssets,
-              { ...asset, requestingAmount: amount },
+              {
+                ...asset,
+                requestingAmount: amount * Math.pow(10, asset.decimals),
+              },
             ]),
           );
           setPickerOpen(false);

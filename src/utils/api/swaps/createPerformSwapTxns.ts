@@ -24,7 +24,7 @@ export default async function createPerformSwapTxns(
     algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
       from: userAddress,
       to: creatorAddress,
-      amount: requesting.requestingAmount * Math.pow(10, requesting.decimals),
+      amount: requesting.requestingAmount,
       assetIndex: requesting.index,
       note: new Uint8Array(Buffer.from(note)),
       suggestedParams,
@@ -37,7 +37,7 @@ export default async function createPerformSwapTxns(
     algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
       from: escrowLsig.address(),
       to: userAddress,
-      amount: offering.offeringAmount * Math.pow(10, offering.decimals),
+      amount: offering.offeringAmount,
       assetIndex: offering.index,
       note: new Uint8Array(Buffer.from(note)),
       suggestedParams,

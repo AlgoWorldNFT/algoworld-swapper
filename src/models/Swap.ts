@@ -13,4 +13,5 @@ export type SwapConfiguration = {
   creator: string;
   proxy: string;
   escrow: string;
+  contract: string;
 };

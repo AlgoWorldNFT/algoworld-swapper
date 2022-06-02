@@ -30,7 +30,10 @@ const FromSwapCard = ({ cardTitle, maxAssets }: Props) => {
           dispatch(
             setOfferingAssets([
               ...offeringAssets,
-              { ...asset, offeringAmount: amount },
+              {
+                ...asset,
+                offeringAmount: amount * Math.pow(10, asset.decimals),
+              },
             ]),
           );
           setPickerOpen(false);
