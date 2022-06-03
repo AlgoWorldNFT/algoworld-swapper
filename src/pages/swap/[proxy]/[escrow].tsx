@@ -1,14 +1,17 @@
 import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
 import ConfirmDialog from '@/components/Dialogs/ConfirmDialog';
 import ShareSwapDialog from '@/components/Dialogs/ShareSwapDialog';
+import PageHeader from '@/components/Headers/PageHeader';
 import AssetListView from '@/components/Lists/AssetListView';
 import { SwapConfiguration } from '@/models/Swap';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
+import { optInAssets } from '@/redux/slices/walletConnectSlice';
 import { connector } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
+import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
 import createPerformSwapTxns from '@/utils/api/swaps/createPerformSwapTxns';
 import loadSwapConfigurations from '@/utils/api/swaps/loadSwapConfigurations';
 import signTransactions from '@/utils/api/transactions/signTransactions';
@@ -35,6 +38,7 @@ const PerformSwap = () => {
   const { proxy, escrow } = router.query;
   const chain = useAppSelector((state) => state.walletConnect.chain);
   const address = useAppSelector((state) => state.walletConnect.address);
+  const existingAssets = useAppSelector((state) => state.walletConnect.assets);
 
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
     useState<boolean>(false);
@@ -63,6 +67,19 @@ const PerformSwap = () => {
     escrow,
   ]);
 
+  const assetsToOptIn = useMemo(() => {
+    const newAssets = [
+      ...(swapConfiguration?.offering ?? []),
+      ...(swapConfiguration?.requesting ?? []),
+    ];
+
+    return getAssetsToOptIn(newAssets, existingAssets);
+  }, [
+    existingAssets,
+    swapConfiguration?.offering,
+    swapConfiguration?.requesting,
+  ]);
+
   const escrowAccount = useMemo(() => {
     if (!swapConfiguration) return;
     return getLogicSign(swapConfiguration.contract);
@@ -75,6 +92,24 @@ const PerformSwap = () => {
           <Typography variant="h6" color={`warning.main`}>
             You can not perform the swap since you are the creator...
           </Typography>
+        );
+      } else if (assetsToOptIn.length > 0) {
+        return (
+          <LoadingButton
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              dispatch(
+                optInAssets({
+                  assetIndexes: assetsToOptIn,
+                  connector,
+                }),
+              );
+            }}
+          >
+            Opt-In
+          </LoadingButton>
         );
       } else {
         return (
@@ -108,6 +143,8 @@ const PerformSwap = () => {
     }
   }, [
     address,
+    assetsToOptIn,
+    dispatch,
     swapConfigsState.error,
     swapConfigsState.loading,
     swapConfiguration,
@@ -183,37 +220,13 @@ const PerformSwap = () => {
 
   return (
     <>
-      <div>
-        {/* Hero unit */}
-        <Container
-          disableGutters
-          maxWidth="md"
-          component="main"
-          sx={{ pt: 8, pb: 6 }}
-        >
-          <Typography
-            component="h1"
-            variant="h3"
-            align="center"
-            color="text.primary"
-            gutterBottom
-          >
-            ⚡️ Perform Swap
-          </Typography>
-          <Typography
-            variant="h6"
-            align="left"
-            color="text.secondary"
-            component="p"
-          >
-            Perform a swap created created by other AlgoWorld Swapper users.
-            Completing the swap will transfer your requested asset directly to
-            swap creator, and you will receive the offering asset from the
-            swap&apos;s escrow account.
-          </Typography>
-        </Container>
-        {/* End hero unit */}
-      </div>
+      <PageHeader
+        title="⚡️ Perform Swap"
+        description="Perform a swap created created by other AlgoWorld Swapper users.
+          Completing the swap will transfer your requested asset directly to
+          swap creator, and you will receive the offering asset from the
+          swap's escrow account."
+      />
       <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
         {swapConfiguration ? (
           <>

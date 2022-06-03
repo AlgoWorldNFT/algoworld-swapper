@@ -1,93 +1,53 @@
+<p align="center"><a  href="https://twitter.com/algoworld_nft/status/1450608110268211203"><img  width=100%  src="https://imgur.com/Sv4A6cq.png"  alt="687474703a2f2f6936332e74696e797069632e636f6d2f333031336c67342e706e67"  border="0" /></a></p>
+
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/26466516/141659551-d7ba5630-7200-46fe-863b-87818dae970a.png" alt="Next.js TypeScript Starter">
+    <a href="https://algorand.com"><img src="https://img.shields.io/badge/Powered by-Algorand-blue.svg" /></a>
+    <a href="https://algoworld.io"><img src="https://img.shields.io/badge/AlgoWorld-Website-pink.svg" /></a>
+    <a href="https://algoworldexplorer.io"><img src="https://img.shields.io/badge/AlgoWorldExplorer-Platform-red.svg" /></a>
+    <a><img src="https://visitor-badge.glitch.me/badge?page_id=AlgoWorldNFT.algoworld-contracts&right_color=green" /></a>
+
 </p>
 
-<br />
+## 📃 About
 
-<div align="center"><strong>Non-opinionated TypeScript starter for Next.js</strong></div>
-<div align="center">Highly scalable foundation with the best DX. All the tools you need to build your next project.</div>
+The following repository hosts the source codes for `AlgoWorld Swapper`. Simple and open-source swapper that allows for trustless transfers of assets on Algorand blockchain and extensibility.
 
-<br />
+_**⚠️ NOTE: [algoworld-contracts](https://github.com/AlgoWorldNFT/algoworld-contracts) are not formally audited by accredited third parties. However, contracts are a basis for certain functionality on the AlgoWorldExplorer.io platform and were created in collaboration with Solution Architect from Algorand (credits @cusma).**_
 
-<div align="center">
-  <img src="https://img.shields.io/static/v1?label=PRs&message=welcome&style=flat-square&color=5e17eb&labelColor=000000" alt="PRs welcome!" />
+- [📃 About](#---about)
+- [✔ Prerequisites](#prerequisites)
+- [🚀 Overview](#---overview)
+- [⚙️ Development guide](#---development-guide)
+- [🧪 Testing](#---testing)
+- [📜 License](#---license)
+- [⭐️ Stargazers](#---stargazers)
 
-  <img alt="License" src="https://img.shields.io/github/license/jpedroschmitz/typescript-nextjs-starter?style=flat-square&color=5e17eb&labelColor=000000">
+## Prerequisites
 
-  <a href="https://twitter.com/intent/follow?screen_name=jpedroschmitz">
-    <img src="https://img.shields.io/twitter/follow/jpedroschmitz?style=flat-square&color=5e17eb&labelColor=000000" alt="Follow @jpedroschmitz" />
-  </a>
-</div>
+- `Node` >= 14.x
+- `yarn` >= 1.12.15
 
-<div align="center">
-  <sub>Created by <a href="https://twitter.com/jpedroschmitz">João Pedro</a> with the help of many <a href="https://github.com/jpedroschmitz/typescript-nextjs-starter/graphs/contributors">wonderful contributors</a>.</sub>
-</div>
+## 🚀 Overview
 
-<br />
+AlgoWorld Swapper currently offers usage of several smart signatures used for single and multi ASA transfers.
 
-## Features
+### Swapper
 
-- ⚡️ Next.js 12
-- ⚛️ React 18
-- ⛑ TypeScript
-- 📏 ESLint — Find and fix problems in your code
-- 💖 Prettier — Code Formatter for consistent style
-- 🐶 Husky — For running scripts before committing
-- 📄 Commitizen — To define a standard way of committing rules
-- 🚓 Commitlint — Make sure your commit messages follow the convention
-- 🖌 Renovate — Keep your dependencies up to date
-- 🚫 lint-staged — To run ESLint and Prettier against staged Git files
-- 👷 PR Workflow — Run Type Check & Linters on all Pull Requests
-- ⚙️ EditorConfig - Maintain consistent coding styles across editors and IDEs
-- 🗂 Path Mapping — Import components or images using the `@` prefix
+There are two different types of smart signatures available:
 
-## Quick Start
+- [ASA to ASA swap | 🎴↔️🎴](src/swapper/asa_to_asa_swapper.py): <br> Allows performing a swap of any single ASA of specified amount to any other single ASA of specified amount.
 
-The best way to start with this template is using [Create Next App](https://nextjs.org/docs/api-reference/create-next-app).
+- [ASAs to ALGO swap | 🎴🎴🎴↔️💰](src/swapper/asas_to_algo_swapper.py): <br> Allows performing a swap of multiple ASAs of specified amount to ALGO of specified amount.
 
-```
-yarn create next-app -e https://github.com/jpedroschmitz/typescript-nextjs-starter
-# or
-npx create-next-app -e https://github.com/jpedroschmitz/typescript-nextjs-starter
-```
-
-### Development
+## ⚙️ Development guide
 
 To start the project locally, run:
 
 ```bash
-yarn dev
+vercel dev
 ```
 
 Open `http://localhost:3000` with your browser to see the result.
-
-## Testimonials
-
-> [**“This starter is by far the best TypeScript starter for Next.js. Feature packed but un-opinionated at the same time!”**](https://github.com/jpedroschmitz/typescript-nextjs-starter/issues/87#issue-789642190)<br>
-> — Arafat Zahan
-
-> [**“I can really recommend the Next.js Typescript Starter repo as a solid foundation for your future Next.js projects.”**](https://corfitz.medium.com/create-a-custom-create-next-project-command-2a6b35a1c8e6)<br>
-> — Corfitz
-
-> [**“Brilliant work!”**](https://github.com/jpedroschmitz/typescript-nextjs-starter/issues/87#issuecomment-769314539)<br>
-> — Soham Dasgupta
-
-## Showcase
-
-List of websites that started off with Next.js TypeScript Starter:
-
-- [dowhile.io](https://dowhile.io)
-- [graphcms.com](https://graphcms.com)
-- [mobg.com.br](https://mobg.com.br)
-- [nextlevelweek.com](https://nextlevelweek.com)
-- [rocketseat.com.br](https://www.rocketseat.com.br)
-
-## Documentation
-
-### Requirements
-
-- Node.js >= 12.22.0
-- Yarn 1 (Classic)
 
 ### Directory Structure
 
@@ -116,11 +76,17 @@ import { Button } from '@/components/Button';
 // To import images or other files from the public folder
 import avatar from '@/public/avatar.png';
 ```
+## 🧪 Testing
 
-### Switch to npm
+TBD
+## 📜 License
 
-By default, this starter uses Yarn 1 (Classic), but this choice is yours. If you'd like to switch to npm, delete the `yarn.lock` file, install the dependencies with `npm install`, and change the CI workflows, Husky Git hooks, and lint-staged steps to use npm commands.
+This project is licensed under the GPLv3 License - see the [LICENSE.md](LICENSE.md) file for more information.
 
-## License
+## ⭐️ Stargazers
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for more information.
+Special thanks to everyone who forked or starred the repository ❤️
+
+[![Stargazers repo roster for @AlgoWorldNFT/algoworld-swapper](https://reporoster.com/stars/dark/AlgoWorldNFT/algoworld-swapper)](https://github.com/AlgoWorldNFT/algoworld-swapper/stargazers)
+
+[![Forkers repo roster for @AlgoWorldNFT/algoworld-swapper](https://reporoster.com/forks/dark/AlgoWorldNFT/algoworld-swapper)](https://github.com/AlgoWorldNFT/algoworld-swapper/network/members)

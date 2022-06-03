@@ -9,6 +9,7 @@ type Props = {
   description: string;
   emojiContent: string;
   swapPageUrl: string;
+  disabled?: boolean;
 };
 
 const SwapTypePickerCard = ({
@@ -16,6 +17,7 @@ const SwapTypePickerCard = ({
   description,
   emojiContent,
   swapPageUrl,
+  disabled = false,
 }: Props) => {
   return (
     <Card
@@ -23,7 +25,7 @@ const SwapTypePickerCard = ({
         maxWidth: 345,
       }}
     >
-      <CardActionArea href={swapPageUrl}>
+      <CardActionArea disabled={disabled} href={swapPageUrl}>
         <CardContent>
           <Grid
             container

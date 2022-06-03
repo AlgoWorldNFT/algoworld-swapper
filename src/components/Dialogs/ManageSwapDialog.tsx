@@ -41,6 +41,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
   );
   const chain = useAppSelector((state) => state.walletConnect.chain);
   const existingSwaps = useAppSelector((state) => state.walletConnect.swaps);
+  const existingAssets = useAppSelector((state) => state.walletConnect.assets);
   const proxy = useAppSelector((state) => state.walletConnect.proxy);
 
   const { enqueueSnackbar } = useSnackbar();

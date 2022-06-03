@@ -1,4 +1,14 @@
-import { Box, Container, Link, Typography } from '@mui/material';
+import {
+  Box,
+  Container,
+  IconButton,
+  Link,
+  Stack,
+  Typography,
+} from '@mui/material';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import TelegramIcon from '@mui/icons-material/Telegram';
+import TwitterIcon from '@mui/icons-material/Twitter';
 
 function Copyright() {
   return (
@@ -11,18 +21,36 @@ function Copyright() {
   );
 }
 
+function ReferenceButtons() {
+  return (
+    <Stack justifyContent={`center`} direction="row">
+      <IconButton>
+        <TelegramIcon />
+      </IconButton>
+      <IconButton>
+        <TwitterIcon />
+      </IconButton>
+      <IconButton>
+        <GitHubIcon />
+      </IconButton>
+    </Stack>
+  );
+}
+
 const Footer = () => (
   <Box
     sx={{
-      py: 3,
+      py: 2,
       px: 2,
       mt: `auto`,
+      bgcolor: `background.paper`,
     }}
     alignItems="center"
     justifyContent="center"
     component="footer"
   >
-    <Container maxWidth="sm">
+    <Container>
+      <ReferenceButtons />
       <Typography
         variant="subtitle1"
         align="center"

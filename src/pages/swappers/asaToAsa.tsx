@@ -39,6 +39,8 @@ import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerBut
 import ShareSwapDialog from '@/components/Dialogs/ShareSwapDialog';
 import { LoadingButton } from '@mui/lab';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
+import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
+import PageHeader from '@/components/Headers/PageHeader';
 
 export default function AsaToAsa() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
@@ -52,9 +54,7 @@ export default function AsaToAsa() {
   const offeringAssets = useAppSelector(
     (state) => state.walletConnect.selectedOfferingAssets,
   );
-  const existingAssetIds = useAppSelector((state) =>
-    state.walletConnect.assets.map((asset) => asset.index),
-  );
+  const existingAssets = useAppSelector((state) => state.walletConnect.assets);
   const requestingAssets = useAppSelector(
     (state) => state.walletConnect.selectedRequestingAssets,
   );
@@ -73,8 +73,6 @@ export default function AsaToAsa() {
 
     const offeringAsset = offeringAssets[0];
     const requestingAsset = requestingAssets[0];
-
-    console.log(offeringAsset);
 
     const response = await getCompiledSwap({
       creator_address: address,
@@ -125,20 +123,11 @@ export default function AsaToAsa() {
   ]);
 
   const assetsToOptIn = useMemo(() => {
-    const indexes = [...offeringAssets, ...requestingAssets].map(
-      (asset) => asset.index,
+    return getAssetsToOptIn(
+      [...offeringAssets, ...requestingAssets],
+      existingAssets,
     );
-
-    const indexesToOptIn = [];
-
-    for (const index of indexes) {
-      if (!existingAssetIds.includes(index)) {
-        indexesToOptIn.push(index);
-      }
-    }
-
-    return indexesToOptIn;
-  }, [existingAssetIds, offeringAssets, requestingAssets]);
+  }, [existingAssets, offeringAssets, requestingAssets]);
 
   const signAndSendSwapInitTxns = async (escrow: LogicSigAccount) => {
     const offeringAsset = offeringAssets[0];
@@ -355,34 +344,13 @@ export default function AsaToAsa() {
   return (
     <>
       <div>
-        {/* Hero unit */}
-        <Container
-          disableGutters
-          maxWidth="md"
-          component="main"
-          sx={{ pt: 8, pb: 6 }}
-        >
-          <Typography
-            component="h1"
-            variant="h3"
-            align="center"
-            color="text.primary"
-            gutterBottom
-          >
-            🎴 ASA to ASA Swap
-          </Typography>
-          <Typography
-            variant="h6"
-            align="center"
-            color="text.secondary"
-            component="p"
-          >
-            Create a safe atomic swap powered by Algorand Smart Signatures.
-            Currently supports ASA to ASA and multi ASA to Algo swaps. Choose
-            and click on the required swap type below.
-          </Typography>
-        </Container>
-        {/* End hero unit */}
+        <PageHeader
+          title="🎴 ASA to ASA Swap"
+          description="Create a safe atomic swap powered by Algorand Smart Signatures.
+          Currently supports ASA to ASA and multi ASA to Algo swaps. Choose
+          and click on the required swap type below."
+        />
+
         <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
           <Grid container spacing={2}>
             <Grid item md={6} xs={12}>
@@ -394,7 +362,11 @@ export default function AsaToAsa() {
             </Grid>
 
             <Grid item xs={12}>
-              <Stack justifyContent={`center`} direction={`column`}>
+              <Stack
+                justifyContent={`center`}
+                direction={`column`}
+                sx={{ pb: 5 }}
+              >
                 {address && assetsToOptIn.length === 0 ? (
                   <LoadingButton
                     disabled={

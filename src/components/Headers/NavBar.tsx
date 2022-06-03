@@ -31,11 +31,16 @@ import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
 import { Grid } from '@mui/material';
+import AboutDialog from '../Dialogs/AboutDialog';
 
-const pages = [
-  { title: `Home`, url: `/` },
-  { title: `About`, url: `/about` },
-];
+type PageConfiguration = {
+  title: string;
+  url: string;
+  disabled?: boolean;
+};
+
+const pages = [{ title: `Home`, url: `/` }] as PageConfiguration[];
+
 const settings = [`My Swaps`, `Logout`];
 
 const NavBar = () => {
@@ -45,6 +50,8 @@ const NavBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   );
+  const [isAboutPopupOpen, setIsAboutPopupOpen] =
+    React.useState<boolean>(false);
   const router = useRouter();
 
   const assets = useAppSelector(selectAssets);
@@ -177,7 +184,13 @@ const NavBar = () => {
       <ConnectWalletDialog
         open={isWalletPopupOpen}
         onClientSelected={handleOnClientSelected}
-      ></ConnectWalletDialog>
+      />
+      <AboutDialog
+        open={isAboutPopupOpen}
+        setOpen={(state) => {
+          setIsAboutPopupOpen(state);
+        }}
+      />
       <AppBar position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
@@ -223,10 +236,18 @@ const NavBar = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page.title} onClick={handleCloseNavMenu}>
+                  <MenuItem key={page.title} href={page.url}>
                     <Typography textAlign="center">{page.title}</Typography>
                   </MenuItem>
                 ))}
+                <MenuItem
+                  key={`about`}
+                  onClick={() => {
+                    setIsAboutPopupOpen(!isAboutPopupOpen);
+                  }}
+                >
+                  <Typography textAlign="center">{`About`}</Typography>
+                </MenuItem>
               </Menu>
             </Box>
 
@@ -235,29 +256,39 @@ const NavBar = () => {
                 <Button
                   key={page.title}
                   href={page.url}
+                  disabled={page.disabled}
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: `white`, display: `block` }}
                 >
                   {page.title}
                 </Button>
               ))}
+              <Button
+                key={`about`}
+                onClick={() => {
+                  setIsAboutPopupOpen(true);
+                }}
+                sx={{ my: 2, color: `white`, display: `block` }}
+              >
+                About
+              </Button>
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
               {address ? (
                 <>
-                  <Grid container alignItems={`center`} spacing={2}>
+                  <Grid container alignItems={`center`} spacing={1}>
                     <Grid item xs>
                       {!loading && (
                         <Tooltip title="Available balance">
-                          <span>
+                          <Typography variant="subtitle2">
                             {formatBigNumWithDecimals(
                               BigInt(nativeCurrency.amount),
                               nativeCurrency.decimals,
                             )}
                             {` `}
                             {nativeCurrency.unitName || `units`}
-                          </span>
+                          </Typography>
                         </Tooltip>
                       )}
                     </Grid>
@@ -267,11 +298,13 @@ const NavBar = () => {
                           onClick={handleOpenUserMenu}
                           sx={{ p: 0, borderRadius: 1 }}
                         >
-                          <AccountBalanceWalletOutlined />
-                          {`${address?.slice(0, 4)}...${address?.slice(
-                            address.length - 4,
-                            address.length,
-                          )} `}
+                          <AccountBalanceWalletOutlined sx={{ pr: 0.5 }} />
+                          <Typography variant="h6">
+                            {`${address?.slice(0, 4)}...${address?.slice(
+                              address.length - 4,
+                              address.length,
+                            )} `}
+                          </Typography>
                         </IconButton>
                       </Tooltip>
                     </Grid>

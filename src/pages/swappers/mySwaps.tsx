@@ -1,5 +1,6 @@
 import ManageSwapDialog from '@/components/Dialogs/ManageSwapDialog';
 import ShareSwapDialog from '@/components/Dialogs/ShareSwapDialog';
+import PageHeader from '@/components/Headers/PageHeader';
 import MySwapsTable from '@/components/Tables/MySwapsTable';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import {
@@ -59,34 +60,16 @@ export default function MySwaps() {
         )} is initialized!`}
       </ShareSwapDialog>
 
-      {/* Hero unit */}
-      <Container
-        disableGutters
-        maxWidth="md"
-        component="main"
-        sx={{ pt: 8, pb: 6 }}
-      >
-        <Typography
-          component="h1"
-          variant="h3"
-          align="center"
-          color="text.primary"
-          gutterBottom
-        >
-          ⚡️ Manage existing swaps
-        </Typography>
-        <Typography
-          variant="h6"
-          align="center"
-          color="text.secondary"
-          component="p"
-        >
-          Activate, update or deactivate your existing swaps.
-        </Typography>
-      </Container>
-      {/* End hero unit */}
+      <PageHeader
+        title="📜 My Swaps"
+        description="Activate, update or deactivate your existing swaps."
+      />
 
-      <Container maxWidth="md" sx={{ textAlign: `center` }} component="main">
+      <Container
+        maxWidth="md"
+        sx={{ textAlign: `center`, pb: 5 }}
+        component="main"
+      >
         {fetchingSwaps ? (
           <Box sx={{ width: `100%` }}>
             <LinearProgress />
