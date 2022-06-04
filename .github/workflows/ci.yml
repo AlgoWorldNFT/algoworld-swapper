@@ -42,7 +42,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source-directory: './'
+          source-directory: 'api'
           destination-github-username: 'aorumbayev'
           destination-repository-name: 'aw-swapper-releases'
           user-email: info@algoworld.io
