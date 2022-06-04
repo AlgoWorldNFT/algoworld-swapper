@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
 
       - name: Copy files for release
-        run: cp -r . release
+        run: cp -r . ./release
         shell: bash
 
       - name: Set up Node
@@ -42,7 +42,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source-directory: 'release'
+          source-directory: './release'
           destination-github-username: 'aorumbayev'
           destination-repository-name: 'aw-swapper-releases'
           user-email: info@algoworld.io
