@@ -40,7 +40,7 @@ jobs:
       - name: Trigger Release
         uses: cpina/github-action-push-to-another-repository@main
         env:
-          API_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
           source-directory: './'
           destination-github-username: 'aorumbayev'
