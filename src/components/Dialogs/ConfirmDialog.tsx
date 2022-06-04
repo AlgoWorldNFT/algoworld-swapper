@@ -14,7 +14,7 @@ type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
   onConfirm: () => void;
-  transactionsFee?: number | stromg;
+  transactionsFee?: number | string;
 };
 
 const ConfirmDialog = ({

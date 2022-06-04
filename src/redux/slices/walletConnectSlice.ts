@@ -185,7 +185,8 @@ export const selectOfferingAssetAmounts = createSelector(
       {},
       ...selectedOfferingAssets.map((asset: Asset) => {
         return {
-          [Number(asset.index)]: asset.amount * Math.pow(10, asset.decimals),
+          [Number(asset.index)]:
+            asset.offeringAmount * Math.pow(10, asset.decimals),
         };
       }),
     ),

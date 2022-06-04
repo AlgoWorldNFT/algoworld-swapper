@@ -74,7 +74,7 @@ export default function MultiAsaToAlgo() {
       return;
     }
 
-    const requestingAlgoAmount = requestingAssets[0].amount;
+    const requestingAlgoAmount = requestingAssets[0].requestingAmount;
 
     const response = await getCompiledMultiSwap({
       creator_address: address,

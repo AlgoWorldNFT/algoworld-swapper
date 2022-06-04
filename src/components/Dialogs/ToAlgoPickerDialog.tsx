@@ -48,6 +48,7 @@ export const ToAlgoPickerDialog = ({
             sx={{ marginTop: 2 }}
             value={selectedAlgoAmount}
             onChange={(value) => {
+              console.log(value);
               setSelectedAlgoAmount(value);
             }}
             coinType={CoinType.ALGO}
@@ -68,6 +69,7 @@ export const ToAlgoPickerDialog = ({
           <Button
             onClick={() => {
               if (selectedAlgoAmount) {
+                console.log(selectedAlgoAmount);
                 onAlgoAmoutSelected(algoAsset, selectedAlgoAmount);
                 setSelectedAlgoAmount(undefined);
               }
