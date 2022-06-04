@@ -56,8 +56,8 @@
     "tsparticles": "2.0.6"
   },
   "devDependencies": {
-    "@commitlint/cli": "16.2.4",
-    "@commitlint/config-conventional": "16.2.4",
+    "@commitlint/cli": "17.0.2",
+    "@commitlint/config-conventional": "17.0.2",
     "@types/node": "16.11.33",
     "@types/react": "18.0.8",
     "@types/react-dom": "18.0.3",
