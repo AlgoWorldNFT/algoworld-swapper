@@ -1,13 +1,9 @@
+import { CoinType } from '@/models/CoinType';
 import { TextField } from '@mui/material';
 import NumberFormat, { NumberFormatValues } from 'react-number-format';
 
-export enum CryptoTextFieldType {
-  ALGO,
-  ASA,
-}
-
 type Props = {
-  coinType: CryptoTextFieldType;
+  coinType: CoinType;
   label: string;
   value: number | undefined;
   onChange: (value: number | undefined) => void;
@@ -35,7 +31,7 @@ const CryptoTextField = ({
       displayType="input"
       placeholder="Enter amount"
       value={value}
-      prefix={coinType === CryptoTextFieldType.ALGO ? `🪙 ` : `🎴 `}
+      prefix={coinType === CoinType.ALGO ? `🪙 ` : `🎴 `}
       label={label}
       decimalScale={decimals}
       customInput={TextField}

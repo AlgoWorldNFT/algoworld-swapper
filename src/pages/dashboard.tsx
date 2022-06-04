@@ -1,4 +1,4 @@
-import { Container, Stack, Typography } from '@mui/material';
+import { Container, Stack } from '@mui/material';
 import SwapTypePickerCard from '@/components/Cards/SwapTypePickerCard';
 import { SwapType } from '@/models/Swap';
 import PageHeader from '@/components/Headers/PageHeader';
@@ -15,11 +15,11 @@ export default function Dashboard() {
     },
     {
       title: `Multi ASA to Algo `,
-      description: `Coming soon ⚠️. Swap up to 5 Assets for desired Algo amount or vice versa.`,
+      description: `Swap up to 5 Assets for desired Algo amount or vice versa. Coming soon ⚠️.`,
       type: SwapType.MULTI_ASA_TO_ALGO,
       emoji: `🚧`,
       swapPageUrl: `/swappers/multiAsaToAlgo`,
-      disabled: true,
+      disabled: false,
     },
   ];
 

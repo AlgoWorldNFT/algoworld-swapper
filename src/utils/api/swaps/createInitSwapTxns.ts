@@ -12,9 +12,11 @@ export default async function createInitSwapTxns(
   creatorWallet: WalletConnect,
   escrowLsig: LogicSigAccount,
   fundingFee: number,
-  offering: Asset,
+  offeringAssets: Asset[],
 ) {
   const suggestedParams = await getTransactionParams(chain);
+
+  const txns = [];
 
   const feeTxn = createTransactionToSign(
     algosdk.makePaymentTxnWithSuggestedParamsFromObject({
@@ -32,22 +34,27 @@ export default async function createInitSwapTxns(
     TransactionToSignType.UserFeeTransaction,
   );
 
-  const nftTxn = createTransactionToSign(
-    algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-      from: escrowLsig.address(),
-      to: escrowLsig.address(),
-      amount: 0,
-      assetIndex: Number(offering.index),
-      note: new Uint8Array(
-        Buffer.from(
-          ` I am an asset opt-in transaction for algoworld swapper escrow, thank you for using AlgoWorld Swapper (☞ ͡° ͜ʖ ͡°)☞`,
-        ),
-      ),
-      suggestedParams,
-    }),
-    escrowLsig,
-    TransactionToSignType.LsigTransaction,
-  );
+  txns.push(feeTxn);
 
-  return [feeTxn, nftTxn];
+  for (const asset of offeringAssets) {
+    const nftTxn = createTransactionToSign(
+      algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+        from: escrowLsig.address(),
+        to: escrowLsig.address(),
+        amount: 0,
+        assetIndex: Number(asset.index),
+        note: new Uint8Array(
+          Buffer.from(
+            ` I am an asset opt-in transaction for algoworld swapper escrow, thank you for using AlgoWorld Swapper (☞ ͡° ͜ʖ ͡°)☞`,
+          ),
+        ),
+        suggestedParams,
+      }),
+      escrowLsig,
+      TransactionToSignType.LsigTransaction,
+    );
+    txns.push(nftTxn);
+  }
+  console.log(txns);
+  return txns;
 }

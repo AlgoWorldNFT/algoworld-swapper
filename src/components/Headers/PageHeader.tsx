@@ -11,6 +11,7 @@ const PageHeader = ({ title, description }: Props) => {
   return (
     <Container
       component="main"
+      maxWidth="sm"
       sx={{
         pt: 5,
         pb: 2,

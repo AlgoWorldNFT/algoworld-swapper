@@ -30,7 +30,7 @@ import ConnectWalletDialog from '../Dialogs/ConnectWalletDialog';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
-import { Grid } from '@mui/material';
+import { Grid, Link } from '@mui/material';
 import AboutDialog from '../Dialogs/AboutDialog';
 
 type PageConfiguration = {
@@ -236,7 +236,7 @@ const NavBar = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page.title} href={page.url}>
+                  <MenuItem component={Link} key={page.title} href={page.url}>
                     <Typography textAlign="center">{page.title}</Typography>
                   </MenuItem>
                 ))}

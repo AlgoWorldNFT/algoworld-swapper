@@ -12,9 +12,8 @@ import { Autocomplete, CircularProgress } from '@mui/material';
 import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
 import { ALGOEXPLORER_INDEXER_URL, axiosFetcher } from '@/common/api';
 import useSWR from 'swr';
-import CryptoTextField, {
-  CryptoTextFieldType,
-} from '../TextFields/CryptoTextField';
+import CryptoTextField from '../TextFields/CryptoTextField';
+import { CoinType } from '@/models/CoinType';
 
 type Props = {
   open: boolean;
@@ -140,7 +139,7 @@ export const ToAssetPickerDialog = ({
               console.log(value);
               setSelectedAssetAmount(value);
             }}
-            coinType={CryptoTextFieldType.ASA}
+            coinType={CoinType.ASA}
             decimals={selectedAsset?.decimals ?? 0}
             maxValue={1e14}
           ></CryptoTextField>

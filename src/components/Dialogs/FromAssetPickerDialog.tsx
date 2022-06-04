@@ -9,10 +9,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Asset } from '@/models/Asset';
 import { useMemo, useState } from 'react';
 import { Autocomplete } from '@mui/material';
-import CryptoTextField, {
-  CryptoTextFieldType,
-} from '../TextFields/CryptoTextField';
+import CryptoTextField from '../TextFields/CryptoTextField';
 import formatAmount from '@/utils/formatAmount';
+import { CoinType } from '@/models/CoinType';
 
 type Props = {
   open: boolean;
@@ -106,7 +105,7 @@ export const FromAssetPickerDialog = ({
               console.log(value);
               setSelectedAssetAmount(value);
             }}
-            coinType={CryptoTextFieldType.ASA}
+            coinType={CoinType.ASA}
             decimals={selectedAsset?.decimals ?? 0}
             maxValue={
               formatAmount(selectedAsset?.amount, selectedAsset?.decimals) ?? 1

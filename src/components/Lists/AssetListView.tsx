@@ -15,6 +15,21 @@ const AssetListView = ({
   onAssetDeselected,
   isOffering = true,
 }: Props) => {
+  const getLabelContent = (index: number, asset: Asset) => {
+    return asset.unitName === `Algo`
+      ? `${formatAmount(
+          isOffering ? asset.offeringAmount : asset.requestingAmount,
+          asset.decimals,
+        )} ${asset.name}`
+      : `${index + 1}. ${asset.index}: ${asset.name} (${
+          `x` +
+          formatAmount(
+            isOffering ? asset.offeringAmount : asset.requestingAmount,
+            asset.decimals,
+          )
+        })`;
+  };
+
   return (
     <Paper sx={{ bgcolor: `background.default` }}>
       <List sx={{ width: `100%` }}>
@@ -27,6 +42,8 @@ const AssetListView = ({
                   edge="end"
                   aria-label="delete"
                   onClick={() => {
+                    console.log(asset);
+                    console.log(asset.name);
                     onAssetDeselected(asset);
                   }}
                 >
@@ -42,15 +59,7 @@ const AssetListView = ({
                 textOverflow: `ellipsis`,
                 overflow: `hidden`,
               }}
-              primary={
-                isOffering
-                  ? `${index + 1}. ${asset.index}: ${asset.name} (${
-                      `x` + formatAmount(asset.offeringAmount, asset.decimals)
-                    })`
-                  : `${index + 1}. ${asset.index}: ${asset.name} (${
-                      `x` + formatAmount(asset.requestingAmount, asset.decimals)
-                    })`
-              }
+              primary={getLabelContent(index, asset)}
             />
           </ListItem>
         ))}

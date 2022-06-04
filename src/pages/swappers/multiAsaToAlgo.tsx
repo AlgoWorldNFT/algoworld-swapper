@@ -8,6 +8,8 @@ import { useContext, useMemo, useState } from 'react';
 import { ConnectContext } from '@/redux/store/connector';
 
 import {
+  ASA_TO_ALGO_FUNDING_BASE_FEE,
+  ASA_TO_ALGO_MAX_FEE,
   ASA_TO_ASA_FUNDING_FEE,
   SWAP_PROXY_VERSION,
   TXN_SIGNING_CANCELLED_MESSAGE,
@@ -16,7 +18,6 @@ import { SwapConfiguration, SwapType } from '@/models/Swap';
 import { useAsync } from 'react-use';
 import { LogicSigAccount } from 'algosdk/dist/types/src/logicsig';
 import ConfirmDialog from '@/components/Dialogs/ConfirmDialog';
-import getCompiledSwap from '@/utils/api/swaps/getCompiledSwap';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import swapExists from '@/utils/api/swaps/swapExists';
 import accountExists from '@/utils/api/accounts/accountExists';
@@ -41,8 +42,10 @@ import { LoadingButton } from '@mui/lab';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
 import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
 import PageHeader from '@/components/Headers/PageHeader';
+import { CoinType } from '@/models/CoinType';
+import getCompiledMultiSwap from '@/utils/api/swaps/getCompiledMultiSwap';
 
-export default function AsaToAsa() {
+export default function MultiAsaToAlgo() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
     useState<boolean>(false);
 
@@ -54,6 +57,16 @@ export default function AsaToAsa() {
   const offeringAssets = useAppSelector(
     (state) => state.walletConnect.selectedOfferingAssets,
   );
+  const offeringAssetAmounts = useMemo(() => {
+    return Object.assign(
+      {},
+      ...offeringAssets.map((asset: Asset) => {
+        return {
+          [Number(asset.index)]: asset.amount * Math.pow(10, asset.decimals),
+        };
+      }),
+    );
+  }, [offeringAssets]);
   const existingAssets = useAppSelector((state) => state.walletConnect.assets);
   const requestingAssets = useAppSelector(
     (state) => state.walletConnect.selectedRequestingAssets,
@@ -67,25 +80,25 @@ export default function AsaToAsa() {
   const { setLoading, resetLoading } = useLoadingIndicator();
 
   const escrowState = useAsync(async () => {
-    if (offeringAssets.length === 0 || requestingAssets.length === 0) {
+    if (offeringAssetAmounts.length === 0 || requestingAssets.length === 0) {
       return;
     }
 
-    const offeringAsset = offeringAssets[0];
-    const requestingAsset = requestingAssets[0];
+    const requestingAlgoAmount = requestingAssets[0].amount;
 
-    const response = await getCompiledSwap({
+    const response = await getCompiledMultiSwap({
       creator_address: address,
-      offered_asa_id: offeringAsset.index,
-      offered_asa_amount: offeringAsset.offeringAmount,
-      requested_asa_id: requestingAsset.index,
-      requested_asa_amount: requestingAsset.requestingAmount,
+      offered_asa_amounts: offeringAssetAmounts,
+      requested_algo_amount: requestingAlgoAmount,
+      max_fee: ASA_TO_ALGO_MAX_FEE,
+      optin_funding_amount:
+        ASA_TO_ALGO_FUNDING_BASE_FEE * offeringAssets.length,
     });
 
     const data = await response.data;
     const logicSig = getLogicSign(data[`result`]);
     return { logicSig, compiledProgram: data[`result`] };
-  }, [address, offeringAssets, requestingAssets]);
+  }, [address, offeringAssetAmounts, requestingAssets]);
 
   const swapConfiguration = useMemo(() => {
     if (
@@ -104,7 +117,7 @@ export default function AsaToAsa() {
 
     return {
       version: SWAP_PROXY_VERSION,
-      type: SwapType.ASA_TO_ASA,
+      type: SwapType.MULTI_ASA_TO_ALGO,
       offering: [offeringAsset],
       requesting: [requestingAsset],
       creator: address,
@@ -123,21 +136,17 @@ export default function AsaToAsa() {
   ]);
 
   const assetsToOptIn = useMemo(() => {
-    return getAssetsToOptIn(
-      [...offeringAssets, ...requestingAssets],
-      existingAssets,
-    );
-  }, [existingAssets, offeringAssets, requestingAssets]);
+    return getAssetsToOptIn(offeringAssets, existingAssets);
+  }, [existingAssets, offeringAssets]);
 
   const signAndSendSwapInitTxns = async (escrow: LogicSigAccount) => {
-    const offeringAsset = offeringAssets[0];
     const initSwapTxns = await createInitSwapTxns(
       chain,
       address,
       connector,
       escrow,
-      ASA_TO_ASA_FUNDING_FEE,
-      [offeringAsset],
+      ASA_TO_ALGO_FUNDING_BASE_FEE * offeringAssets.length,
+      offeringAssets,
     );
 
     const signedInitSwapTxns = await signTransactions(
@@ -345,7 +354,7 @@ export default function AsaToAsa() {
     <>
       <div>
         <PageHeader
-          title="🎴 ASA to ASA Swap"
+          title="🎴💰 Multi ASA to Algo Swap"
           description="Create a safe atomic swap powered by Algorand Smart Signatures.
           Currently supports ASA to ASA and multi ASA to Algo swaps. Choose
           and click on the required swap type below."
@@ -354,11 +363,15 @@ export default function AsaToAsa() {
         <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
           <Grid container spacing={2}>
             <Grid item md={6} xs={12}>
-              <FromSwapCard cardTitle="You provide" maxAssets={1} />
+              <FromSwapCard cardTitle="You provide" maxAssets={5} />
             </Grid>
 
             <Grid item md={6} xs={12}>
-              <ToSwapCard cardTitle="You receive" maxAssets={1} />
+              <ToSwapCard
+                cardTitle="You receive"
+                maxAssets={1}
+                coinType={CoinType.ALGO}
+              />
             </Grid>
 
             <Grid item xs={12}>
@@ -426,7 +439,10 @@ export default function AsaToAsa() {
         open={confirmSwapDialogOpen}
         setOpen={setConfirmSwapDialogOpen}
         onConfirm={handleSwap}
-        transactionsFee={0.32}
+        transactionsFee={(
+          0.11 +
+          (ASA_TO_ALGO_FUNDING_BASE_FEE * offeringAssets.length) / 1e6
+        ).toFixed(2)}
       >
         A swapper escrow contract will be created, a small fixed fee in algos
         will be charged to fund the wallet and your offering asa will be then

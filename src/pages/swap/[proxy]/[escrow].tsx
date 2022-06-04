@@ -227,7 +227,11 @@ const PerformSwap = () => {
           swap creator, and you will receive the offering asset from the
           swap's escrow account."
       />
-      <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
+      <Container
+        maxWidth="sm"
+        sx={{ textAlign: `center`, pb: 5 }}
+        component="main"
+      >
         {swapConfiguration ? (
           <>
             <Grid container spacing={2}>
@@ -304,6 +308,7 @@ const PerformSwap = () => {
         onConfirm={async () => {
           await handlePerformSwap();
         }}
+        transactionsFee={0.5 + 0.01 * 3}
       >
         {`Proceeding with swap will perform transaction to send offering assets from swap's escrow to your wallet and will transfer requested asset to creator of the swap within a single atomic group. Additionally, platform charges a small 0.5 ALGO fee to keep the platform running and incentivise further development and support ❤️`}
       </ConfirmDialog>

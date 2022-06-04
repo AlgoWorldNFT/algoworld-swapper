@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import { Typography } from '@mui/material';
+import LinearProgress from '@mui/material/LinearProgress';
+import { Stack, Typography } from '@mui/material';
 
 type Props = {
   isLoading: boolean;
@@ -15,11 +15,21 @@ const LoadingBackdrop = ({
   return (
     <div>
       <Backdrop
-        sx={{ color: `#fff`, zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{
+          color: `#fff`,
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          opacity: 0.3,
+        }}
         open={isLoading}
       >
-        {<CircularProgress color="inherit" />}
-        {message && <Typography variant="h5">{message}</Typography>}
+        <Stack sx={{ maxWidth: `90%` }} spacing={1}>
+          {message && (
+            <Typography color="primary" variant="h6">
+              {message}
+            </Typography>
+          )}
+          <LinearProgress color="secondary" />
+        </Stack>
       </Backdrop>
     </div>
   );

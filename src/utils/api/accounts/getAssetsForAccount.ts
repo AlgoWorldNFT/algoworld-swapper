@@ -47,6 +47,7 @@ export default async function getAssetsForAccount(
           try {
             const assetResponse = await client.getAssetByID(asset.index).do();
             const assetParams = assetResponse[`params`];
+            console.log(assetParams);
             asset[`name`] = assetParams.hasOwnProperty(`name`)
               ? assetParams[`name`]
               : ``;
@@ -64,6 +65,7 @@ export default async function getAssetsForAccount(
       });
     }),
   );
+  console.log(`heeee`, assets);
 
   assets.unshift({
     index: 0,

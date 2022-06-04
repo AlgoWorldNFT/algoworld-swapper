@@ -9,6 +9,7 @@ import submitTransactions from '../transactions/submitTransactions';
 
 import { setLoadingIndicator } from '@/redux/slices/applicationSlice';
 import { Dispatch } from '@reduxjs/toolkit';
+import { getAccountAssets } from '@/redux/slices/walletConnectSlice';
 
 export default async function optInAssets(
   chain: ChainType,
@@ -81,6 +82,9 @@ export default async function optInAssets(
   );
 
   dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
+
+  // Makes sure to reload assets after opt-in
+  dispatch(getAccountAssets({ chain, address: creatorAddress }) as any);
 
   return saveSwapConfigResponse.txId;
 }

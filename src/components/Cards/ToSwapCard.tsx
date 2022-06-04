@@ -2,17 +2,23 @@ import { Card, CardHeader, CardContent, Stack, Button } from '@mui/material';
 
 import { useState } from 'react';
 import { Asset } from '@/models/Asset';
-import { ToAssetPickerDialog } from '../Dialogs/ToAssetPickerDialog';
 import AssetListView from '../Lists/AssetListView';
 import { setRequestingAssets } from '@/redux/slices/walletConnectSlice';
 import { useAppSelector, useAppDispatch } from '@/redux/store/hooks';
+import { CoinType } from '@/models/CoinType';
+import { ToAlgoPickerDialog } from '../Dialogs/ToAlgoPickerDialog';
 
 type Props = {
   cardTitle: string;
   maxAssets: number;
+  coinType?: CoinType;
 };
 
-const ToSwapCard = ({ cardTitle, maxAssets }: Props) => {
+const ToSwapCard = ({
+  cardTitle,
+  maxAssets,
+  coinType = CoinType.ASA,
+}: Props) => {
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
 
   const address = useAppSelector((state) => state.walletConnect.address);
@@ -23,15 +29,15 @@ const ToSwapCard = ({ cardTitle, maxAssets }: Props) => {
 
   return (
     <>
-      <ToAssetPickerDialog
+      <ToAlgoPickerDialog
         open={pickerOpen}
-        onAssetSelected={(asset: Asset, amount: number) => {
+        onAlgoAmoutSelected={(algo: Asset, amount: number) => {
           dispatch(
             setRequestingAssets([
               ...requestingAssets,
               {
-                ...asset,
-                requestingAmount: amount * Math.pow(10, asset.decimals),
+                ...algo,
+                requestingAmount: amount * Math.pow(10, algo.decimals),
               },
             ]),
           );
@@ -59,7 +65,9 @@ const ToSwapCard = ({ cardTitle, maxAssets }: Props) => {
                 setPickerOpen(true);
               }}
             >
-              Select Requesting Asset
+              {coinType === CoinType.ASA
+                ? `Select Requesting Asset`
+                : `Enter requesting Algo`}
             </Button>
 
             {requestingAssets.length > 0 && (
