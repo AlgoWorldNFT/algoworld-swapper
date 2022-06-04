@@ -38,7 +38,7 @@ export const FromAssetPickerDialog = ({
     const unpackedSelectedAssetIndexes = selectedAssets
       ? selectedAssets.map((asset) => asset.index)
       : [];
-    console.log(unpackedAssets);
+
     const filtered = [
       ...unpackedAssets.filter((asset) => {
         return (
@@ -48,7 +48,7 @@ export const FromAssetPickerDialog = ({
         );
       }),
     ];
-    console.log(filtered);
+
     return filtered;
   }, [assets, selectedAssets]);
 
@@ -102,7 +102,6 @@ export const FromAssetPickerDialog = ({
             disabled={!selectedAsset}
             value={selectedAssetAmount}
             onChange={(value) => {
-              console.log(value);
               setSelectedAssetAmount(value);
             }}
             coinType={CoinType.ASA}

@@ -11,30 +11,32 @@ export default async function createSwapDeactivateTxns(
   creatorAddress: string,
   creatorWallet: WalletConnect,
   escrow: LogicSigAccount,
-  offeringAsset: Asset,
+  offeringAssets: Asset[],
 ) {
   const suggestedParams = await getTransactionParams(chain);
 
   const txns = [];
 
-  const closeAsaTxn = createTransactionToSign(
-    algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-      from: escrow.address(),
-      to: creatorAddress,
-      amount: 0,
-      assetIndex: offeringAsset.index,
-      closeRemainderTo: creatorAddress,
-      note: new Uint8Array(
-        Buffer.from(
-          `I am a fee transaction for closing algoworld swapper escrow, thank you for using AlgoWorld Swapper :-)`,
+  for (const asset of offeringAssets) {
+    const closeAsaTxn = createTransactionToSign(
+      algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+        from: escrow.address(),
+        to: creatorAddress,
+        amount: 0,
+        assetIndex: asset.index,
+        closeRemainderTo: creatorAddress,
+        note: new Uint8Array(
+          Buffer.from(
+            `I am a fee transaction for closing algoworld swapper escrow, thank you for using AlgoWorld Swapper :-)`,
+          ),
         ),
-      ),
-      suggestedParams,
-    }),
-    escrow,
-    TransactionToSignType.LsigFeeTransaction,
-  );
-  txns.push(closeAsaTxn);
+        suggestedParams,
+      }),
+      escrow,
+      TransactionToSignType.LsigFeeTransaction,
+    );
+    txns.push(closeAsaTxn);
+  }
 
   const closeSwapTxn = createTransactionToSign(
     algosdk.makePaymentTxnWithSuggestedParamsFromObject({

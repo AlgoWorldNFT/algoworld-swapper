@@ -11,14 +11,14 @@ export default function Dashboard() {
       type: SwapType.ASA_TO_ASA,
       emoji: `🎴↔️🎴`,
       disabled: false,
-      swapPageUrl: `/swappers/asaToAsa`,
+      swapPageUrl: `/swappers/asa-to-asa`,
     },
     {
       title: `Multi ASA to Algo `,
-      description: `Swap up to 5 Assets for desired Algo amount or vice versa. Coming soon ⚠️.`,
+      description: `Swap up to 5 Assets for desired Algo amount or vice versa.`,
       type: SwapType.MULTI_ASA_TO_ALGO,
-      emoji: `🚧`,
-      swapPageUrl: `/swappers/multiAsaToAlgo`,
+      emoji: `x🎴↔️💰`,
+      swapPageUrl: `/swappers/asas-to-algo`,
       disabled: false,
     },
   ];

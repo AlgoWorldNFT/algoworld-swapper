@@ -33,6 +33,9 @@ import { useSnackbar } from 'notistack';
 import {
   getAccountSwaps,
   optInAssets,
+  selectOfferingAssetAmounts,
+  selectOfferingAssets,
+  selectRequestingAssets,
   setOfferingAssets,
   setRequestingAssets,
 } from '@/redux/slices/walletConnectSlice';
@@ -54,23 +57,10 @@ export default function MultiAsaToAlgo() {
 
   const connector = useContext(ConnectContext);
   const proxy = useAppSelector((state) => state.walletConnect.proxy);
-  const offeringAssets = useAppSelector(
-    (state) => state.walletConnect.selectedOfferingAssets,
-  );
-  const offeringAssetAmounts = useMemo(() => {
-    return Object.assign(
-      {},
-      ...offeringAssets.map((asset: Asset) => {
-        return {
-          [Number(asset.index)]: asset.amount * Math.pow(10, asset.decimals),
-        };
-      }),
-    );
-  }, [offeringAssets]);
+  const offeringAssets = useAppSelector(selectOfferingAssets);
+  const offeringAssetAmounts = useAppSelector(selectOfferingAssetAmounts);
   const existingAssets = useAppSelector((state) => state.walletConnect.assets);
-  const requestingAssets = useAppSelector(
-    (state) => state.walletConnect.selectedRequestingAssets,
-  );
+  const requestingAssets = useAppSelector(selectRequestingAssets);
   const existingSwaps = useAppSelector((state) => state.walletConnect.swaps);
   const address = useAppSelector((state) => state.walletConnect.address);
   const chain = useAppSelector((state) => state.walletConnect.chain);
@@ -102,7 +92,7 @@ export default function MultiAsaToAlgo() {
 
   const swapConfiguration = useMemo(() => {
     if (
-      offeringAssets.length !== 1 ||
+      offeringAssets.length === 0 ||
       requestingAssets.length !== 1 ||
       escrowState.loading ||
       escrowState.error ||
@@ -112,14 +102,12 @@ export default function MultiAsaToAlgo() {
     }
 
     const escrow = escrowState.value.logicSig as LogicSigAccount;
-    const offeringAsset = offeringAssets[0];
-    const requestingAsset = requestingAssets[0];
 
     return {
       version: SWAP_PROXY_VERSION,
       type: SwapType.MULTI_ASA_TO_ALGO,
-      offering: [offeringAsset],
-      requesting: [requestingAsset],
+      offering: offeringAssets,
+      requesting: requestingAssets,
       creator: address,
       escrow: escrow.address(),
       contract: escrowState.value.compiledProgram,
@@ -213,14 +201,14 @@ export default function MultiAsaToAlgo() {
 
   const signAndSendDepositSwapAssetTxns = async (
     escrow: LogicSigAccount,
-    offeringAsset: Asset,
+    offeringAssets: Asset[],
   ) => {
     const swapDepositTxns = await createSwapDepositTxns(
       chain,
       address,
       connector,
       escrow,
-      offeringAsset,
+      offeringAssets,
       ASA_TO_ASA_FUNDING_FEE,
     );
 
@@ -259,7 +247,7 @@ export default function MultiAsaToAlgo() {
 
     const depositTxnId = await signAndSendDepositSwapAssetTxns(
       escrow,
-      offeringAssets[0],
+      offeringAssets,
     );
     if (!depositTxnId) {
       resetLoading();
@@ -362,15 +350,20 @@ export default function MultiAsaToAlgo() {
 
         <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
           <Grid container spacing={2}>
-            <Grid item md={6} xs={12}>
-              <FromSwapCard cardTitle="You provide" maxAssets={5} />
+            <Grid item xs={12}>
+              <FromSwapCard
+                cardTitle="You provide"
+                maxAssets={5}
+                disabled={escrowState.loading}
+              />
             </Grid>
 
-            <Grid item md={6} xs={12}>
+            <Grid item xs={12}>
               <ToSwapCard
                 cardTitle="You receive"
                 maxAssets={1}
                 coinType={CoinType.ALGO}
+                disabled={escrowState.loading}
               />
             </Grid>
 

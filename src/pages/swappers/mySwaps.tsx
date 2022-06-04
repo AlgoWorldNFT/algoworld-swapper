@@ -9,7 +9,7 @@ import {
 } from '@/redux/slices/applicationSlice';
 import { getAccountSwaps } from '@/redux/slices/walletConnectSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
-import { Box, Container, LinearProgress, Typography } from '@mui/material';
+import { Box, Container, LinearProgress } from '@mui/material';
 
 export default function MySwaps() {
   const swaps = useAppSelector((state) => state.walletConnect.swaps);

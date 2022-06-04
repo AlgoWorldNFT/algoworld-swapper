@@ -12,7 +12,7 @@ export default async function createSwapDepositTxns(
   creatorAddress: string,
   creatorWallet: WalletConnect,
   escrow: LogicSigAccount,
-  offeringAsset: Asset,
+  offeringAssets: Asset[],
   fundingFee: number,
 ) {
   const suggestedParams = await getTransactionParams(chain);
@@ -24,8 +24,8 @@ export default async function createSwapDepositTxns(
     escrowAccountInfo && `account` in escrowAccountInfo
       ? escrowAccountInfo.account.amount
       : 0;
-
-  if (offeringAsset.amount > fundingFee) {
+  console.log(escrowBalance, fundingFee);
+  if (fundingFee > escrowBalance) {
     const feeTxn = createTransactionToSign(
       algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: creatorAddress,
@@ -44,25 +44,27 @@ export default async function createSwapDepositTxns(
     txns.push(feeTxn);
   }
 
-  const depositTxn = createTransactionToSign(
-    algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-      from: creatorAddress,
-      to: escrow.address(),
-      amount: offeringAsset.offeringAmount,
-      assetIndex: offeringAsset.index,
-      note: new Uint8Array(
-        Buffer.from(
-          `Transcation for the depositing asset ${
-            offeringAsset.index
-          } to swapper ${escrow.address()}, thank you for using AlgoWorld Swapper :-)`,
+  for (const asset of offeringAssets) {
+    const depositTxn = createTransactionToSign(
+      algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+        from: creatorAddress,
+        to: escrow.address(),
+        amount: asset.offeringAmount,
+        assetIndex: asset.index,
+        note: new Uint8Array(
+          Buffer.from(
+            `Transcation for the depositing asset ${
+              asset.index
+            } to swapper ${escrow.address()}, thank you for using AlgoWorld Swapper :-)`,
+          ),
         ),
-      ),
-      suggestedParams,
-    }),
-    creatorWallet,
-    TransactionToSignType.UserTransaction,
-  );
-  txns.push(depositTxn);
+        suggestedParams,
+      }),
+      creatorWallet,
+      TransactionToSignType.UserTransaction,
+    );
+    txns.push(depositTxn);
+  }
 
   return txns;
 }

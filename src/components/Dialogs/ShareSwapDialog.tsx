@@ -58,14 +58,14 @@ const ShareSwapDialog = ({
         </Button>
         <Button
           onClick={() => {
-            if (swapConfiguration)
+            if (swapConfiguration) {
               copyToClipboard(
                 `${window.location.origin}/swap/${swapConfiguration.proxy}/${swapConfiguration.escrow}`,
               );
-
-            enqueueSnackbar(`Copied to clipboard...`, {
-              variant: `success`,
-            });
+              enqueueSnackbar(`Copied to clipboard...`, {
+                variant: `success`,
+              });
+            }
           }}
         >
           Copy URL

@@ -61,7 +61,6 @@ const columns: GridColDef[] = [
     headerClassName: `super-app-theme--header`,
     align: `center`,
     renderCell: (params) => {
-      console.log(params);
       return <>{params.row.offeringAmount > 0 ? `Offering` : `Requesting`}</>;
     },
   },
@@ -92,9 +91,6 @@ const AssetsTable = ({ assets }: Props) => {
         pageSize={10}
         columns={columns}
         getRowId={(row) => {
-          console.log(
-            `${row.index}_${row.offeringAmount}_${row.requestingAmount}`,
-          );
           return `${row.index}${row.offeringAmount}${row.requestingAmount}`;
         }}
         autoPageSize

@@ -55,6 +55,6 @@ export default async function createInitSwapTxns(
     );
     txns.push(nftTxn);
   }
-  console.log(txns);
+
   return txns;
 }

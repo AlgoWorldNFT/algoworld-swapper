@@ -1,8 +1,9 @@
 import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
 import ConfirmDialog from '@/components/Dialogs/ConfirmDialog';
-import ShareSwapDialog from '@/components/Dialogs/ShareSwapDialog';
+import InfoDialog from '@/components/Dialogs/InfoDialog';
 import PageHeader from '@/components/Headers/PageHeader';
 import AssetListView from '@/components/Lists/AssetListView';
+import { Asset } from '@/models/Asset';
 import { SwapConfiguration } from '@/models/Swap';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
@@ -10,6 +11,8 @@ import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { optInAssets } from '@/redux/slices/walletConnectSlice';
 import { connector } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
+import accountExists from '@/utils/api/accounts/accountExists';
+import getAssetsForAccount from '@/utils/api/accounts/getAssetsForAccount';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
 import createPerformSwapTxns from '@/utils/api/swaps/createPerformSwapTxns';
@@ -31,11 +34,11 @@ import { LogicSigAccount } from 'algosdk';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useMemo, useState } from 'react';
-import { useAsyncRetry } from 'react-use';
+import { useAsync, useAsyncRetry } from 'react-use';
 
 const PerformSwap = () => {
   const router = useRouter();
-  const { proxy, escrow } = router.query;
+  const { proxy, escrow } = router.query as { proxy: string; escrow: string };
   const chain = useAppSelector((state) => state.walletConnect.chain);
   const address = useAppSelector((state) => state.walletConnect.address);
   const existingAssets = useAppSelector((state) => state.walletConnect.assets);
@@ -56,7 +59,6 @@ const PerformSwap = () => {
   const swapConfiguration = useMemo(() => {
     if (swapConfigsState.loading || swapConfigsState.error) return;
 
-    console.log(swapConfigsState.value);
     const allConfigs = swapConfigsState.value ?? [];
 
     return allConfigs.filter((config) => config.escrow === escrow)[0];
@@ -66,6 +68,61 @@ const PerformSwap = () => {
     swapConfigsState.value,
     escrow,
   ]);
+
+  const swapAssetsState = useAsync(async () => {
+    if (!swapConfiguration) {
+      return undefined;
+    }
+
+    return await getAssetsForAccount(chain, swapConfiguration.escrow);
+  }, [swapConfiguration]);
+
+  const swapAssets = useMemo(() => {
+    if (swapAssetsState.loading || swapAssetsState.error) {
+      return [];
+    }
+
+    return (swapAssetsState.value ?? []) as Asset[];
+  }, [swapAssetsState.error, swapAssetsState.loading, swapAssetsState.value]);
+
+  const hasZeroBalanceAssets = useMemo(() => {
+    const zeroBalanceAssets = swapAssets.filter((asset) => {
+      return asset.amount === 0;
+    });
+
+    return zeroBalanceAssets.length > 0;
+  }, [swapAssets]);
+
+  const hasNoBalanceForAssets = useMemo(() => {
+    if (!swapConfiguration) {
+      return true;
+    }
+    for (const asset of swapConfiguration.requesting) {
+      const assetBalance = existingAssets.find((a) => a.index === asset.index);
+
+      if (!assetBalance) {
+        return true;
+      }
+
+      if (assetBalance.amount < asset.requestingAmount) {
+        return true;
+      }
+    }
+
+    return false;
+  }, [existingAssets, swapConfiguration]);
+
+  const swapIsActiveState = useAsync(async () => {
+    return await accountExists(chain, escrow);
+  }, [escrow]);
+
+  const swapIsActive = useMemo(() => {
+    if (swapIsActiveState.loading || swapIsActiveState.error) {
+      return false;
+    }
+
+    return swapIsActiveState.value ?? false;
+  }, [swapIsActiveState]);
 
   const assetsToOptIn = useMemo(() => {
     const newAssets = [
@@ -93,6 +150,12 @@ const PerformSwap = () => {
             You can not perform the swap since you are the creator...
           </Typography>
         );
+      } else if (hasZeroBalanceAssets || !swapIsActive) {
+        return (
+          <Typography variant="h6" color={`warning.main`}>
+            Swap is deactivated...
+          </Typography>
+        );
       } else if (assetsToOptIn.length > 0) {
         return (
           <LoadingButton
@@ -110,6 +173,12 @@ const PerformSwap = () => {
           >
             Opt-In
           </LoadingButton>
+        );
+      } else if (hasNoBalanceForAssets) {
+        return (
+          <Typography variant="h6" color={`warning.main`}>
+            Insufficient funds...
+          </Typography>
         );
       } else {
         return (
@@ -145,9 +214,12 @@ const PerformSwap = () => {
     address,
     assetsToOptIn,
     dispatch,
+    hasZeroBalanceAssets,
     swapConfigsState.error,
     swapConfigsState.loading,
     swapConfiguration,
+    swapIsActive,
+    hasNoBalanceForAssets,
   ]);
 
   const signAndSendSwapPerformTxns = async (
@@ -158,10 +230,8 @@ const PerformSwap = () => {
       chain,
       address,
       connector,
-      swapConfiguration.creator,
       escrow,
-      swapConfiguration.offering[0],
-      swapConfiguration.requesting[0],
+      swapConfiguration,
     );
 
     const signedPerformSwapTxns = await signTransactions(
@@ -194,8 +264,9 @@ const PerformSwap = () => {
       !swapConfiguration.requesting ||
       !escrow ||
       !escrowAccount
-    )
+    ) {
       return;
+    }
 
     setLoading(`Performing swap, please sign transactions...`);
 
@@ -235,7 +306,7 @@ const PerformSwap = () => {
         {swapConfiguration ? (
           <>
             <Grid container spacing={2}>
-              <Grid item md={6} xs={12}>
+              <Grid item xs={12}>
                 <Card>
                   <CardHeader
                     title={`You provide`}
@@ -250,7 +321,7 @@ const PerformSwap = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item md={6} xs={12}>
+              <Grid item xs={12}>
                 <Card>
                   <CardHeader
                     title={`You receive`}
@@ -314,22 +385,18 @@ const PerformSwap = () => {
       </ConfirmDialog>
 
       {swapConfiguration && (
-        <ShareSwapDialog
-          title="Share AlgoWorld Swap"
+        <InfoDialog
+          title="Successfully performed swap"
           open={shareSwapDialogOpen}
-          swapConfiguration={swapConfiguration}
           setOpen={setShareSwapDialogOpen}
           onClose={() => {
             router.replace(`/`);
           }}
-          onConfirm={() => {
-            router.replace(`/`);
-          }}
         >
-          {`Success! Swap ${ellipseAddress(
+          {`Swap ${ellipseAddress(
             swapConfiguration?.escrow,
-          )} was performed!`}
-        </ShareSwapDialog>
+          )} was performed, thank you for using AlgoWorld Swapper ❤️`}
+        </InfoDialog>
       )}
     </>
   );

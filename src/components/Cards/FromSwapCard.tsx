@@ -10,9 +10,10 @@ import { setOfferingAssets } from '@/redux/slices/walletConnectSlice';
 type Props = {
   cardTitle: string;
   maxAssets: number;
+  disabled?: boolean;
 };
 
-const FromSwapCard = ({ cardTitle, maxAssets }: Props) => {
+const FromSwapCard = ({ cardTitle, maxAssets, disabled = false }: Props) => {
   const assets = useAppSelector((state) => state.walletConnect.assets);
   const address = useAppSelector((state) => state.walletConnect.address);
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
@@ -54,7 +55,9 @@ const FromSwapCard = ({ cardTitle, maxAssets }: Props) => {
           <Stack spacing={2}>
             <Stack spacing={2}>
               <Button
-                disabled={offeringAssets.length >= maxAssets || !address}
+                disabled={
+                  offeringAssets.length >= maxAssets || !address || disabled
+                }
                 variant="outlined"
                 onClick={() => {
                   setPickerOpen(true);

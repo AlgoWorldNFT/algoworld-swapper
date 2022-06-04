@@ -211,7 +211,7 @@ export default function AsaToAsa() {
       address,
       connector,
       escrow,
-      offeringAsset,
+      [offeringAsset],
       ASA_TO_ASA_FUNDING_FEE,
     );
 
@@ -354,11 +354,19 @@ export default function AsaToAsa() {
         <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
           <Grid container spacing={2}>
             <Grid item md={6} xs={12}>
-              <FromSwapCard cardTitle="You provide" maxAssets={1} />
+              <FromSwapCard
+                cardTitle="You provide"
+                maxAssets={1}
+                disabled={escrowState.loading}
+              />
             </Grid>
 
             <Grid item md={6} xs={12}>
-              <ToSwapCard cardTitle="You receive" maxAssets={1} />
+              <ToSwapCard
+                cardTitle="You receive"
+                maxAssets={1}
+                disabled={escrowState.loading}
+              />
             </Grid>
 
             <Grid item xs={12}>

@@ -42,8 +42,6 @@ const AssetListView = ({
                   edge="end"
                   aria-label="delete"
                   onClick={() => {
-                    console.log(asset);
-                    console.log(asset.name);
                     onAssetDeselected(asset);
                   }}
                 >

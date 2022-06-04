@@ -14,7 +14,7 @@ const PageHeader = ({ title, description }: Props) => {
       maxWidth="sm"
       sx={{
         pt: 5,
-        pb: 2,
+        pb: 5,
       }}
     >
       <Typography

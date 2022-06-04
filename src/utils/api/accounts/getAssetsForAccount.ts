@@ -47,7 +47,7 @@ export default async function getAssetsForAccount(
           try {
             const assetResponse = await client.getAssetByID(asset.index).do();
             const assetParams = assetResponse[`params`];
-            console.log(assetParams);
+
             asset[`name`] = assetParams.hasOwnProperty(`name`)
               ? assetParams[`name`]
               : ``;
@@ -57,15 +57,12 @@ export default async function getAssetsForAccount(
             asset[`decimals`] = assetParams[`decimals`];
             asset[`unitName`] = assetParams[`unit-name`];
             asset[`creator`] = assetParams[`creator`];
-          } catch (error) {
-            console.error(`asset:`, asset.index, error);
-          }
+          } catch (error) {}
           resolve();
         }, 25 * i);
       });
     }),
   );
-  console.log(`heeee`, assets);
 
   assets.unshift({
     index: 0,

@@ -136,7 +136,6 @@ export const ToAssetPickerDialog = ({
             disabled={!selectedAsset}
             value={selectedAssetAmount}
             onChange={(value) => {
-              console.log(value);
               setSelectedAssetAmount(value);
             }}
             coinType={CoinType.ASA}

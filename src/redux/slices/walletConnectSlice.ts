@@ -104,7 +104,6 @@ export const optInAssets = createAsyncThunk(
     let state = getState() as any;
     state = state.walletConnect as WalletConnect;
 
-    console.log(state);
     return await optInAssetsForAccount(
       state.chain,
       assetIndexes,
@@ -171,6 +170,31 @@ export const walletConnectSlice = createSlice({
 export const selectAssets = createSelector(
   (state: RootState) => state.walletConnect.assets,
   (assets) => assets.map((a) => ({ ...a, amount: a.amount })),
+);
+
+export const selectOfferingAssets = createSelector(
+  (state: RootState) => state.walletConnect.selectedOfferingAssets,
+  (selectedOfferingAssets) =>
+    [...selectedOfferingAssets].sort((a, b) => a.index - b.index),
+);
+
+export const selectOfferingAssetAmounts = createSelector(
+  (state: RootState) => state.walletConnect.selectedOfferingAssets,
+  (selectedOfferingAssets) =>
+    Object.assign(
+      {},
+      ...selectedOfferingAssets.map((asset: Asset) => {
+        return {
+          [Number(asset.index)]: asset.amount * Math.pow(10, asset.decimals),
+        };
+      }),
+    ),
+);
+
+export const selectRequestingAssets = createSelector(
+  (state: RootState) => state.walletConnect.selectedRequestingAssets,
+  (selectedRequestingAssets) =>
+    selectedRequestingAssets.sort((a, b) => a.index - b.index),
 );
 
 export const {

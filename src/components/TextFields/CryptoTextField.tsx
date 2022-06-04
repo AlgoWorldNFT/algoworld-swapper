@@ -36,12 +36,11 @@ const CryptoTextField = ({
       decimalScale={decimals}
       customInput={TextField}
       isAllowed={(inputObj) => {
-        console.log(inputObj);
         return Number(inputObj.value) <= maxValue;
       }}
       onValueChange={(values: NumberFormatValues) => {
         const value = values.floatValue;
-        console.log(values);
+
         onChange(value);
       }}
       thousandSeparator={true}

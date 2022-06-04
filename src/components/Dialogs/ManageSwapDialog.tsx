@@ -59,7 +59,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     if (swapAssetsState.loading || swapAssetsState.error) {
       return [];
     }
-
+    console.log(swapAssetsState.value);
     return swapAssetsState.value ?? [];
   }, [swapAssetsState.error, swapAssetsState.loading, swapAssetsState.value]);
 
@@ -69,7 +69,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
 
   const swapZeroBalanceAssets = useMemo(() => {
     return swapAssets.filter(
-      (asset: Asset) => asset.amount === 0 || asset.index === 0,
+      (asset: Asset) => asset.amount === 0 && asset.index != 0,
     );
   }, [swapAssets]);
 
@@ -86,13 +86,16 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
     setDepositLoading(true);
+    enqueueSnackbar(`Open your wallet to sign the deposit transactions...`, {
+      variant: `info`,
+    });
 
     const swapDepositTxns = await createSwapDepositTxns(
       chain,
       selectedManageSwap.creator,
       connector,
       escrow,
-      selectedManageSwap.offering[0],
+      selectedManageSwap.offering,
       ASA_TO_ASA_FUNDING_FEE,
     );
 
@@ -123,13 +126,16 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
     setDeleteLoading(true);
+    enqueueSnackbar(`Open your wallet to sign the delete transactions...`, {
+      variant: `info`,
+    });
 
     const swapDeactivateTxns = await createSwapDeactivateTxns(
       chain,
       selectedManageSwap.creator,
       connector,
       escrow,
-      selectedManageSwap.offering[0],
+      selectedManageSwap.offering,
     );
 
     const signedSwapDeactivateTxns = await signTransactions(
@@ -200,10 +206,18 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
             </Typography>
             <Typography
               textAlign={`center`}
-              sx={{ mb: 1.5 }}
+              sx={{ fontWeight: `bold` }}
               color="text.secondary"
             >
               Balance: {swapAlgoBalance} Algos
+            </Typography>
+
+            <Typography
+              textAlign={`center`}
+              sx={{ mb: 1.5, fontWeight: `bold` }}
+              color="text.secondary"
+            >
+              Status: {swapZeroBalanceAssets.length > 0 ? `Disabled` : `Active`}
             </Typography>
           </DialogTitle>
 
@@ -245,7 +259,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
             Delete
           </LoadingButton>
         )}
-        {swapZeroBalanceAssets.length === 0 && (
+        {swapZeroBalanceAssets.length > 0 && swapAlgoBalance > 0 && (
           <LoadingButton
             onClick={async () => {
               await manageDepositSwap();
@@ -255,7 +269,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
             loading={depositLoading}
             color="info"
           >
-            Deposit
+            Activate
           </LoadingButton>
         )}
       </DialogActions>

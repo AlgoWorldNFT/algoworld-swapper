@@ -1,18 +1,17 @@
-<p align="center"><a  href="https://twitter.com/algoworld_nft/status/1450608110268211203"><img  width=100%  src="https://imgur.com/Sv4A6cq.png"  alt="687474703a2f2f6936332e74696e797069632e636f6d2f333031336c67342e706e67"  border="0" /></a></p>
+<p align="center"><img  width=100%  src="https://imgur.com/Sv4A6cq.png"  alt="687474703a2f2f6936332e74696e797069632e636f6d2f333031336c67342e706e67"  border="0" /></p>
 
 <p align="center">
-    <a href="https://algorand.com"><img src="https://img.shields.io/badge/Powered by-Algorand-blue.svg" /></a>
-    <a href="https://algoworld.io"><img src="https://img.shields.io/badge/AlgoWorld-Website-pink.svg" /></a>
-    <a href="https://algoworldexplorer.io"><img src="https://img.shields.io/badge/AlgoWorldExplorer-Platform-red.svg" /></a>
-    <a><img src="https://visitor-badge.glitch.me/badge?page_id=AlgoWorldNFT.algoworld-contracts&right_color=green" /></a>
-
+    <a href="https://algorand.com"><img src="https://img.shields.io/badge/Powered by-Algorand-black.svg" /></a>
+    <a href="https://algoworld.io"><img src="https://img.shields.io/badge/AlgoWorld-Website-black.svg" /></a>
+    <a href="https://algoworldexplorer.io"><img src="https://img.shields.io/badge/AlgoWorldExplorer-Platform-black.svg" /></a>
+    <a><img src="https://visitor-badge.glitch.me/badge?page_id=AlgoWorldNFT.algoworld-swapper&right_color=black" /></a>
 </p>
 
 ## 📃 About
 
-The following repository hosts the source codes for `AlgoWorld Swapper`. Simple and open-source swapper that allows for trustless transfers of assets on Algorand blockchain and extensibility.
+The following repository hosts the source codes for `AlgoWorld Swapper`. Free and open-source swapper that allows for trustless transfers of assets on Algorand blockchain and extensibility.
 
-_**⚠️ NOTE: [algoworld-contracts](https://github.com/AlgoWorldNFT/algoworld-contracts) are not formally audited by accredited third parties. However, contracts are a basis for certain functionality on the AlgoWorldExplorer.io platform and were created in collaboration with Solution Architect from Algorand (credits @cusma).**_
+> _**⚠️ NOTE: [algoworld-contracts](https://github.com/AlgoWorldNFT/algoworld-contracts) used by the swapper are not formally audited by accredited third parties. However, contracts are a basis for certain functionality on the AlgoWorldExplorer.io platform and were created in collaboration with Solution Architect from Algorand (credits @cusma).**_
 
 - [📃 About](#---about)
 - [✔ Prerequisites](#prerequisites)
@@ -26,6 +25,7 @@ _**⚠️ NOTE: [algoworld-contracts](https://github.com/AlgoWorldNFT/algoworld-
 
 - `Node` >= 14.x
 - `yarn` >= 1.12.15
+- `vercel cli` >= 24.2.4
 
 ## 🚀 Overview
 
@@ -35,9 +35,11 @@ AlgoWorld Swapper currently offers usage of several smart signatures used for si
 
 There are two different types of smart signatures available:
 
-- [ASA to ASA swap | 🎴↔️🎴](src/swapper/asa_to_asa_swapper.py): <br> Allows performing a swap of any single ASA of specified amount to any other single ASA of specified amount.
+- **ASA to ASA swap | 🎴↔️🎴**: <br> Allows performing a swap of any single ASA of specified amount to any other single ASA of specified amount.
 
-- [ASAs to ALGO swap | 🎴🎴🎴↔️💰](src/swapper/asas_to_algo_swapper.py): <br> Allows performing a swap of multiple ASAs of specified amount to ALGO of specified amount.
+- **ASAs to ALGO swap | 🎴🎴🎴↔️💰**: <br> Allows performing a swap of multiple ASAs of specified amount to ALGO of specified amount.
+
+> Detailed documentation is work in progress ⚠️
 
 ## ⚙️ Development guide
 
@@ -51,12 +53,22 @@ Open `http://localhost:3000` with your browser to see the result.
 
 ### Directory Structure
 
-- [`.github`](.github) — GitHub configuration including the CI workflow.<br>
-- [`.husky`](.husky) — Husky configuration and hooks.<br>
 - [`public`](./public) — Static assets such as robots.txt, images, and favicon.<br>
 - [`src`](./src) — Application source code, including pages, components, styles.
+- [`api`](./api) — Serverless vercel functions, contract compilation is using `python` and `pyteal` and ipfs storage is done with `node`.
+- [`.husky`](.husky) — Husky configuration and hooks.<br>
 
 ### Scripts
+
+The section describes different modes of running the swapper for local dev purposes.
+
+#### Client and functions:
+
+- `vercel dev` - executes both backend and frontend.
+
+#### Frontend only:
+
+Below is for frontend client only (excluding `Vercel` serveless functions).
 
 - `yarn dev` — Starts the application in development mode at `http://localhost:3000`.
 - `yarn build` — Creates an optimized production build of your application.
