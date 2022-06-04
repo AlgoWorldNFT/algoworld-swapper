@@ -11,13 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: tweak deploy permission
-        run: git config --global --add safe.directory /tmp/tmp.*
-
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Copy files for release
+        run: cp -r . /tmp/test
+        shell: bash
 
       - name: Set up Node
         uses: actions/setup-node@v3
@@ -36,14 +37,13 @@ jobs:
       # - name: Check commits messages
       #   uses: wagoid/commitlint-github-action@v4
 
-      - name: Trigger vercel deployment
-        uses: aorumbayev/copy_folder_to_another_repo_action@1.0.4
+      - name: Trigger Release
+        uses: cpina/github-action-push-to-another-repository@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_folder: './'
-          destination_repo: 'aorumbayev/aw-swapper-releases'
-          user_email: 'info@algoworld.io'
-          user_name: 'AlgoWorld Bot'
-          destination_branch: 'releases'
-          commit_msg: '[AW_RELEASE] New deploy trigger'
+          source-directory: '/tmp/test'
+          destination-github-username: 'aorumbayev'
+          destination-repository-name: 'aw-swapper-releases'
+          user-email: info@algoworld.io
+          target-branch: releases
