@@ -44,5 +44,5 @@ jobs:
            git config --global user.name "AlgoWorld Bot"
 
            git add -f .
-           git commit -m "New release trigger 🤖"
-           git push -fq origin releases > /dev/null
+           git commit --allow-empty -m "New release trigger 🤖"
+           git push --force  origin releases > /dev/null
