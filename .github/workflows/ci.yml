@@ -37,7 +37,7 @@ jobs:
       #   uses: wagoid/commitlint-github-action@v4
 
       - name: Trigger vercel deployment
-        uses: aorumbayev/copy_folder_to_another_repo_action@1.1.2
+        uses: aorumbayev/copy_folder_to_another_repo_action@1.0.2
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
