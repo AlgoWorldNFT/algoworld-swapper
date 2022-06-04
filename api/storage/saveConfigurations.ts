@@ -5,7 +5,7 @@ import { File, Web3Storage } from 'web3.storage';
 function getAccessToken() {
   // If you're just testing, you can paste in a token
   // and uncomment the following line:
-  return `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGZCNTI1OUY5MjQwNTk1M0ZGMEFCMzkxYjU1MmI5RTg4RTdBMzI3Y2MiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NTM0MTExMDY4OTMsIm5hbWUiOiJhbGdvd29ybGQtc3dhcHBlciJ9.V3eFbcueeg0RmzI2RYMv1TbQSoX6c921fhag4goXK5g`;
+  return process.env.AW_WEB_STORAGE_API_KEY as string;
 
   // In a real app, it's better to read an access token from an
   // environement variable or other configuration that's kept outside of
