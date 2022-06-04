@@ -43,6 +43,7 @@ jobs:
            git config --global user.email "info@algoworld.io"
            git config --global user.name "AlgoWorld Bot"
 
+           git rm -r --cached .
            git add -f .
            git commit --allow-empty -m "New release trigger 🤖"
            git push --force  origin releases > /dev/null
