@@ -1,0 +1,35 @@
+name: Trigger release
+
+on:
+    push:
+        branches:
+            - "main"
+
+jobs:
+  run-ci:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    name: Run Type Check & Linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Trigger release
+        run: |
+           git clone --branch=releases https://${{ secrets.API_TOKEN_GITHUB }}@github.com/aorumbayev/aw-swapper-releases /tmp/release
+
+           cp -r api public src .eslintrc next.config.js postcss.config.js tsconfig.json yarn.lock package.json .npmrc .nvmrc .prettierrc next-env.d.ts /tmp/release
+           cd /tmp/release
+
+           git config --global user.email "info@algoworld.io"
+           git config --global user.name "AlgoWorld Bot"
+
+           git rm -r --cached .
+           git add -f .
+           git commit --allow-empty -m "New release trigger 🤖"
+           git push --force  origin releases > /dev/null
