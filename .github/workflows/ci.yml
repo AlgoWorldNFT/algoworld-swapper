@@ -32,3 +32,15 @@ jobs:
 
       - name: Check commits messages
         uses: wagoid/commitlint-github-action@v4
+
+      - name: Trigger vercel deployment
+        uses: datalbry/copy_folder_to_another_repo_action@1.0.0
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_folder: '.'
+          destination_repo: 'aorumbayev/aw-swapper-releases'
+          destination_folder: '.'
+          user_email: 'info@algoworld.io'
+          user_name: 'AlgoWorld Bot'
+          commit_msg: '[AW_RELEASE] New deploy trigger'
