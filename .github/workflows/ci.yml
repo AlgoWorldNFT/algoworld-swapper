@@ -37,8 +37,7 @@ jobs:
         run: |
            git clone --branch=releases https://${{ secrets.API_TOKEN_GITHUB }}@github.com/aorumbayev/aw-swapper-releases /tmp/release
 
-           rm -rf .git
-           cp -r . /tmp/release
+           cp -r api public src next.config.js tsconfig.json yarn.lock package.json .npmrc .nvmrc .prettierrc /tmp/release
            cd /tmp/release
 
            git config --global user.email "info@algoworld.io"
