@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: tweak deploy permission
+        run: git config --global --add safe.directory /tmp/tmp.*
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
