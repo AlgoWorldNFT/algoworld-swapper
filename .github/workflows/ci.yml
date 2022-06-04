@@ -33,18 +33,12 @@ jobs:
       # - name: Check commits messages
       #   uses: wagoid/commitlint-github-action@v4
 
-      - name: Create folder
+      - name: Trigger release
         run: |
-          mkdir /tmp/release/ && cp -r . /tmp/release/
-          ls /tmp/release/
-
-      - name: Trigger Release
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source-directory: '/tmp/release/'
-          destination-github-username: 'aorumbayev'
-          destination-repository-name: 'aw-swapper-releases'
-          user-email: info@algoworld.io
-          target-branch: releases
+           git config --global user.email "info@algoworld.io"
+           git config --global user.name "AlgoWorld Bot"
+           git clone --quiet --branch=releases https://${{ secrets.API_TOKEN_GITHUB }}@github.com/aorumbayev/aw-swapper-releases /tmp/releases > /dev/null
+           cd /tmp/releases
+           git add -f .
+           git commit -m "New release trigger 🤖"
+           git push -fq origin releases > /dev/null
