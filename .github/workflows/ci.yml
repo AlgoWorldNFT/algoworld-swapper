@@ -38,9 +38,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_folder: '.'
           destination_repo: 'aorumbayev/aw-swapper-releases'
-          destination_folder: '.'
           user_email: 'info@algoworld.io'
           user_name: 'AlgoWorld Bot'
           destination_branch: 'releases'
