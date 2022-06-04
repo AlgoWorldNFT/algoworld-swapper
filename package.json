@@ -1,14 +1,14 @@
 {
-  "name": "typescript-nextjs-starter",
-  "description": "A TypeScript starter for Next.js that includes all you need to build amazing projects",
-  "version": "1.0.0",
+  "name": "algoworld-swapper",
+  "description": "Free and trustless ASA swapper, powered by Algorand ⚡️",
+  "version": "0.1.0",
   "private": true,
-  "author": "João Pedro Schmitz <hey@joaopedro.dev> (@jpedroschmitz)",
-  "license": "MIT",
+  "author": "AlgoWorld <info@algoworld.io>",
+  "license": "GPL-3.0",
   "keywords": [
     "nextjs",
-    "starter",
-    "typescript"
+    "algoworld",
+    "algorand"
   ],
   "scripts": {
     "dev": "next",
