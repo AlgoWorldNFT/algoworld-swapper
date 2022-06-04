@@ -20,6 +20,8 @@ jobs:
         run: mkdir /tmp/release/ && cp -r . /tmp/release/
         shell: bash
 
+
+
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
@@ -37,12 +39,17 @@ jobs:
       # - name: Check commits messages
       #   uses: wagoid/commitlint-github-action@v4
 
+      - name: Create folder
+        run: |
+          mkdir -p /tmp/release/ && cp -R . /tmp/release/
+          ls /tmp/release/
+
       - name: Trigger Release
         uses: cpina/github-action-push-to-another-repository@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source-directory: 'api'
+          source-directory: '/tmp/release/'
           destination-github-username: 'aorumbayev'
           destination-repository-name: 'aw-swapper-releases'
           user-email: info@algoworld.io
