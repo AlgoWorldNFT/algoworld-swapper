@@ -30,8 +30,9 @@ import ConnectWalletDialog from '../Dialogs/ConnectWalletDialog';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
-import { Grid, Link } from '@mui/material';
+import { Grid, Link, Stack } from '@mui/material';
 import AboutDialog from '../Dialogs/AboutDialog';
+import { ChainType } from '@/models/Chain';
 
 type PageConfiguration = {
   title: string;
@@ -281,14 +282,26 @@ const NavBar = () => {
                     <Grid item xs>
                       {!loading && (
                         <Tooltip title="Available balance">
-                          <Typography variant="subtitle2">
-                            {formatBigNumWithDecimals(
-                              BigInt(nativeCurrency.amount),
-                              nativeCurrency.decimals,
-                            )}
-                            {` `}
-                            {nativeCurrency.unitName || `units`}
-                          </Typography>
+                          <Stack
+                            direction={`column`}
+                            sx={{ alignItems: `center` }}
+                          >
+                            <Typography variant="subtitle2">
+                              {formatBigNumWithDecimals(
+                                BigInt(nativeCurrency.amount),
+                                nativeCurrency.decimals,
+                              )}
+                              {` `}
+                              {nativeCurrency.unitName || `units`}
+                            </Typography>
+                            <Typography variant="caption" color="primary">
+                              {`${
+                                chain === ChainType.MainNet
+                                  ? `MainNet`
+                                  : `TestNet`
+                              }`}
+                            </Typography>
+                          </Stack>
                         </Tooltip>
                       )}
                     </Grid>
