@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
 
       - name: Copy files for release
-        run: cp -r . /tmp/release
+        run: mkdir /tmp/release && cp -r . /tmp/release
         shell: bash
 
       - name: Set up Node
