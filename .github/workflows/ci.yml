@@ -35,7 +35,7 @@ jobs:
 
       - name: Trigger release
         run: |
-           git clone --quiet --branch=releases https://${{ secrets.API_TOKEN_GITHUB }}@github.com/aorumbayev/aw-swapper-releases /tmp/releases > /dev/null
+           git clone --branch=releases https://${{ secrets.API_TOKEN_GITHUB }}@github.com/aorumbayev/aw-swapper-releases /tmp/releases
            cd /tmp/releases
            git config --global user.email "info@algoworld.io"
            git config --global user.name "AlgoWorld Bot"
