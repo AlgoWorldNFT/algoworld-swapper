@@ -38,7 +38,7 @@
     "@mui/icons-material": "5.8.2",
     "@mui/lab": "5.0.0-alpha.84",
     "@mui/material": "5.8.2",
-    "@mui/x-data-grid": "5.11.1",
+    "@mui/x-data-grid": "5.12.0",
     "@reduxjs/toolkit": "1.8.2",
     "@walletconnect/client": "1.7.8",
     "algorand-walletconnect-qrcode-modal": "1.7.4",
