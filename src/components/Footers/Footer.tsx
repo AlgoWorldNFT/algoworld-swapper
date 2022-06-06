@@ -24,13 +24,13 @@ function Copyright() {
 function ReferenceButtons() {
   return (
     <Stack justifyContent={`center`} direction="row">
-      <IconButton>
+      <IconButton target={`_blank`} href="https://t.me/algoworld_nft">
         <TelegramIcon />
       </IconButton>
-      <IconButton>
+      <IconButton target={`_blank`} href="https://twitter.com/algoworld_nft">
         <TwitterIcon />
       </IconButton>
-      <IconButton>
+      <IconButton target={`_blank`} href="https://github.com/AlgoWorldNFT">
         <GitHubIcon />
       </IconButton>
     </Stack>

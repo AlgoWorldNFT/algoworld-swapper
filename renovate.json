@@ -1,13 +1,26 @@
 {
-  "extends": ["config:base"],
+  "extends": [
+    "config:base"
+  ],
   "semanticCommits": true,
-  "stabilityDays": 3,
-  "prCreation": "not-pending",
-  "labels": ["type: dependencies"],
-  "packageRules": [
-    {
-      "packageNames": ["node"],
-      "enabled": false
-    }
-  ]
+  "ignoreDeps": [],
+  "schedule": "before 3am on the first day of the month",
+  "assignees": [
+    "aorumbayev"
+  ],
+  "baseBranches": [
+    "main"
+  ],
+  "separateMajorMinor": true,
+  "rebaseStalePrs": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "extends": "schedule:monthly"
+  },
+  "docker": {
+    "enabled": true
+  },
+  "python": {
+    "enabled": false
+  }
 }
