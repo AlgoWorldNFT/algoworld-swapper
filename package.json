@@ -42,7 +42,7 @@
     "@reduxjs/toolkit": "1.8.2",
     "@walletconnect/client": "1.7.8",
     "algorand-walletconnect-qrcode-modal": "1.7.4",
-    "algosdk": "1.16.0",
+    "algosdk": "1.17.0",
     "axios": "0.27.2",
     "next": "12.1.6",
     "notistack": "2.0.5",
