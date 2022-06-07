@@ -31,16 +31,10 @@ import ConnectWalletDialog from '../Dialogs/ConnectWalletDialog';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
-import {
-  Divider,
-  FormControlLabel,
-  Grid,
-  Link,
-  Stack,
-  Switch,
-} from '@mui/material';
+import { Divider, FormControlLabel, Grid, Stack, Switch } from '@mui/material';
 import AboutDialog from '../Dialogs/AboutDialog';
 import { ChainType } from '@/models/Chain';
+import Link from 'next/link';
 
 type PageConfiguration = {
   title: string;
@@ -175,6 +169,11 @@ const NavBar = () => {
       dispatch(getProxy({ address }));
       dispatch(getAccountSwaps({ chain, address }));
     }
+
+    if (typeof window !== `undefined`) {
+      const persistedChainType = localStorage.getItem(`ChainType`);
+      dispatch(switchChain(persistedChainType as ChainType));
+    }
   }, [dispatch, address, chain]);
 
   const nativeCurrency = assets.find(
@@ -245,9 +244,11 @@ const NavBar = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem component={Link} key={page.title} href={page.url}>
-                    <Typography textAlign="center">{page.title}</Typography>
-                  </MenuItem>
+                  <Link key={page.title} href={page.url}>
+                    <MenuItem>
+                      <Typography textAlign="center">{page.title}</Typography>
+                    </MenuItem>
+                  </Link>
                 ))}
                 <MenuItem
                   key={`about`}
@@ -262,15 +263,16 @@ const NavBar = () => {
 
             <Box sx={{ flexGrow: 1, display: { xs: `none`, md: `flex` } }}>
               {pages.map((page) => (
-                <Button
-                  key={page.title}
-                  href={page.url}
-                  disabled={page.disabled}
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: `white`, display: `block` }}
-                >
-                  {page.title}
-                </Button>
+                <Link key={page.title} href={page.url}>
+                  <Button
+                    key={page.title}
+                    disabled={page.disabled}
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: `white`, display: `block` }}
+                  >
+                    {page.title}
+                  </Button>
+                </Link>
               ))}
               <Button
                 key={`about`}
@@ -351,13 +353,16 @@ const NavBar = () => {
                         <Switch
                           checked={chain === ChainType.MainNet}
                           onChange={() => {
-                            dispatch(
-                              switchChain(
-                                chain === ChainType.MainNet
-                                  ? ChainType.TestNet
-                                  : ChainType.MainNet,
-                              ),
-                            );
+                            const newValue =
+                              chain === ChainType.MainNet
+                                ? ChainType.TestNet
+                                : ChainType.MainNet;
+
+                            if (typeof window !== `undefined`) {
+                              localStorage.setItem(`ChainType`, newValue);
+                            }
+
+                            dispatch(switchChain(newValue));
                           }}
                         />
                       }
