@@ -106,7 +106,7 @@ const NavBar = () => {
     }
 
     if (event.target.textContent === `My Swaps`) {
-      router.push(`/swappers/mySwaps`);
+      router.push(`/swappers/my-swaps`);
     }
 
     if (event.target.textContent === `Logout`) {

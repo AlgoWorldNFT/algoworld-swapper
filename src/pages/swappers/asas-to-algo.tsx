@@ -70,7 +70,10 @@ export default function MultiAsaToAlgo() {
   const { setLoading, resetLoading } = useLoadingIndicator();
 
   const escrowState = useAsync(async () => {
-    if (offeringAssetAmounts.length === 0 || requestingAssets.length === 0) {
+    if (
+      Object.keys(offeringAssetAmounts ?? {}).length === 0 ||
+      requestingAssets.length === 0
+    ) {
       return;
     }
 
