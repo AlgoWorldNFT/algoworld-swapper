@@ -23,6 +23,7 @@ import {
   selectAssets,
   getAccountSwaps,
   getProxy,
+  switchChain,
 } from '@/redux/slices/walletConnectSlice';
 import { formatBigNumWithDecimals } from '@/redux/helpers/utilities';
 import { Asset } from '@/models/Asset';
@@ -30,7 +31,14 @@ import ConnectWalletDialog from '../Dialogs/ConnectWalletDialog';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
-import { Grid, Link, Stack } from '@mui/material';
+import {
+  Divider,
+  FormControlLabel,
+  Grid,
+  Link,
+  Stack,
+  Switch,
+} from '@mui/material';
 import AboutDialog from '../Dialogs/AboutDialog';
 import { ChainType } from '@/models/Chain';
 
@@ -338,8 +346,33 @@ const NavBar = () => {
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={chain === ChainType.MainNet}
+                          onChange={() => {
+                            dispatch(
+                              switchChain(
+                                chain === ChainType.MainNet
+                                  ? ChainType.TestNet
+                                  : ChainType.MainNet,
+                              ),
+                            );
+                          }}
+                        />
+                      }
+                      label={
+                        chain === ChainType.MainNet ? `MainNet` : `TestNet`
+                      }
+                      sx={{ ml: 1, mr: 2 }}
+                    />
+                    <Divider />
                     {settings.map((setting) => (
-                      <MenuItem key={setting} onClick={handleClickUserMenu}>
+                      <MenuItem
+                        sx={{ justifyContent: `center` }}
+                        key={setting}
+                        onClick={handleClickUserMenu}
+                      >
                         <Typography textAlign="center">{setting}</Typography>
                       </MenuItem>
                     ))}
