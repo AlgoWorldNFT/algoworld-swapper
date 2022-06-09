@@ -15,7 +15,7 @@ import { CoinType } from '@/models/CoinType';
 
 type Props = {
   open: boolean;
-  onAssetSelected: (asset: Asset, amount: number) => void;
+  onAssetSelected: (asset: Asset, amount: number | string) => void;
   onCancel: () => void;
   assets?: Asset[];
   selectedAssets?: Asset[];
@@ -30,7 +30,7 @@ export const FromAssetPickerDialog = ({
 }: Props) => {
   const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>();
   const [selectedAssetAmount, setSelectedAssetAmount] = useState<
-    number | undefined
+    number | string | undefined
   >(undefined);
 
   const searchedAssets = useMemo(() => {
@@ -77,7 +77,7 @@ export const FromAssetPickerDialog = ({
                 : `No assets available`
             }`}
             onChange={(_, value) => {
-              setSelectedAssetAmount(1);
+              setSelectedAssetAmount(``);
               setSelectedAsset(value ?? undefined);
             }}
             renderInput={(params) => (

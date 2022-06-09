@@ -9,11 +9,14 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Asset } from '@/models/Asset';
 import { useMemo, useState } from 'react';
 import { Autocomplete, CircularProgress } from '@mui/material';
-import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
-import { ALGOEXPLORER_INDEXER_URL, axiosFetcher } from '@/common/api';
+import {
+  EMPTY_ASSET_IMAGE_URL,
+  ALGOEXPLORER_INDEXER_URL,
+} from '@/common/constants';
 import useSWR from 'swr';
 import CryptoTextField from '../TextFields/CryptoTextField';
 import { CoinType } from '@/models/CoinType';
+import axios from 'axios';
 
 type Props = {
   open: boolean;
@@ -47,7 +50,9 @@ export const ToAssetPickerDialog = ({
     return `${ALGOEXPLORER_INDEXER_URL}/v2/assets?${searchParam}&limit=5`;
   }, [searchContent]);
 
-  const { data, error } = useSWR(searchAssetSearchParam, axiosFetcher);
+  const { data, error } = useSWR(searchAssetSearchParam, (url: string) => {
+    return axios.get(url).then((res) => res.data);
+  });
 
   const searchedAssets: Asset[] = useMemo(() => {
     if (error || !data) {

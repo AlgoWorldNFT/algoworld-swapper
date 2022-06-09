@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { AppProps } from 'next/app';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import PropTypes from 'prop-types';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import { Provider } from 'react-redux';
 import darkTheme from '../redux/theme/darkTheme';
@@ -24,7 +25,7 @@ interface MyAppProps extends AppProps {
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   return (
-    <>
+    <CacheProvider value={emotionCache}>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
         <link rel="shortcut icon" href="/favicon.ico" />
@@ -32,25 +33,29 @@ export default function MyApp(props: MyAppProps) {
 
       <Provider store={store}>
         <ConnectContext.Provider value={connector}>
-          <CacheProvider value={emotionCache}>
-            <ThemeProvider theme={darkTheme}>
-              <SnackbarProvider
-                maxSnack={3}
-                anchorOrigin={{
-                  vertical: `bottom`,
-                  horizontal: `center`,
-                }}
-                TransitionComponent={Slide}
-              >
-                <CssBaseline />
-                <Layout title="AlgoWorld Swapper">
-                  <Component {...pageProps} />
-                </Layout>
-              </SnackbarProvider>
-            </ThemeProvider>
-          </CacheProvider>
+          <ThemeProvider theme={darkTheme}>
+            <SnackbarProvider
+              maxSnack={3}
+              anchorOrigin={{
+                vertical: `bottom`,
+                horizontal: `center`,
+              }}
+              TransitionComponent={Slide}
+            >
+              <CssBaseline />
+              <Layout title="AlgoWorld Swapper">
+                <Component {...pageProps} />
+              </Layout>
+            </SnackbarProvider>
+          </ThemeProvider>
         </ConnectContext.Provider>
       </Provider>
-    </>
+    </CacheProvider>
   );
 }
+
+MyApp.propTypes = {
+  Component: PropTypes.elementType.isRequired,
+  emotionCache: PropTypes.object,
+  pageProps: PropTypes.object.isRequired,
+};

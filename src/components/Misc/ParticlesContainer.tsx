@@ -16,7 +16,6 @@ const ParticlesContainer = () => {
           enable: true,
           zIndex: -1,
         },
-        fpsLimit: 30,
         interactivity: {
           detectsOn: `window`,
           modes: {
@@ -65,14 +64,52 @@ const ParticlesContainer = () => {
             value: 40,
           },
           opacity: {
-            value: 0.2,
+            value: 0.5,
           },
           shape: {
-            type: `square`,
+            options: {
+              character: {
+                fill: false,
+                font: `Verdana`,
+                style: ``,
+                value: `*`,
+                weight: `400`,
+              },
+              char: {
+                fill: false,
+                font: `Verdana`,
+                style: ``,
+                value: `*`,
+                weight: `400`,
+              },
+              polygon: {
+                sides: 5,
+              },
+              star: {
+                sides: 5,
+              },
+              image: [
+                {
+                  src: `https://i.imgur.com/CI7mXuT.png`,
+                },
+                {
+                  src: `https://i.imgur.com/UzKYM8V.png`,
+                },
+                {
+                  src: `https://i.imgur.com/KuMx4jk.png`,
+                },
+                {
+                  src: `https://i.imgur.com/zxKYgLQ.png`,
+                },
+                {
+                  src: `https://i.imgur.com/8zMvcjr.png`,
+                },
+              ],
+            },
+            type: `image`,
           },
           size: {
-            random: true,
-            value: 5,
+            value: 10,
           },
         },
         detectRetina: true,

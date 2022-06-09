@@ -5,7 +5,7 @@ import NumberFormat, { NumberFormatValues } from 'react-number-format';
 type Props = {
   coinType: CoinType;
   label: string;
-  value: number | undefined;
+  value: number | string | undefined;
   onChange: (value: number | undefined) => void;
   decimals: number;
   maxValue: number;
@@ -40,7 +40,6 @@ const CryptoTextField = ({
       }}
       onValueChange={(values: NumberFormatValues) => {
         const value = values.floatValue;
-
         onChange(value);
       }}
       thousandSeparator={true}

@@ -23,6 +23,7 @@ import {
   selectAssets,
   getAccountSwaps,
   getProxy,
+  switchChain,
 } from '@/redux/slices/walletConnectSlice';
 import { formatBigNumWithDecimals } from '@/redux/helpers/utilities';
 import { Asset } from '@/models/Asset';
@@ -30,9 +31,10 @@ import ConnectWalletDialog from '../Dialogs/ConnectWalletDialog';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
-import { Grid, Link, Stack } from '@mui/material';
+import { Divider, FormControlLabel, Grid, Stack, Switch } from '@mui/material';
 import AboutDialog from '../Dialogs/AboutDialog';
 import { ChainType } from '@/models/Chain';
+import Link from 'next/link';
 
 type PageConfiguration = {
   title: string;
@@ -106,7 +108,7 @@ const NavBar = () => {
     }
 
     if (event.target.textContent === `My Swaps`) {
-      router.push(`/swappers/mySwaps`);
+      router.push(`/swappers/my-swaps`);
     }
 
     if (event.target.textContent === `Logout`) {
@@ -166,6 +168,11 @@ const NavBar = () => {
       dispatch(getAccountAssets({ chain, address }));
       dispatch(getProxy({ address }));
       dispatch(getAccountSwaps({ chain, address }));
+    }
+
+    if (typeof window !== `undefined`) {
+      const persistedChainType = localStorage.getItem(`ChainType`);
+      dispatch(switchChain(persistedChainType as ChainType));
     }
   }, [dispatch, address, chain]);
 
@@ -237,9 +244,11 @@ const NavBar = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem component={Link} key={page.title} href={page.url}>
-                    <Typography textAlign="center">{page.title}</Typography>
-                  </MenuItem>
+                  <Link key={page.title} href={page.url}>
+                    <MenuItem>
+                      <Typography textAlign="center">{page.title}</Typography>
+                    </MenuItem>
+                  </Link>
                 ))}
                 <MenuItem
                   key={`about`}
@@ -254,15 +263,16 @@ const NavBar = () => {
 
             <Box sx={{ flexGrow: 1, display: { xs: `none`, md: `flex` } }}>
               {pages.map((page) => (
-                <Button
-                  key={page.title}
-                  href={page.url}
-                  disabled={page.disabled}
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: `white`, display: `block` }}
-                >
-                  {page.title}
-                </Button>
+                <Link key={page.title} href={page.url}>
+                  <Button
+                    key={page.title}
+                    disabled={page.disabled}
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: `white`, display: `block` }}
+                  >
+                    {page.title}
+                  </Button>
+                </Link>
               ))}
               <Button
                 key={`about`}
@@ -338,8 +348,36 @@ const NavBar = () => {
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={chain === ChainType.MainNet}
+                          onChange={() => {
+                            const newValue =
+                              chain === ChainType.MainNet
+                                ? ChainType.TestNet
+                                : ChainType.MainNet;
+
+                            if (typeof window !== `undefined`) {
+                              localStorage.setItem(`ChainType`, newValue);
+                            }
+
+                            dispatch(switchChain(newValue));
+                          }}
+                        />
+                      }
+                      label={
+                        chain === ChainType.MainNet ? `MainNet` : `TestNet`
+                      }
+                      sx={{ ml: 1, mr: 2 }}
+                    />
+                    <Divider />
                     {settings.map((setting) => (
-                      <MenuItem key={setting} onClick={handleClickUserMenu}>
+                      <MenuItem
+                        sx={{ justifyContent: `center` }}
+                        key={setting}
+                        onClick={handleClickUserMenu}
+                      >
                         <Typography textAlign="center">{setting}</Typography>
                       </MenuItem>
                     ))}

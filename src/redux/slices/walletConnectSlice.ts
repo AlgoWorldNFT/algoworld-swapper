@@ -1,4 +1,8 @@
-import { EMPTY_ASSET_IMAGE_URL, SWAP_PROXY_VERSION } from '@/common/constants';
+import {
+  CHAIN_TYPE,
+  EMPTY_ASSET_IMAGE_URL,
+  SWAP_PROXY_VERSION,
+} from '@/common/constants';
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import { SwapConfiguration } from '@/models/Swap';
@@ -52,7 +56,7 @@ const initialState = {
   ],
   selectedOfferingAssets: [],
   selectedRequestingAssets: [],
-  chain: ChainType.TestNet,
+  chain: CHAIN_TYPE,
   swaps: [],
   fetching: false,
   fetchingSwaps: false,
@@ -185,8 +189,7 @@ export const selectOfferingAssetAmounts = createSelector(
       {},
       ...selectedOfferingAssets.map((asset: Asset) => {
         return {
-          [Number(asset.index)]:
-            asset.offeringAmount * Math.pow(10, asset.decimals),
+          [Number(asset.index)]: asset.offeringAmount,
         };
       }),
     ),

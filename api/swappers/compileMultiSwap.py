@@ -9,15 +9,15 @@ from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
 from algoworld_contracts import contracts
 
-LEDGER_TYPE = os.environ.get("LEDGER_TYPE", "TestNet")
+CHAIN_TYPE = os.environ.get("CHAIN_TYPE", "TestNet")
 INDEXER_URL = (
     "https://algoindexer.testnet.algoexplorerapi.io"
-    if LEDGER_TYPE.lower() == "testnet"
+    if CHAIN_TYPE.lower() == "testnet"
     else "https://algoindexer.algoexplorerapi.io"
 )
 ALGOD_URL = (
     "https://node.testnet.algoexplorerapi.io"
-    if LEDGER_TYPE.lower() == "testnet"
+    if CHAIN_TYPE.lower() == "testnet"
     else "https://node.algoexplorerapi.io"
 )
 INCENTIVE_WALLET = "RJVRGSPGSPOG7W3V7IMZZ2BAYCABW3YC5MWGKEOPAEEI5ZK5J2GSF6Y26A"

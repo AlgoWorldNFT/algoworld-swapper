@@ -27,13 +27,13 @@ const FromSwapCard = ({ cardTitle, maxAssets, disabled = false }: Props) => {
     <>
       <FromAssetPickerDialog
         open={pickerOpen}
-        onAssetSelected={(asset: Asset, amount: number) => {
+        onAssetSelected={(asset: Asset, amount: number | string) => {
           dispatch(
             setOfferingAssets([
               ...offeringAssets,
               {
                 ...asset,
-                offeringAmount: amount * Math.pow(10, asset.decimals),
+                offeringAmount: Number(amount) * Math.pow(10, asset.decimals),
               },
             ]),
           );
