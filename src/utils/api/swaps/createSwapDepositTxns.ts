@@ -24,7 +24,7 @@ export default async function createSwapDepositTxns(
     escrowAccountInfo && `account` in escrowAccountInfo
       ? escrowAccountInfo.account.amount
       : 0;
-  console.log(escrowBalance, fundingFee);
+
   if (fundingFee > escrowBalance) {
     const feeTxn = createTransactionToSign(
       algosdk.makePaymentTxnWithSuggestedParamsFromObject({

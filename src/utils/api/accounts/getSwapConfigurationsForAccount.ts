@@ -11,6 +11,7 @@ export default async function getSwapConfigurationsForAccount(
   const compiledSwapProxy = await getCompiledProxy({
     swap_creator: address,
     version: SWAP_PROXY_VERSION,
+    chain_type: chain,
   });
   const data = await compiledSwapProxy.data;
 

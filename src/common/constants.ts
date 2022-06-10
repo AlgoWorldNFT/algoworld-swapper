@@ -5,20 +5,23 @@ export const CHAIN_TYPE: ChainType =
     ? ChainType.TestNet
     : ChainType.MainNet;
 
-console.log(CHAIN_TYPE, `blaaa`);
-
-export const ALGOEXPLORER_API_URL: string =
-  CHAIN_TYPE.toLowerCase() === `mainnet`
+export const ALGOEXPLORER_API_URL = (chain: ChainType) => {
+  return chain.toLowerCase() === `mainnet`
     ? `https://node.algoexplorerapi.io`
     : `https://node.testnet.algoexplorerapi.io`;
-export const ALGOEXPLORER_INDEXER_URL: string =
-  CHAIN_TYPE.toLowerCase() === `mainnet`
+};
+
+export const ALGOEXPLORER_INDEXER_URL = (chain: ChainType) => {
+  return chain.toLowerCase() === `mainnet`
     ? `https://algoindexer.algoexplorerapi.io`
     : `https://algoindexer.testnet.algoexplorerapi.io`;
-export const ALGOEXPLORER_URL: string =
-  CHAIN_TYPE.toLowerCase() === `mainnet`
+};
+
+export const ALGOEXPLORER_URL = (chain: ChainType) => {
+  return chain.toLowerCase() === `mainnet`
     ? `https://algoexplorer.io`
     : `https://testnet.algoexplorer.io`;
+};
 
 export const EMPTY_ASSET_IMAGE_URL = `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`;
 export const SWAP_PROXY_VERSION = `0.0.2`;

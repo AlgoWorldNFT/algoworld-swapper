@@ -39,3 +39,6 @@ yarn-error.log*
 .vercel
 
 /api/storage/node_modules
+
+#python
+.venv

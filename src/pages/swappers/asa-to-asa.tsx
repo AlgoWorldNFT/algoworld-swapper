@@ -80,6 +80,7 @@ export default function AsaToAsa() {
       offered_asa_amount: offeringAsset.offeringAmount,
       requested_asa_id: requestingAsset.index,
       requested_asa_amount: requestingAsset.requestingAmount,
+      chain_type: chain,
     });
 
     const data = await response.data;

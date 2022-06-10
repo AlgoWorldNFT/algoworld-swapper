@@ -1,29 +1,11 @@
 import json
-import os
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler
 from urllib import parse
 
-from algosdk.v2client.algod import AlgodClient
-from algosdk.v2client.indexer import IndexerClient
 from algoworld_contracts import contracts
 
-CHAIN_TYPE = os.environ.get("CHAIN_TYPE", "TestNet")
-INDEXER_URL = (
-    "https://algoindexer.testnet.algoexplorerapi.io"
-    if CHAIN_TYPE.lower() == "testnet"
-    else "https://algoindexer.algoexplorerapi.io"
-)
-ALGOD_URL = (
-    "https://node.testnet.algoexplorerapi.io"
-    if CHAIN_TYPE.lower() == "testnet"
-    else "https://node.algoexplorerapi.io"
-)
-INCENTIVE_WALLET = "RJVRGSPGSPOG7W3V7IMZZ2BAYCABW3YC5MWGKEOPAEEI5ZK5J2GSF6Y26A"
-INCENTIVE_FEE = 500_000
-
-algod = AlgodClient("", ALGOD_URL, headers={"User-Agent": "algosdk"})
-indexer = IndexerClient("", INDEXER_URL, headers={"User-Agent": "algosdk"})
+from .common import INCENTIVE_FEE, INCENTIVE_WALLET, get_algod
 
 
 @dataclass
@@ -33,21 +15,22 @@ class SwapQueryParams:
     offered_asa_amount: int
     requested_asa_id: int
     requested_asa_amount: int
+    chain_type: str
 
 
-def compileSwap(inputParams: SwapQueryParams):
+def compileSwap(input_params: SwapQueryParams):
 
     swapper = contracts.get_swapper_teal(
-        inputParams.creator_address,
-        inputParams.offered_asa_id,
-        inputParams.offered_asa_amount,
-        inputParams.requested_asa_id,
-        inputParams.requested_asa_amount,
+        input_params.creator_address,
+        input_params.offered_asa_id,
+        input_params.offered_asa_amount,
+        input_params.requested_asa_id,
+        input_params.requested_asa_amount,
         INCENTIVE_WALLET,
         INCENTIVE_FEE,
     )
 
-    response = algod.compile(swapper)
+    response = get_algod(input_params.chain_type).compile(swapper)
     return response
 
 
@@ -64,6 +47,7 @@ class handler(BaseHTTPRequestHandler):
                 "offered_asa_amount": int(raw_params["offered_asa_amount"]),
                 "requested_asa_id": int(raw_params["requested_asa_id"]),
                 "requested_asa_amount": int(raw_params["requested_asa_amount"]),
+                "chain_type": raw_params["chain_type"],
             }
         )
 
@@ -72,6 +56,5 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
 
         response = json.dumps(compileSwap(params))
-        print(response)
         self.wfile.write(response.encode())
         return

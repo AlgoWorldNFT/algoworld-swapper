@@ -48,7 +48,6 @@ export const ToAlgoPickerDialog = ({
             sx={{ marginTop: 2 }}
             value={selectedAlgoAmount}
             onChange={(value) => {
-              console.log(value, `hels`);
               setSelectedAlgoAmount(value);
             }}
             coinType={CoinType.ALGO}

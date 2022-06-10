@@ -74,14 +74,17 @@ export const getProxy = createAsyncThunk(
   `walletConnect/getProxy`,
   async ({
     address,
+    chain,
     version = SWAP_PROXY_VERSION,
   }: {
     address: string;
+    chain: ChainType;
     version?: string;
   }) => {
     const response = await getCompiledProxy({
       swap_creator: address,
       version: version,
+      chain_type: chain,
     });
 
     const data = await response.data;

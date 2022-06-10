@@ -1,42 +1,25 @@
 import json
-import os
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler
 from urllib import parse
 
-from algosdk.v2client.algod import AlgodClient
-from algosdk.v2client.indexer import IndexerClient
 from algoworld_contracts import contracts
 
-CHAIN_TYPE = os.environ.get("CHAIN_TYPE", "TestNet")
-INDEXER_URL = (
-    "https://algoindexer.testnet.algoexplorerapi.io"
-    if CHAIN_TYPE.lower() == "testnet"
-    else "https://algoindexer.algoexplorerapi.io"
-)
-
-
-ALGOD_URL = (
-    "https://node.testnet.algoexplorerapi.io"
-    if CHAIN_TYPE.lower() == "testnet"
-    else "https://node.algoexplorerapi.io"
-)
-
-algod = AlgodClient("", ALGOD_URL, headers={"User-Agent": "algosdk"})
-indexer = IndexerClient("", INDEXER_URL, headers={"User-Agent": "algosdk"})
+from .common import get_algod
 
 
 @dataclass
 class SwapProxyConfig:
     swap_creator: str
     version: str
+    chain_type: str
 
 
 def compileSwapProxy(cfg: SwapProxyConfig):
     swapper = contracts.get_swapper_proxy_teal(
         swap_creator=cfg.swap_creator, version=cfg.version
     )
-    response = algod.compile(swapper)
+    response = get_algod(cfg.chain_type).compile(swapper)
     return response
 
 
@@ -48,6 +31,7 @@ class handler(BaseHTTPRequestHandler):
             **{
                 "swap_creator": raw_params["swap_creator"],
                 "version": raw_params["version"],
+                "chain_type": raw_params["chain_type"],
             }
         )
         self.send_response(200)

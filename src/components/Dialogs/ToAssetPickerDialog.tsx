@@ -17,6 +17,7 @@ import useSWR from 'swr';
 import CryptoTextField from '../TextFields/CryptoTextField';
 import { CoinType } from '@/models/CoinType';
 import axios from 'axios';
+import { useAppSelector } from '@/redux/store/hooks';
 
 type Props = {
   open: boolean;
@@ -36,6 +37,7 @@ export const ToAssetPickerDialog = ({
     number | undefined
   >(undefined);
 
+  const chain = useAppSelector((state) => state.walletConnect.chain);
   const [searchContent, setSearchContent] = useState(``);
   const [autocompleteOpen, setAutocompleteOpen] = useState(false);
 
@@ -47,8 +49,10 @@ export const ToAssetPickerDialog = ({
       ? `asset-id=${Number(searchContent)}`
       : `name=${searchContent}`;
 
-    return `${ALGOEXPLORER_INDEXER_URL}/v2/assets?${searchParam}&limit=5`;
-  }, [searchContent]);
+    return `${ALGOEXPLORER_INDEXER_URL(
+      chain,
+    )}/v2/assets?${searchParam}&limit=5`;
+  }, [chain, searchContent]);
 
   const { data, error } = useSWR(searchAssetSearchParam, (url: string) => {
     return axios.get(url).then((res) => res.data);
