@@ -156,15 +156,5 @@ export default async function createPerformSwapTxns(
           swapConfiguration.requesting[0].requestingAmount,
         );
 
-  console.log(
-    `txns are here:`,
-    txns.map((txn) => txn.transaction),
-  );
-
-  console.log(
-    `txns are here:`,
-    txns.map((txn) => txn.transaction.txID()),
-  );
-
   return txns;
 }

@@ -49,6 +49,5 @@ export default async function signTransactions(
     }
   }) as Uint8Array[];
 
-  console.log(signedTxs);
   return signedTxs;
 }

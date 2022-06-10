@@ -59,7 +59,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     if (swapAssetsState.loading || swapAssetsState.error) {
       return [];
     }
-    console.log(swapAssetsState.value);
+
     return swapAssetsState.value ?? [];
   }, [swapAssetsState.error, swapAssetsState.loading, swapAssetsState.value]);
 

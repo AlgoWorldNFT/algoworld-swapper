@@ -5,8 +5,6 @@ export const CHAIN_TYPE: ChainType =
     ? ChainType.TestNet
     : ChainType.MainNet;
 
-console.log(CHAIN_TYPE, `blaaa`);
-
 export const ALGOEXPLORER_API_URL: string =
   CHAIN_TYPE.toLowerCase() === `mainnet`
     ? `https://node.algoexplorerapi.io`
