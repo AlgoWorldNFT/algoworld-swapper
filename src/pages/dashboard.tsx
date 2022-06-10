@@ -7,7 +7,7 @@ export default function Dashboard() {
   const pageContent = [
     {
       title: `ASA to ASA`,
-      description: `Secury & Simple 1 to 1 asset swaps with minimal fees.`,
+      description: `Secure & Simple 1 to 1 asset swaps with minimal fees.`,
       type: SwapType.ASA_TO_ASA,
       emoji: `🎴↔️🎴`,
       disabled: false,

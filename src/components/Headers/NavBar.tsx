@@ -202,17 +202,14 @@ const NavBar = () => {
       <AppBar position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <IconButton
-              sx={{ display: { xs: `none`, md: `flex` }, mr: 1 }}
-              href="/"
-            >
+            <Link href="/">
               <Image
                 src="/algoworld_logo.svg"
                 alt="AlgoWorld Swapper Logo"
                 height={40}
                 width={40}
               />
-            </IconButton>
+            </Link>
 
             <Box sx={{ flexGrow: 1, display: { xs: `flex`, md: `none` } }}>
               <IconButton
