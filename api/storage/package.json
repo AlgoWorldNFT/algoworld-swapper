@@ -4,7 +4,7 @@
   "description": "Serverless vercel functions to store ipfs files",
   "dependencies": {
     "web3.storage": "4.2.0",
-    "@vercel/node": "2.0.1"
+    "@vercel/node": "2.1.0"
   },
   "devDependencies": {}
 }
