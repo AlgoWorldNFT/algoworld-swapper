@@ -1,3 +1,4 @@
+import { ALGOEXPLORER_URL } from '@/common/constants';
 import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
 import { ChainType } from '@/models/Chain';
 
@@ -17,7 +18,7 @@ export default function createAlgoExplorerUrl(
   input: string,
   type: AlgoExplorerUrlType,
 ) {
-  return `https://${
-    chain === ChainType.TestNet ? `testnet.` : ``
-  }algoexplorer.io/${algoExplorerUrlTypeToPath(type)}/${input}`;
+  return `${ALGOEXPLORER_URL(chain)}/${algoExplorerUrlTypeToPath(
+    type,
+  )}/${input}`;
 }

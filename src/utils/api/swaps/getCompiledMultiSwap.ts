@@ -2,5 +2,5 @@
 import axios from 'axios';
 
 export default function getCompiledMultiSwap(configuration: any) {
-  return axios.post(`/api/swappers/compileMultiSwap`, configuration);
+  return axios.post(`/api/swappers/compile-asas-to-algo`, configuration);
 }

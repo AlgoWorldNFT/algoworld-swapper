@@ -5,27 +5,8 @@ from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler
 from urllib import parse
 
-from algosdk.v2client.algod import AlgodClient
-from algosdk.v2client.indexer import IndexerClient
 from algoworld_contracts import contracts
-
-CHAIN_TYPE = os.environ.get("CHAIN_TYPE", "TestNet")
-INDEXER_URL = (
-    "https://algoindexer.testnet.algoexplorerapi.io"
-    if CHAIN_TYPE.lower() == "testnet"
-    else "https://algoindexer.algoexplorerapi.io"
-)
-ALGOD_URL = (
-    "https://node.testnet.algoexplorerapi.io"
-    if CHAIN_TYPE.lower() == "testnet"
-    else "https://node.algoexplorerapi.io"
-)
-INCENTIVE_WALLET = "RJVRGSPGSPOG7W3V7IMZZ2BAYCABW3YC5MWGKEOPAEEI5ZK5J2GSF6Y26A"
-INCENTIVE_FEE = 500_000
-
-algod = AlgodClient("", ALGOD_URL, headers={"User-Agent": "algosdk"})
-indexer = IndexerClient("", INDEXER_URL, headers={"User-Agent": "algosdk"})
-
+from .common import INCENTIVE_WALLET, INCENTIVE_FEE, get_algod
 
 @dataclass
 class SwapConfig:
@@ -34,6 +15,7 @@ class SwapConfig:
     requested_algo_amount: int
     max_fee: int
     optin_funding_amount: int
+    chain_type: str
 
 
 def compileMultiSwap(inputParams: SwapConfig):
@@ -48,7 +30,7 @@ def compileMultiSwap(inputParams: SwapConfig):
         INCENTIVE_FEE,
     )
 
-    response = algod.compile(swapper)
+    response = get_algod(inputParams.chain_type).compile(swapper)
     return response
 
 
@@ -64,6 +46,7 @@ class handler(BaseHTTPRequestHandler):
                 "requested_algo_amount": post_body["requested_algo_amount"],
                 "max_fee": post_body["max_fee"],
                 "optin_funding_amount": post_body["optin_funding_amount"],
+                "chain_type": post_body['chain_type'],
             }
         )
 
@@ -71,7 +54,6 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/plain")
         self.end_headers()
 
-        print(params)
         response = json.dumps(compileMultiSwap(params))
 
         self.wfile.write(response.encode())

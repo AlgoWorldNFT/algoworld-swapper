@@ -86,6 +86,7 @@ export default function MultiAsaToAlgo() {
       max_fee: ASA_TO_ALGO_MAX_FEE,
       optin_funding_amount:
         ASA_TO_ALGO_FUNDING_BASE_FEE * offeringAssets.length,
+      chain_type: chain,
     });
 
     const data = await response.data;

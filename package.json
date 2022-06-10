@@ -33,12 +33,12 @@
     "@emotion/server": "11.4.0",
     "@emotion/styled": "11.8.1",
     "@fontsource/roboto": "4.5.7",
-    "@hookform/resolvers": "2.9.0",
+    "@hookform/resolvers": "2.9.1",
     "@json-rpc-tools/utils": "1.7.6",
     "@mui/icons-material": "5.8.3",
     "@mui/lab": "5.0.0-alpha.85",
     "@mui/material": "5.8.3",
-    "@mui/x-data-grid": "5.12.0",
+    "@mui/x-data-grid": "5.12.1",
     "@reduxjs/toolkit": "1.8.2",
     "@walletconnect/client": "1.7.8",
     "algorand-walletconnect-qrcode-modal": "1.7.4",
@@ -59,12 +59,11 @@
   "devDependencies": {
     "@commitlint/cli": "17.0.2",
     "@commitlint/config-conventional": "17.0.2",
-    "@types/node": "16.11.39",
+    "@types/node": "17.0.41",
     "@types/react": "18.0.12",
     "@types/react-dom": "18.0.5",
     "@typescript-eslint/eslint-plugin": "5.27.1",
     "@typescript-eslint/parser": "5.27.1",
-    "@vercel/node": "2.1.0",
     "autoprefixer": "10.4.7",
     "commitizen": "4.2.4",
     "cz-conventional-changelog": "3.3.0",
@@ -77,8 +76,7 @@
     "lint-staged": "13.0.1",
     "postcss": "8.4.14",
     "prettier": "2.6.2",
-    "typescript": "4.7.3",
-    "web3.storage": "4.2.0"
+    "typescript": "4.7.3"
   },
   "config": {
     "commitizen": {

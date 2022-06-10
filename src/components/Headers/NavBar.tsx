@@ -166,7 +166,7 @@ const NavBar = () => {
       console.log(`chain: `, chain);
 
       dispatch(getAccountAssets({ chain, address }));
-      dispatch(getProxy({ address }));
+      dispatch(getProxy({ address, chain }));
       dispatch(getAccountSwaps({ chain, address }));
     }
 
