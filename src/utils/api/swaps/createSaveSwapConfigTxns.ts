@@ -15,30 +15,37 @@ export default async function createSaveSwapConfigTxns(
 ) {
   const suggestedParams = await getTransactionParams(chain);
 
-  const feeTxn = createTransactionToSign(
-    algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-      from: creatorAddress,
-      to: proxyLsig.address(),
-      amount: fundingFee,
-      note: new Uint8Array(
-        Buffer.from(
-          `I am a fee transaction for configuring algoworld swapper proxy, thank you for using AlgoWorld Swapper :-)`,
-        ),
+  const rawFeeTxn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: creatorAddress,
+    to: proxyLsig.address(),
+    amount: fundingFee,
+    note: new Uint8Array(
+      Buffer.from(
+        `I am a fee transaction for configuring algoworld swapper proxy, thank you for using AlgoWorld Swapper :-)`,
       ),
-      suggestedParams,
-    }),
+    ),
+    suggestedParams,
+  });
+  rawFeeTxn.flatFee = true;
+  rawFeeTxn.fee = 1_000 * 2; // covers both user signed and escrow signed txns fee
+
+  const feeTxn = createTransactionToSign(
+    rawFeeTxn,
     creatorWallet,
     TransactionToSignType.UserFeeTransaction,
   );
 
+  const rawStoreTxn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: proxyLsig.address(),
+    to: proxyLsig.address(),
+    amount: 0,
+    note: new Uint8Array(Buffer.from(`ipfs://${swapConfigurationCID}`)),
+    suggestedParams: { ...suggestedParams, fee: 0 },
+  });
+  rawStoreTxn.fee = 0;
+
   const storeTxn = createTransactionToSign(
-    algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-      from: proxyLsig.address(),
-      to: proxyLsig.address(),
-      amount: 0,
-      note: new Uint8Array(Buffer.from(`ipfs://${swapConfigurationCID}`)),
-      suggestedParams,
-    }),
+    rawStoreTxn,
     proxyLsig,
     TransactionToSignType.LsigTransaction,
   );

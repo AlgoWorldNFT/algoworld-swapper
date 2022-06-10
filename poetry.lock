@@ -1,22 +1,15 @@
 [[package]]
 name = "algoworld-contracts"
-version = "1.2.4"
+version = "1.3.0"
 description = "AlgoWorld Smart Contracts and Signatures"
 category = "main"
 optional = false
-python-versions = "^3.9"
-develop = false
+python-versions = ">=3.9,<4.0"
 
 [package.dependencies]
 py-algorand-sdk = "1.13.1"
 pyteal = "0.10.0"
 PyYAML = "6.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/algoworldnft/algoworld-contracts"
-reference = "feature/swap_proxy"
-resolved_reference = "5467823d56a8e47c28be70d1ccf1e5bdea9e035d"
 
 [[package]]
 name = "black"
@@ -202,10 +195,13 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "504d00b682cde7fdad1909506001c4c9a5817aeaf422af72154f95e380a5f99a"
+content-hash = "c43e5fdfdfc064ec226144ac8476b6950df20877ca6d9c46018ce93826c85ad1"
 
 [metadata.files]
-algoworld-contracts = []
+algoworld-contracts = [
+    {file = "algoworld_contracts-1.3.0-py3-none-any.whl", hash = "sha256:9df6145ddb1b6b93c12f3cfd4b0b0b244eb22d90887d4d6336ffed22e8a94f30"},
+    {file = "algoworld_contracts-1.3.0.tar.gz", hash = "sha256:335102d7a61426826ba1bf1acfe213d7bd43945662c637ff03221ea6c4893cea"},
+]
 black = [
     {file = "black-22.3.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:2497f9c2386572e28921fa8bec7be3e51de6801f7459dffd6e62492531c47e09"},
     {file = "black-22.3.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:5795a0375eb87bfe902e80e0c8cfaedf8af4d49694d69161e5bd3206c18618bb"},
