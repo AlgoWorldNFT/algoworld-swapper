@@ -1,1 +1,1 @@
-algoworld-contracts==1.3.0
+algoworld-contracts @ git+https://github.com/algoworldnft/algoworld-contracts@1.3.0

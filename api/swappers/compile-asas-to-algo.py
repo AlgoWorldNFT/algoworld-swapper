@@ -1,12 +1,11 @@
-from cgi import parse_header, parse_multipart
 import json
-import os
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler
-from urllib import parse
 
 from algoworld_contracts import contracts
-from .common import INCENTIVE_WALLET, INCENTIVE_FEE, get_algod
+
+from .common import INCENTIVE_FEE, INCENTIVE_WALLET, get_algod
+
 
 @dataclass
 class SwapConfig:
@@ -46,7 +45,7 @@ class handler(BaseHTTPRequestHandler):
                 "requested_algo_amount": post_body["requested_algo_amount"],
                 "max_fee": post_body["max_fee"],
                 "optin_funding_amount": post_body["optin_funding_amount"],
-                "chain_type": post_body['chain_type'],
+                "chain_type": post_body["chain_type"],
             }
         )
 

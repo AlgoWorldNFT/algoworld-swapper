@@ -3,4 +3,4 @@
 . "$(dirname "$0")/common.sh"
 
 yarn lint-staged
-
+pre-commit run --all-files

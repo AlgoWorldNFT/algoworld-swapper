@@ -26,6 +26,7 @@ The following repository hosts the source codes for `AlgoWorld Swapper`. Free an
 - `Node` >= 14.x
 - `yarn` >= 1.12.15
 - `vercel cli` >= 24.2.4
+- [`pre-commit`](https://pre-commit.com/) >= 2.19.0
 
 ## 🚀 Overview
 
@@ -57,7 +58,7 @@ Open `http://localhost:3000` with your browser to see the result.
 - [`src`](./src) — Application source code, including pages, components, styles.
 - [`api`](./api) — Serverless vercel functions, contract compilation is using `python` and `pyteal` and ipfs storage is done with `node`.
 - [`.husky`](.husky) — Husky configuration and hooks.<br>
-
+- [`.pre-commit-config.yaml`](.pre-commit-config.yaml) — pre commit coniguration for formatting python serverless functions.<br></br>
 ### Scripts
 
 The section describes different modes of running the swapper for local dev purposes.

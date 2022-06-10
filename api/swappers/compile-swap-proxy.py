@@ -1,11 +1,12 @@
 import json
-import os
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler
 from urllib import parse
 
 from algoworld_contracts import contracts
+
 from .common import get_algod
+
 
 @dataclass
 class SwapProxyConfig:
@@ -30,7 +31,7 @@ class handler(BaseHTTPRequestHandler):
             **{
                 "swap_creator": raw_params["swap_creator"],
                 "version": raw_params["version"],
-                "chain_type": raw_params['chain_type'],
+                "chain_type": raw_params["chain_type"],
             }
         )
         self.send_response(200)
