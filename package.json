@@ -33,7 +33,7 @@
     "@emotion/server": "11.4.0",
     "@emotion/styled": "11.8.1",
     "@fontsource/roboto": "4.5.7",
-    "@hookform/resolvers": "2.8.10",
+    "@hookform/resolvers": "2.9.0",
     "@json-rpc-tools/utils": "1.7.6",
     "@mui/icons-material": "5.8.3",
     "@mui/lab": "5.0.0-alpha.85",
