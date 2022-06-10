@@ -171,10 +171,10 @@
   resolved "https://registry.yarnpkg.com/@vercel/node-bridge/-/node-bridge-3.0.0.tgz#443655b74713ec65531726fb5a30c5c528c804bf"
   integrity sha512-TNQK6cufwrhd8ASDk5YHHenH8Xhp9sY8xUjOTKnQQI37KLk+Sw2HlHhT5rzUFN23ahosUlkY8InwtYUmSNb9kw==
 
-"@vercel/node@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@vercel/node/-/node-2.0.1.tgz#29e256e7476cc08a91843da50e916fb234797936"
-  integrity sha512-49VaRMz7R5H1I0fjLowF+y1rM7f7maLxxXZV2cKYZgkw8/6KnHOopfLtLWAVoiY8rIyLmGSxM1zT4ZrlyKMdww==
+"@vercel/node@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@vercel/node/-/node-2.1.0.tgz#39220aa6b3810c7d3f92d561b874fde502f01b5f"
+  integrity sha512-CqZo0gQj6BAxad358KFTIkcwdd+Onp7O4Nnj2QzdaUOcrMmgUEV7XR8LIrCz0knVawl2DZMDXdLjdknW4e8rQw==
   dependencies:
     "@types/node" "*"
     "@vercel/node-bridge" "3.0.0"
