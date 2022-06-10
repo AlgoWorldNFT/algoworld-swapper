@@ -124,6 +124,9 @@ export const walletConnectSlice = createSlice({
   reducers: {
     switchChain(state, action: PayloadAction<ChainType>) {
       state.chain = action.payload;
+      state.selectedOfferingAssets = [];
+      state.selectedRequestingAssets = [];
+      state.swaps = [];
     },
     setOfferingAssets(state, action: PayloadAction<Asset[]>) {
       state.selectedOfferingAssets = action.payload;
