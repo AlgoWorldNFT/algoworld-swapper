@@ -18,6 +18,6 @@ export default function createAlgoExplorerUrl(
   type: AlgoExplorerUrlType,
 ) {
   return `https://${
-    chain === ChainType.TestNet ? `testnet` : ``
-  }.algoexplorer.io/${algoExplorerUrlTypeToPath(type)}/${input}`;
+    chain === ChainType.TestNet ? `testnet.` : ``
+  }algoexplorer.io/${algoExplorerUrlTypeToPath(type)}/${input}`;
 }
