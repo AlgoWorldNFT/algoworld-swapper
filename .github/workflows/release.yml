@@ -30,7 +30,7 @@ jobs:
       - name: Check linting
         run: yarn run build
 
-      - uses: amondnet/vercel-action@v20 #deploy
+      - uses: amondnet/vercel-action@latest #deploy
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
