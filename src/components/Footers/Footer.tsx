@@ -9,6 +9,8 @@ import {
 import GitHubIcon from '@mui/icons-material/GitHub';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import TwitterIcon from '@mui/icons-material/Twitter';
+import PublicIcon from '@mui/icons-material/Public';
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 
 function Copyright() {
   return (
@@ -24,14 +26,37 @@ function Copyright() {
 function ReferenceButtons() {
   return (
     <Stack justifyContent={`center`} direction="row">
-      <IconButton target={`_blank`} href="https://t.me/algoworld_nft">
+      <IconButton size="small" target={`_blank`} href="https://algoworld.io">
+        <PublicIcon />
+      </IconButton>
+      <IconButton
+        size="small"
+        target={`_blank`}
+        href="https://t.me/algoworld_nft"
+      >
         <TelegramIcon />
       </IconButton>
-      <IconButton target={`_blank`} href="https://twitter.com/algoworld_nft">
+      <IconButton
+        size="small"
+        target={`_blank`}
+        href="https://twitter.com/algoworld_nft"
+      >
         <TwitterIcon />
       </IconButton>
-      <IconButton target={`_blank`} href="https://github.com/AlgoWorldNFT">
+      <IconButton
+        size="small"
+        target={`_blank`}
+        href="https://github.com/AlgoWorldNFT"
+      >
         <GitHubIcon />
+      </IconButton>
+
+      <IconButton
+        size="small"
+        target={`_blank`}
+        href="https://algoworldexplorer.io"
+      >
+        <TravelExploreIcon />
       </IconButton>
     </Stack>
   );
