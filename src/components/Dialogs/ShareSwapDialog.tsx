@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ChainType } from '@/models/Chain';
 import { SwapConfiguration } from '@/models/Swap';
+import { useAppSelector } from '@/redux/store/hooks';
 import {
   Dialog,
   DialogTitle,
@@ -48,7 +50,7 @@ const ShareSwapDialog = ({
 }: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_result, copyToClipboard] = useCopyToClipboard();
-
+  const selectedChain = useAppSelector((state) => state.walletConnect.chain);
   const { enqueueSnackbar } = useSnackbar();
 
   return (
@@ -78,7 +80,11 @@ const ShareSwapDialog = ({
           onClick={() => {
             if (swapConfiguration) {
               copyToClipboard(
-                `${window.location.origin}/swap/${swapConfiguration.proxy}/${swapConfiguration.escrow}`,
+                `${window.location.origin}/swap/${swapConfiguration.proxy}/${
+                  swapConfiguration.escrow
+                }${
+                  selectedChain === ChainType.TestNet ? `?chain=testnet` : ``
+                }`,
               );
               enqueueSnackbar(`Copied to clipboard...`, {
                 variant: `success`,

@@ -59,7 +59,7 @@ import {
 } from '@/redux/slices/walletConnectSlice';
 import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
 import ShareSwapDialog from '@/components/Dialogs/ShareSwapDialog';
-import { LoadingButton } from '@mui/lab';
+import LoadingButton from '@mui/lab/LoadingButton';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
 import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
 import PageHeader from '@/components/Headers/PageHeader';
