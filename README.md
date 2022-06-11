@@ -2,9 +2,12 @@
 
 <p align="center">
     <a href="https://algorand.com"><img src="https://img.shields.io/badge/Powered by-Algorand-black.svg" /></a>
-    <a href="https://algoworld.io"><img src="https://img.shields.io/badge/AlgoWorld-Website-black.svg" /></a>
-    <a href="https://algoworldexplorer.io"><img src="https://img.shields.io/badge/AlgoWorldExplorer-Platform-black.svg" /></a>
-    <a><img src="https://visitor-badge.glitch.me/badge?page_id=AlgoWorldNFT.algoworld-swapper&right_color=black" /></a>
+    <a href="https://algoworld.io"><img src="https://img.shields.io/badge/AlgoWorld-Website-purple.svg" /></a>
+    <a href="https://github.com/MShawon/github-clone-count-badge"><img src="https://img.shields.io/badge/dynamic/json?color=success&label=Clone&query=count&url=https://gist.githubusercontent.com/aorumbayev/ec038d0e28f865f4056bdf69af201b78/raw/clone.json&logo=github" /></a>
+    <br/>
+    <a href="https://github.com/AlgoWorldNFT/algoworld-swapper/actions/workflows/release.yml"><img src="https://github.com/AlgoWorldNFT/algoworld-swapper/actions/workflows/release.yml/badge.svg?branch=main" /></a>
+    <a href="https://algoworldexplorer.io"><img src="https://img.shields.io/badge/AlgoWorldExplorer-Platform-orange.svg" /></a>
+    <a><img src="https://visitor-badge.glitch.me/badge?page_id=AlgoWorldNFT.algoworld-swapper&right_color=blue" /></a>
 </p>
 
 ## 📃 About
