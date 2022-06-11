@@ -36,8 +36,15 @@ repos:
 
   - repo: local
     hooks:
-      - id: yarn-lint-staged
-        name: lint-staged
+      - id: type-check
+        name: yarn-type-check
+        entry: yarn type-check
+        language: system
+        stages: [commit]
+        types: [ts, tsx]
+
+      - id: lint-staged
+        name: yarn-lint-staged
         entry: yarn lint-staged
         language: system
         types: [jsx, ts, tsx, javascript]
@@ -54,3 +61,5 @@ repos:
     hooks:
       - id: commitlint
         stages: [commit-msg]
+      - id: commitlint-travis
+        stages: [manual]

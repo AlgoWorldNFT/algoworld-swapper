@@ -24,19 +24,16 @@ jobs:
         with:
           node-version: 16
 
-      - uses: pre-commit/action@v2.0.3
-        name: 'Check python vercel functions'
-        with:
-          extra_args: --all-files --show-diff-on-failure
-
       - name: Install dependencies (with cache)
         uses: bahmutov/npm-install@v1
 
       - name: Check types
         run: yarn type-check
 
-      - name: Check linting
-        run: yarn lint
+      - uses: pre-commit/action@v2.0.3
+        name: 'Check python vercel functions'
+        with:
+          extra_args: --all-files --show-diff-on-failure
 
       - name: Check commits messages
         uses: wagoid/commitlint-github-action@v4
