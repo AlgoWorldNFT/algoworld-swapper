@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Deploy new release
-        uses: amondnet/vercel-action@25 #deploy
+        uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
