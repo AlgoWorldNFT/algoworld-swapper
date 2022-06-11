@@ -22,5 +22,11 @@
     "incremental": true
   },
   "exclude": ["node_modules", "**/*.spec.ts", "api"],
-  "include": ["next-env.d.ts", "desc.d.ts", "**/*.ts", "**/*.tsx"]
+  "include": [
+    "next-env.d.ts",
+    "desc.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/pages/_error.js"
+  ]
 }

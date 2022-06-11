@@ -16,24 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import WalletConnect from '@walletconnect/client';
-import { Transaction } from 'algosdk';
-import { LogicSigAccount } from 'algosdk/dist/types/src/logicsig';
+import { captureException } from '@sentry/nextjs';
+import { CaptureContext } from '@sentry/types';
 
-export enum TransactionToSignType {
-  UserTransaction,
-  LsigTransaction,
-  UserFeeTransaction,
-  LsigFeeTransaction,
+export default function captureError(
+  error: any,
+  captureContext?: CaptureContext | undefined,
+) {
+  captureException(error, captureContext);
 }
-
-export interface TransactionToSign {
-  transaction: Transaction;
-  signer: WalletConnect | LogicSigAccount;
-  type: TransactionToSignType;
-}
-
-export type SubmitTransactionResponse = {
-  txId: string | undefined;
-  confirmedRound: number | undefined;
-};

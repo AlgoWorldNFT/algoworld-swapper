@@ -12,15 +12,7 @@
 The following repository hosts the source codes for `AlgoWorld Swapper`. Free and open-source swapper that allows for trustless transfers of assets on Algorand blockchain and extensibility.
 
 > _**⚠️ NOTE: [algoworld-contracts](https://github.com/AlgoWorldNFT/algoworld-contracts) used by the swapper are not formally audited by accredited third parties. However, contracts are a basis for certain functionality on the AlgoWorldExplorer.io platform and were created in collaboration with Solution Architect from Algorand (credits @cusma).**_
-
-- [📃 About](#---about)
-- [✔ Prerequisites](#prerequisites)
-- [🚀 Overview](#---overview)
-- [⚙️ Development guide](#---development-guide)
-- [🧪 Testing](#---testing)
-- [📜 License](#---license)
-- [⭐️ Stargazers](#---stargazers)
-
+---
 ## Prerequisites
 
 - `Node` >= 14.x
@@ -28,6 +20,7 @@ The following repository hosts the source codes for `AlgoWorld Swapper`. Free an
 - `vercel cli` >= 24.2.4
 - [`pre-commit`](https://pre-commit.com/) >= 2.19.0
 
+---
 ## 🚀 Overview
 
 AlgoWorld Swapper currently offers usage of several smart signatures used for single and multi ASA transfers.
@@ -42,6 +35,7 @@ There are two different types of smart signatures available:
 
 > Detailed documentation is work in progress ⚠️
 
+---
 ## ⚙️ Development guide
 
 To start the project locally, run:
@@ -51,6 +45,19 @@ vercel dev
 ```
 
 Open `http://localhost:3000` with your browser to see the result.
+
+> Running `vercel dev` for the first time will prompt you to setup and link with your existing/new vercel project. You can create a dummy project and link it to be able to run the development locally.
+
+### Env variables
+
+For running locally create a file called `.env.local` and fill it with the following default parameters (or replace with your own values):
+
+| Variable Name                     | Required? | Description                                                                                   |
+|-----------------------------------|:---------:|-----------------------------------------------------------------------------------------------|
+| **AW_WEB_STORAGE_API_KEY**        |     yes     | obtain your own api key on [ web3.storage ]( https://web3.storage/ ).                         |
+| **NEXT_PUBLIC_CHAIN_TYPE**        |     yes    |  set to  `mainnet`  or  `testnet`  to indicate which chain to use by default.                  |
+| **NEXT_PUBLIC_GA_MEASUREMENT_ID** |     no     | a tag value for Google Analytics tracking. For local dev purposes you can skip it completely. |
+| **NEXT_PUBLIC_SENTRY_DSN**        |     no     | a tag value for Sentry error tracking. For local dev purposes you can skip it completely.     |
 
 ### Directory Structure
 
@@ -63,11 +70,11 @@ Open `http://localhost:3000` with your browser to see the result.
 
 The section describes different modes of running the swapper for local dev purposes.
 
-#### Client and functions:
+#### Client and functions
 
 - `vercel dev` - executes both backend and frontend.
 
-#### Frontend only:
+#### Frontend only
 
 Below is for frontend client only (excluding `Vercel` serveless functions).
 
@@ -89,13 +96,17 @@ import { Button } from '@/components/Button';
 // To import images or other files from the public folder
 import avatar from '@/public/avatar.png';
 ```
+---
 ## 🧪 Testing
 
 TBD
+
+---
 ## 📜 License
 
 This project is licensed under the GPLv3 License - see the [LICENSE.md](LICENSE.md) file for more information.
 
+---
 ## ⭐️ Stargazers
 
 Special thanks to everyone who forked or starred the repository ❤️

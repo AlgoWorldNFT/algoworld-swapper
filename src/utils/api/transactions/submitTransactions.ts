@@ -18,6 +18,7 @@
 
 import { ChainType } from '@/models/Chain';
 import { SubmitTransactionResponse } from '@/models/Transaction';
+import captureError from '@/utils/errors/captureError';
 import { algodForChain } from '../algorand';
 import waitForTransaction from './waitForTransaction';
 
@@ -25,10 +26,19 @@ export default async function submitTransactions(
   chain: ChainType,
   stxns: Uint8Array[],
 ): Promise<SubmitTransactionResponse> {
-  const { txId } = await algodForChain(chain).sendRawTransaction(stxns).do();
+  let txIdResponse: string | undefined = undefined;
+  let confirmedRound: number | undefined = undefined;
+
+  try {
+    const { txId } = await algodForChain(chain).sendRawTransaction(stxns).do();
+    txIdResponse = txId;
+    confirmedRound = await waitForTransaction(chain, txId);
+  } catch (e) {
+    captureError(e);
+  }
 
   return {
-    confirmedRound: await waitForTransaction(chain, txId),
-    txId: txId,
+    confirmedRound: confirmedRound,
+    txId: txIdResponse,
   } as SubmitTransactionResponse;
 }

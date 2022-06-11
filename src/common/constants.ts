@@ -52,3 +52,4 @@ export const INCENTIVE_WALLET = `RJVRGSPGSPOG7W3V7IMZZ2BAYCABW3YC5MWGKEOPAEEI5ZK
 export const INCENTIVE_FEE = 0.5 * 1e6;
 
 export const TXN_SIGNING_CANCELLED_MESSAGE = `You have cancelled transactions signing...`;
+export const TXN_SUBMISSION_FAILED_MESSAGE = `Failed to submit transactions, refresh page and try again. Make sure you have enough minimum balance on your account...`;

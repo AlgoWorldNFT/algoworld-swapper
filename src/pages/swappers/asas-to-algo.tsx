@@ -31,6 +31,7 @@ import {
   ASA_TO_ASA_FUNDING_FEE,
   SWAP_PROXY_VERSION,
   TXN_SIGNING_CANCELLED_MESSAGE,
+  TXN_SUBMISSION_FAILED_MESSAGE,
 } from '@/common/constants';
 import { SwapConfiguration, SwapType } from '@/models/Swap';
 import { useAsync } from 'react-use';
@@ -273,6 +274,9 @@ export default function MultiAsaToAlgo() {
     );
     if (!depositTxnId) {
       resetLoading();
+      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
+        variant: `error`,
+      });
       return;
     }
 
@@ -302,6 +306,9 @@ export default function MultiAsaToAlgo() {
     );
     if (!saveSwapTxnId) {
       resetLoading();
+      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
+        variant: `error`,
+      });
       return;
     }
 
@@ -334,6 +341,9 @@ export default function MultiAsaToAlgo() {
     const swapInitTxnId = await signAndSendSwapInitTxns(escrow);
     if (!swapInitTxnId) {
       resetLoading();
+      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
+        variant: `error`,
+      });
       return;
     }
 
