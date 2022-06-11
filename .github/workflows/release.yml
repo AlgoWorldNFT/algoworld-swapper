@@ -19,6 +19,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Trigger release
-        run: |
-           git push --mirror https://${{ secrets.API_TOKEN_GITHUB }}@github.com/aorumbayev/aw-swapper-releases.git
+      - name: Deploy to Vercel Action
+        uses: BetaHuhn/deploy-to-vercel-action@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.API_TOKEN_GITHUB }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
