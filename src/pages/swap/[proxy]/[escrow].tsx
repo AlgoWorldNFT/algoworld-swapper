@@ -26,7 +26,10 @@ import { SwapConfiguration } from '@/models/Swap';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
-import { optInAssets } from '@/redux/slices/walletConnectSlice';
+import {
+  getAccountAssets,
+  optInAssets,
+} from '@/redux/slices/walletConnectSlice';
 import { connector } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import accountExists from '@/utils/api/accounts/accountExists';
@@ -232,17 +235,42 @@ const PerformSwap = () => {
           later...
         </Typography>
       );
+    } else if (!address) {
+      return (
+        <Button
+          onClick={() => {
+            dispatch(setIsWalletPopupOpen(true));
+          }}
+          fullWidth
+          variant="contained"
+          color="primary"
+        >
+          Connect Wallet
+        </Button>
+      );
+    } else {
+      return (
+        <Button
+          onClick={() => {
+            swapConfigsState.retry();
+          }}
+          fullWidth
+          variant="contained"
+          color="primary"
+        >
+          Click to retry loading
+        </Button>
+      );
     }
   }, [
-    address,
-    assetsToOptIn,
-    dispatch,
-    hasZeroBalanceAssets,
-    swapConfigsState.error,
-    swapConfigsState.loading,
     swapConfiguration,
+    address,
+    swapConfigsState,
+    hasZeroBalanceAssets,
     swapIsActive,
+    assetsToOptIn,
     hasNoBalanceForAssets,
+    dispatch,
   ]);
 
   const signAndSendSwapPerformTxns = async (
@@ -328,73 +356,47 @@ const PerformSwap = () => {
         sx={{ textAlign: `center`, pb: 5 }}
         component="main"
       >
-        {swapConfiguration ? (
-          <>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Card>
-                  <CardHeader
-                    title={`You provide`}
-                    titleTypographyProps={{ align: `center` }}
-                    sx={{}}
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader
+                title={`You provide`}
+                titleTypographyProps={{ align: `center` }}
+                sx={{}}
+              />
+              <CardContent>
+                {swapConfiguration && (
+                  <AssetListView
+                    assets={swapConfiguration.requesting}
+                    isOffering={false}
                   />
-                  <CardContent>
-                    <AssetListView
-                      assets={swapConfiguration.requesting}
-                      isOffering={false}
-                    />
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12}>
-                <Card>
-                  <CardHeader
-                    title={`You receive`}
-                    titleTypographyProps={{ align: `center` }}
-                    sx={{}}
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader
+                title={`You receive`}
+                titleTypographyProps={{ align: `center` }}
+                sx={{}}
+              />
+              <CardContent>
+                {swapConfiguration && (
+                  <AssetListView
+                    assets={swapConfiguration.offering}
+                    isOffering={true}
                   />
-                  <CardContent>
-                    <AssetListView
-                      assets={swapConfiguration.offering}
-                      isOffering={true}
-                    />
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12}>
-                <Stack justifyContent={`center`} direction={`column`}>
-                  {address ? (
-                    <>{errorLabelsContent}</>
-                  ) : (
-                    <Button
-                      onClick={() => {
-                        dispatch(setIsWalletPopupOpen(true));
-                      }}
-                      fullWidth
-                      variant="contained"
-                      color="primary"
-                    >
-                      Connect Wallet
-                    </Button>
-                  )}
-                </Stack>
-              </Grid>
-            </Grid>
-          </>
-        ) : (
-          <>
-            <Button
-              onClick={() => {
-                swapConfigsState.retry();
-              }}
-              fullWidth
-              variant="contained"
-              color="primary"
-            >
-              Click to retry loading
-            </Button>
-          </>
-        )}
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Stack justifyContent={`center`} direction={`column`}>
+              <>{errorLabelsContent}</>
+            </Stack>
+          </Grid>
+        </Grid>
       </Container>
 
       <ConfirmDialog
@@ -415,6 +417,12 @@ const PerformSwap = () => {
           open={shareSwapDialogOpen}
           setOpen={setShareSwapDialogOpen}
           onClose={() => {
+            dispatch(
+              getAccountAssets({
+                chain: selectedChain,
+                address: address,
+              }) as any,
+            );
             router.replace(`/`);
           }}
         >
