@@ -27,11 +27,14 @@ jobs:
       - name: Install dependencies (with cache)
         uses: bahmutov/npm-install@v1
 
-      - name: Check types
+      - name: Run TypeScript type check
         run: yarn type-check
 
+      - name: Run TypeScript lint
+        run: yarn lint
+
       - uses: pre-commit/action@v2.0.3
-        name: 'Check python vercel functions'
+        name: 'Run pre-commit checks'
         with:
           extra_args: --all-files --show-diff-on-failure
 

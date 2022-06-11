@@ -34,22 +34,6 @@ repos:
           - --ignore-init-module-imports
         stages: [commit]
 
-  - repo: local
-    hooks:
-      - id: type-check
-        name: yarn-type-check
-        entry: yarn type-check
-        language: system
-        stages: [commit]
-        types: [ts, tsx]
-
-      - id: lint-staged
-        name: yarn-lint-staged
-        entry: yarn lint-staged
-        language: system
-        types: [jsx, ts, tsx, javascript]
-        stages: [commit]
-
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.6.2
     hooks:
