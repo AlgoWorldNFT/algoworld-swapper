@@ -1,3 +1,21 @@
+/**
+ * AlgoWorld Swapper
+ * Copyright (C) 2022 AlgoWorld
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -203,18 +221,26 @@ const NavBar = () => {
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Link href="/">
-              <Image
-                src="/algoworld_logo.svg"
-                alt="AlgoWorld Swapper Logo"
-                height={40}
-                width={40}
-              />
+              <IconButton
+                size="medium"
+                aria-label="home icon"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                color="inherit"
+              >
+                <Image
+                  src="/algoworld_logo.svg"
+                  alt="AlgoWorld Swapper Logo"
+                  height={40}
+                  width={40}
+                />
+              </IconButton>
             </Link>
 
             <Box sx={{ flexGrow: 1, display: { xs: `flex`, md: `none` } }}>
               <IconButton
                 size="large"
-                aria-label="account of current user"
+                aria-label="home button"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleOpenNavMenu}
