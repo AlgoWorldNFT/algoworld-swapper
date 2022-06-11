@@ -1,9 +1,9 @@
 name: Trigger release
 
 on:
-    pull_request:
+    push:
         branches:
-            - "*"
+            - "main"
 
 jobs:
   run-ci:
