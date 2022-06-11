@@ -1,9 +1,9 @@
 name: GitHub Clone Count Badge Update Everyday
 
 on:
-  pull_request:
-    branches:
-      - '*'
+  schedule:
+    - cron: '0 */24 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
