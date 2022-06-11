@@ -1,6 +1,9 @@
 name: GitHub Clone Count Badge Update Everyday
 
 on:
+  push:
+    branches:
+      - '*'
   schedule:
     - cron: '0 */24 * * *'
   workflow_dispatch:
