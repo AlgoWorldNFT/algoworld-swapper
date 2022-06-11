@@ -203,18 +203,26 @@ const NavBar = () => {
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Link href="/">
-              <Image
-                src="/algoworld_logo.svg"
-                alt="AlgoWorld Swapper Logo"
-                height={40}
-                width={40}
-              />
+              <IconButton
+                size="medium"
+                aria-label="home icon"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                color="inherit"
+              >
+                <Image
+                  src="/algoworld_logo.svg"
+                  alt="AlgoWorld Swapper Logo"
+                  height={40}
+                  width={40}
+                />
+              </IconButton>
             </Link>
 
             <Box sx={{ flexGrow: 1, display: { xs: `flex`, md: `none` } }}>
               <IconButton
                 size="large"
-                aria-label="account of current user"
+                aria-label="home button"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleOpenNavMenu}

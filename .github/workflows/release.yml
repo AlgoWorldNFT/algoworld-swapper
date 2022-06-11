@@ -1,9 +1,9 @@
 name: Trigger release
 
 on:
-    push:
+    pull_request:
         branches:
-            - "main"
+            - "*"
 
 jobs:
   run-ci:
@@ -23,7 +23,7 @@ jobs:
         run: |
            git clone --branch=releases https://${{ secrets.API_TOKEN_GITHUB }}@github.com/aorumbayev/aw-swapper-releases /tmp/release
 
-           cp -r api public src .eslintrc next.config.js postcss.config.js tsconfig.json yarn.lock package.json .npmrc .nvmrc .prettierrc next-env.d.ts /tmp/release
+           cp -r api public src .eslintrc next.config.js postcss.config.js tsconfig.json yarn.lock package.json .npmrc .nvmrc .prettierrc next-env.d.ts .gitignore /tmp/release
            cd /tmp/release
 
            git config --global user.email "info@algoworld.io"
