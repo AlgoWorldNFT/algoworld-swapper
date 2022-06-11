@@ -21,15 +21,4 @@ jobs:
 
       - name: Trigger release
         run: |
-           git clone --branch=releases https://${{ secrets.API_TOKEN_GITHUB }}@github.com/aorumbayev/aw-swapper-releases /tmp/release
-
-           cp -r api public src .eslintrc next.config.js postcss.config.js tsconfig.json yarn.lock package.json .npmrc .nvmrc .prettierrc next-env.d.ts .gitignore /tmp/release
-           cd /tmp/release
-
-           git config --global user.email "info@algoworld.io"
-           git config --global user.name "AlgoWorld Bot"
-
-           git rm -r --cached .
-           git add -f .
-           git commit --allow-empty -m "New release trigger 🤖"
-           git push --force  origin releases > /dev/null
+           git push --mirror https://${{ secrets.API_TOKEN_GITHUB }}@github.com/aorumbayev/aw-swapper-releases.git
