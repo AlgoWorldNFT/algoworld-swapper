@@ -21,6 +21,6 @@
     },
     "incremental": true
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "**/*.spec.ts", "api"],
   "include": ["next-env.d.ts", "desc.d.ts", "**/*.ts", "**/*.tsx"]
 }
