@@ -6,6 +6,8 @@ module.exports = {
       '*.cf-ipfs.com',
       'images.unsplash.com',
       'vitals.vercel-insights.com',
+      'google-analytics.com',
+      '*.google-analytics.com',
     ],
   },
 };

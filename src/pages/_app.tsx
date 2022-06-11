@@ -27,11 +27,11 @@ import { Provider } from 'react-redux';
 import darkTheme from '../redux/theme/darkTheme';
 import createEmotionCache from '../utils/createEmotionCache';
 import { SnackbarProvider } from 'notistack';
-
 import Layout from '@/components/Layouts/Layout';
 import store from '@/redux/store';
 import { ConnectContext, connector } from '@/redux/store/connector';
 import { Slide } from '@mui/material';
+import { GoogleAnalytics } from 'nextjs-google-analytics';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -62,7 +62,10 @@ export default function MyApp(props: MyAppProps) {
             >
               <CssBaseline />
               <Layout title="AlgoWorld Swapper">
-                <Component {...pageProps} />
+                <>
+                  <GoogleAnalytics />
+                  <Component {...pageProps} />
+                </>
               </Layout>
             </SnackbarProvider>
           </ThemeProvider>
