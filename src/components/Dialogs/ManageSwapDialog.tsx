@@ -9,14 +9,17 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ASA_TO_ASA_FUNDING_FEE } from '@/common/constants';
+import {
+  ASA_TO_ASA_FUNDING_FEE,
+  TXN_SUBMISSION_FAILED_MESSAGE,
+} from '@/common/constants';
 import { connector } from '@/redux/store/connector';
 import { useAppSelector } from '@/redux/store/hooks';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
@@ -128,6 +131,14 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     );
 
     const depositTxnId = signedSwapDepositResponse.txId;
+    if (!depositTxnId) {
+      setDepositLoading(false);
+      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
+        variant: `error`,
+      });
+      return;
+    }
+
     enqueueSnackbar(`Deposit of offering asset performed...`, {
       variant: `success`,
       action: () => (
@@ -136,7 +147,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     });
 
     setDepositLoading(false);
-    return depositTxnId;
+    return;
   };
 
   const manageDeleteSwap = async () => {
@@ -165,6 +176,14 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       chain,
       signedSwapDeactivateTxns,
     );
+    const deactivateTxnId = signedSwapDeactivateResponse.txId;
+    if (!deactivateTxnId) {
+      setDeleteLoading(false);
+      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
+        variant: `error`,
+      });
+      return;
+    }
 
     const newSwapConfigs = existingSwaps.filter((swapConfig) => {
       return swapConfig.escrow !== selectedManageSwap.escrow;
@@ -189,29 +208,33 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       chain,
       signedSaveSwapConfigTxns,
     );
+    const saveSwapConfigResponseTxn = saveSwapConfigResponse.txId;
+    if (!saveSwapConfigResponseTxn) {
+      setDeleteLoading(false);
+      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
+        variant: `error`,
+      });
+      return;
+    }
+
     enqueueSnackbar(`Swap removed from proxy configuration...`, {
       variant: `success`,
       action: () => (
         <ViewOnAlgoExplorerButton
           chain={chain}
-          txId={saveSwapConfigResponse.txId}
+          txId={saveSwapConfigResponseTxn}
         />
       ),
     });
 
-    const deactivateTxnId = signedSwapDeactivateResponse.txId;
     enqueueSnackbar(`Deactivation of swap performed...`, {
       variant: `success`,
       action: () => (
-        <ViewOnAlgoExplorerButton
-          chain={chain}
-          txId={signedSwapDeactivateResponse.txId}
-        />
+        <ViewOnAlgoExplorerButton chain={chain} txId={deactivateTxnId} />
       ),
     });
 
     setDeleteLoading(false);
-    return deactivateTxnId;
   };
 
   return (

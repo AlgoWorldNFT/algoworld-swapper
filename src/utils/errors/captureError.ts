@@ -16,7 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export enum CoinType {
-  ALGO,
-  ASA,
+import { captureException } from '@sentry/nextjs';
+import { CaptureContext } from '@sentry/types';
+
+export default function captureError(
+  error: any,
+  captureContext?: CaptureContext | undefined,
+) {
+  captureException(error, captureContext);
 }

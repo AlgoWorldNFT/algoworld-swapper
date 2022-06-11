@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -18,6 +18,7 @@
 
 import { ChainType } from '@/models/Chain';
 import { SubmitTransactionResponse } from '@/models/Transaction';
+import captureError from '@/utils/errors/captureError';
 import { algodForChain } from '../algorand';
 import waitForTransaction from './waitForTransaction';
 
@@ -25,10 +26,19 @@ export default async function submitTransactions(
   chain: ChainType,
   stxns: Uint8Array[],
 ): Promise<SubmitTransactionResponse> {
-  const { txId } = await algodForChain(chain).sendRawTransaction(stxns).do();
+  let txIdResponse: string | undefined = undefined;
+  let confirmedRound: number | undefined = undefined;
+
+  try {
+    const { txId } = await algodForChain(chain).sendRawTransaction(stxns).do();
+    txIdResponse = txId;
+    confirmedRound = await waitForTransaction(chain, txId);
+  } catch (e) {
+    captureError(e);
+  }
 
   return {
-    confirmedRound: await waitForTransaction(chain, txId),
-    txId: txId,
+    confirmedRound: confirmedRound,
+    txId: txIdResponse,
   } as SubmitTransactionResponse;
 }

@@ -18,7 +18,6 @@
     "type-check": "tsc",
     "lint": "eslint --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\"",
     "format": "prettier --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\" --write",
-    "postinstall": "husky install",
     "commit": "cz"
   },
   "lint-staged": {
@@ -40,6 +39,7 @@
     "@mui/material": "5.8.3",
     "@mui/x-data-grid": "5.12.1",
     "@reduxjs/toolkit": "1.8.2",
+    "@sentry/nextjs": "7.1.1",
     "@walletconnect/client": "1.7.8",
     "algorand-walletconnect-qrcode-modal": "1.7.4",
     "algosdk": "1.17.0",
@@ -75,7 +75,6 @@
     "eslint-config-prettier": "8.5.0",
     "eslint-import-resolver-typescript": "2.7.1",
     "eslint-plugin-prettier": "4.0.0",
-    "husky": "8.0.1",
     "lint-staged": "13.0.1",
     "postcss": "8.4.14",
     "prettier": "2.6.2",

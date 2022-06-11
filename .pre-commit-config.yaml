@@ -1,29 +1,49 @@
 repos:
-    - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v4.3.0
-      hooks:
-          - id: check-yaml
-          - id: end-of-file-fixer
-          - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-yaml
+        stages: [commit]
+      - id: end-of-file-fixer
+        stages: [commit]
+      - id: trailing-whitespace
+        stages: [commit]
 
-    - repo: https://github.com/psf/black
-      rev: 22.3.0
-      hooks:
-          - id: black
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        stages: [commit]
 
-    - repo: https://github.com/pycqa/isort
-      rev: 5.10.1
-      hooks:
-          - id: isort
-            args: ["--profile", "black"]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        args: ['--profile', 'black']
+        stages: [commit]
 
-    - repo: https://github.com/myint/autoflake
-      rev: v1.4
-      hooks:
-          - id: autoflake
-            args:
-                - --in-place
-                - --remove-unused-variables
-                - --remove-all-unused-imports
-                - --expand-star-imports
-                - --ignore-init-module-imports
+  - repo: https://github.com/myint/autoflake
+    rev: v1.4
+    hooks:
+      - id: autoflake
+        args:
+          - --in-place
+          - --remove-unused-variables
+          - --remove-all-unused-imports
+          - --expand-star-imports
+          - --ignore-init-module-imports
+        stages: [commit]
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.6.2
+    hooks:
+      - id: prettier
+        stages: [commit]
+
+  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+    rev: v8.0.0
+    hooks:
+      - id: commitlint
+        stages: [commit-msg]
+      - id: commitlint-travis
+        stages: [manual]

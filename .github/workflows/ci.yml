@@ -1,9 +1,9 @@
 name: Check PR
 
 on:
-    pull_request:
-        branches:
-            - "*"
+  pull_request:
+    branches:
+      - '*'
 
 jobs:
   run-ci:
@@ -24,19 +24,19 @@ jobs:
         with:
           node-version: 16
 
-      - uses: pre-commit/action@v2.0.3
-        name: "Check python vercel functions"
-        with:
-          extra_args: --all-files --show-diff-on-failure
-
       - name: Install dependencies (with cache)
         uses: bahmutov/npm-install@v1
 
-      - name: Check types
+      - name: Run TypeScript type check
         run: yarn type-check
 
-      - name: Check linting
+      - name: Run TypeScript lint
         run: yarn lint
+
+      - uses: pre-commit/action@v2.0.3
+        name: 'Run pre-commit checks'
+        with:
+          extra_args: --all-files --show-diff-on-failure
 
       - name: Check commits messages
         uses: wagoid/commitlint-github-action@v4
