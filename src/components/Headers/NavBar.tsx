@@ -231,6 +231,7 @@ const NavBar = () => {
             <Link href="/">
               <IconButton
                 size="medium"
+                sx={{ display: { xs: `none`, md: `flex` }, mr: 1 }}
                 aria-label="home icon"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
@@ -254,7 +255,12 @@ const NavBar = () => {
                 onClick={handleOpenNavMenu}
                 color="inherit"
               >
-                <MenuIcon />
+                <Image
+                  src="/algoworld_logo.svg"
+                  alt="AlgoWorld Swapper Logo"
+                  height={40}
+                  width={40}
+                />
               </IconButton>
               <Menu
                 id="menu-appbar"
@@ -325,7 +331,10 @@ const NavBar = () => {
                         <Tooltip title="Available balance">
                           <Stack
                             direction={`column`}
-                            sx={{ alignItems: `center` }}
+                            sx={{
+                              alignItems: `center`,
+                              display: { xs: `none`, md: `flex` },
+                            }}
                           >
                             <Typography variant="subtitle2">
                               {formatBigNumWithDecimals(
@@ -379,6 +388,17 @@ const NavBar = () => {
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ textAlign: `center`, color: `primary.main` }}
+                    >
+                      {formatBigNumWithDecimals(
+                        BigInt(nativeCurrency.amount),
+                        nativeCurrency.decimals,
+                      )}
+                      {` `}
+                      {nativeCurrency.unitName || `units`}
+                    </Typography>
                     <FormControlLabel
                       control={
                         <Switch
@@ -411,10 +431,19 @@ const NavBar = () => {
                   </Menu>
                 </>
               ) : (
-                <Stack direction="row">
+                <Stack
+                  direction="column"
+                  sx={{
+                    alignItems: `center`,
+                    pb: 1,
+                    pt: 1,
+                  }}
+                >
                   <FormControlLabel
+                    labelPlacement="start"
                     control={
                       <Switch
+                        size="small"
                         checked={selectedChain === ChainType.MainNet}
                         onChange={() => {
                           const newValue =
@@ -426,12 +455,12 @@ const NavBar = () => {
                         }}
                       />
                     }
+                    sx={{ color: `primary.main` }}
                     label={
                       selectedChain === ChainType.MainNet
                         ? `MainNet`
                         : `TestNet`
                     }
-                    sx={{ ml: 1, mr: 2 }}
                   />
                   <Button
                     id="connect-wallet-button"
