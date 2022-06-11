@@ -1,9 +1,9 @@
 name: Check PR
 
 on:
-    pull_request:
-        branches:
-            - "*"
+  pull_request:
+    branches:
+      - '*'
 
 jobs:
   run-ci:
@@ -25,7 +25,7 @@ jobs:
           node-version: 16
 
       - uses: pre-commit/action@v2.0.3
-        name: "Check python vercel functions"
+        name: 'Check python vercel functions'
         with:
           extra_args: --all-files --show-diff-on-failure
 

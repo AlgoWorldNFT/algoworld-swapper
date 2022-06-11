@@ -1,16 +1,10 @@
 {
-  "extends": [
-    "config:base"
-  ],
+  "extends": ["config:base"],
   "semanticCommits": true,
   "ignoreDeps": [],
   "schedule": "before 3am on the first day of the month",
-  "assignees": [
-    "aorumbayev"
-  ],
-  "baseBranches": [
-    "main"
-  ],
+  "assignees": ["aorumbayev"],
+  "baseBranches": ["main"],
   "separateMajorMinor": true,
   "rebaseStalePrs": true,
   "lockFileMaintenance": {
