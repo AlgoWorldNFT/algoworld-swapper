@@ -281,7 +281,11 @@ const NavBar = () => {
               >
                 {pages.map((page) => (
                   <Link key={page.title} href={page.url}>
-                    <MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        handleCloseNavMenu();
+                      }}
+                    >
                       <Typography textAlign="center">{page.title}</Typography>
                     </MenuItem>
                   </Link>
@@ -290,6 +294,7 @@ const NavBar = () => {
                   key={`about`}
                   onClick={() => {
                     setIsAboutPopupOpen(!isAboutPopupOpen);
+                    handleCloseNavMenu();
                   }}
                 >
                   <Typography textAlign="center">{`About`}</Typography>

@@ -50,6 +50,7 @@ import saveSwapConfigurations from '@/utils/api/swaps/saveSwapConfigurations';
 import createSwapDepositTxns from '@/utils/api/swaps/createSwapDepositTxns';
 import { useSnackbar } from 'notistack';
 import {
+  getAccountAssets,
   getAccountSwaps,
   optInAssets,
   selectOfferingAssetAmounts,
@@ -362,6 +363,7 @@ export default function MultiAsaToAlgo() {
   };
 
   const resetStates = () => {
+    dispatch(getAccountAssets({ chain, address: address }) as any);
     dispatch(getAccountSwaps({ chain, address }));
     setConfirmSwapDialogOpen(false);
     setShareSwapDialogOpen(false);

@@ -18,6 +18,7 @@
 
 import {
   ASA_TO_ASA_FUNDING_FEE,
+  TXN_SIGNING_CANCELLED_MESSAGE,
   TXN_SUBMISSION_FAILED_MESSAGE,
 } from '@/common/constants';
 import { connector } from '@/redux/store/connector';
@@ -123,7 +124,17 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     const signedSwapDepositTxns = await signTransactions(
       swapDepositTxns,
       connector,
-    );
+    ).catch(() => {
+      setDepositLoading(false);
+      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+        variant: `error`,
+      });
+      return;
+    });
+
+    if (!signedSwapDepositTxns) {
+      return;
+    }
 
     const signedSwapDepositResponse = await submitTransactions(
       chain,
@@ -170,7 +181,17 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     const signedSwapDeactivateTxns = await signTransactions(
       swapDeactivateTxns,
       connector,
-    );
+    ).catch(() => {
+      setDeleteLoading(false);
+      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+        variant: `error`,
+      });
+      return;
+    });
+
+    if (!signedSwapDeactivateTxns) {
+      return;
+    }
 
     const signedSwapDeactivateResponse = await submitTransactions(
       chain,
@@ -202,7 +223,17 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     const signedSaveSwapConfigTxns = await signTransactions(
       saveSwapConfigTxns,
       connector,
-    );
+    ).catch(() => {
+      setDeleteLoading(false);
+      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+        variant: `error`,
+      });
+      return;
+    });
+
+    if (!signedSaveSwapConfigTxns) {
+      return;
+    }
 
     const saveSwapConfigResponse = await submitTransactions(
       chain,
