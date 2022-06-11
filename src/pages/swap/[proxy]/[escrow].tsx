@@ -37,7 +37,7 @@ import createPerformSwapTxns from '@/utils/api/swaps/createPerformSwapTxns';
 import loadSwapConfigurations from '@/utils/api/swaps/loadSwapConfigurations';
 import signTransactions from '@/utils/api/transactions/signTransactions';
 import submitTransactions from '@/utils/api/transactions/submitTransactions';
-import { LoadingButton } from '@mui/lab';
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Button,
   Card,
@@ -56,8 +56,12 @@ import { useAsync, useAsyncRetry } from 'react-use';
 
 const PerformSwap = () => {
   const router = useRouter();
-  const { proxy, escrow } = router.query as { proxy: string; escrow: string };
-  const chain = useAppSelector((state) => state.walletConnect.chain);
+  const { proxy, escrow } = router.query as {
+    proxy: string;
+    escrow: string;
+  };
+
+  const selectedChain = useAppSelector((state) => state.walletConnect.chain);
   const address = useAppSelector((state) => state.walletConnect.address);
   const existingAssets = useAppSelector((state) => state.walletConnect.assets);
 
@@ -67,11 +71,12 @@ const PerformSwap = () => {
     useState<boolean>(false);
 
   const dispatch = useAppDispatch();
+
   const { enqueueSnackbar } = useSnackbar();
   const { setLoading, resetLoading } = useLoadingIndicator();
 
   const swapConfigsState = useAsyncRetry(async () => {
-    return await loadSwapConfigurations(chain, proxy as string);
+    return await loadSwapConfigurations(selectedChain, proxy as string);
   }, [proxy]);
 
   const swapConfiguration = useMemo(() => {
@@ -92,7 +97,7 @@ const PerformSwap = () => {
       return undefined;
     }
 
-    return await getAssetsForAccount(chain, swapConfiguration.escrow);
+    return await getAssetsForAccount(selectedChain, swapConfiguration.escrow);
   }, [swapConfiguration]);
 
   const swapAssets = useMemo(() => {
@@ -131,7 +136,7 @@ const PerformSwap = () => {
   }, [existingAssets, swapConfiguration]);
 
   const swapIsActiveState = useAsync(async () => {
-    return await accountExists(chain, escrow);
+    return await accountExists(selectedChain, escrow);
   }, [escrow]);
 
   const swapIsActive = useMemo(() => {
@@ -245,7 +250,7 @@ const PerformSwap = () => {
     escrow: LogicSigAccount,
   ) => {
     const performSwapTxns = await createPerformSwapTxns(
-      chain,
+      selectedChain,
       address,
       connector,
       escrow,
@@ -267,7 +272,7 @@ const PerformSwap = () => {
     }
 
     const performSwapResponse = await submitTransactions(
-      chain,
+      selectedChain,
       signedPerformSwapTxns,
     );
 
@@ -300,7 +305,9 @@ const PerformSwap = () => {
 
     enqueueSnackbar(`Swap performed successfully...`, {
       variant: `success`,
-      action: () => <ViewOnAlgoExplorerButton chain={chain} txId={txId} />,
+      action: () => (
+        <ViewOnAlgoExplorerButton chain={selectedChain} txId={txId} />
+      ),
     });
 
     setShareSwapDialogOpen(true);

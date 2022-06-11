@@ -41,7 +41,8 @@ const SwapTypePickerCard = ({
   return (
     <Card
       sx={{
-        width: 345,
+        maxWidth: 345,
+        minWidth: 150,
       }}
     >
       <Link href={swapPageUrl}>
@@ -70,11 +71,12 @@ const SwapTypePickerCard = ({
               textAlign={`center`}
               gutterBottom
               variant="h5"
+              color="primary.main"
               component="div"
             >
               {title}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography color="info.main" variant="body2">
               {description}
             </Typography>
           </CardContent>

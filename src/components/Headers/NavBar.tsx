@@ -74,14 +74,17 @@ const NavBar = () => {
   const [isAboutPopupOpen, setIsAboutPopupOpen] =
     React.useState<boolean>(false);
   const router = useRouter();
+  const { chain } = router.query as {
+    chain?: string;
+  };
 
   const assets = useAppSelector(selectAssets);
 
-  const {
-    fetching: loading,
-    address,
-    chain,
-  } = useAppSelector((state) => state.walletConnect);
+  const { fetching: loading, address } = useAppSelector(
+    (state) => state.walletConnect,
+  );
+
+  const selectedChain = useAppSelector((state) => state.walletConnect.chain);
 
   const isWalletPopupOpen = useAppSelector(
     (state) => state.application.isWalletPopupOpen,
@@ -170,29 +173,34 @@ const NavBar = () => {
       dispatch(reset());
     });
 
+    if (typeof window !== `undefined`) {
+      const persistedChainType =
+        chain !== undefined
+          ? chain.toLowerCase() === `mainnet`
+            ? ChainType.MainNet
+            : ChainType.TestNet
+          : (localStorage.getItem(`ChainType`) as ChainType) ??
+            ChainType.TestNet;
+      console.log(persistedChainType);
+      dispatch(switchChain(persistedChainType));
+    }
+
+    // Retrieve assets info
+    if (address?.length > 0) {
+      console.log(`chain: `, selectedChain);
+
+      dispatch(getAccountAssets({ chain: selectedChain, address }));
+      dispatch(getProxy({ address, chain: selectedChain }));
+      dispatch(getAccountSwaps({ chain: selectedChain, address }));
+    }
+
     return () => {
       console.log(`%cin unsubscribeFromEvents`, `background: yellow`);
       connector.off(`connect`);
       connector.off(`session_update`);
       connector.off(`disconnect`);
     };
-  }, [dispatch, connector]);
-
-  useEffect(() => {
-    // Retrieve assets info
-    if (address?.length > 0) {
-      console.log(`chain: `, chain);
-
-      dispatch(getAccountAssets({ chain, address }));
-      dispatch(getProxy({ address, chain }));
-      dispatch(getAccountSwaps({ chain, address }));
-    }
-
-    if (typeof window !== `undefined`) {
-      const persistedChainType = localStorage.getItem(`ChainType`);
-      dispatch(switchChain(persistedChainType as ChainType));
-    }
-  }, [dispatch, address, chain]);
+  }, [dispatch, connector, address, selectedChain, chain]);
 
   const nativeCurrency = assets.find(
     (asset: Asset) => asset.index === 0,
@@ -223,6 +231,7 @@ const NavBar = () => {
             <Link href="/">
               <IconButton
                 size="medium"
+                sx={{ display: { xs: `none`, md: `flex` }, mr: 1 }}
                 aria-label="home icon"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
@@ -246,7 +255,12 @@ const NavBar = () => {
                 onClick={handleOpenNavMenu}
                 color="inherit"
               >
-                <MenuIcon />
+                <Image
+                  src="/algoworld_logo.svg"
+                  alt="AlgoWorld Swapper Logo"
+                  height={40}
+                  width={40}
+                />
               </IconButton>
               <Menu
                 id="menu-appbar"
@@ -317,7 +331,10 @@ const NavBar = () => {
                         <Tooltip title="Available balance">
                           <Stack
                             direction={`column`}
-                            sx={{ alignItems: `center` }}
+                            sx={{
+                              alignItems: `center`,
+                              display: { xs: `none`, md: `flex` },
+                            }}
                           >
                             <Typography variant="subtitle2">
                               {formatBigNumWithDecimals(
@@ -329,7 +346,7 @@ const NavBar = () => {
                             </Typography>
                             <Typography variant="caption" color="primary">
                               {`${
-                                chain === ChainType.MainNet
+                                selectedChain === ChainType.MainNet
                                   ? `MainNet`
                                   : `TestNet`
                               }`}
@@ -371,19 +388,26 @@ const NavBar = () => {
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ textAlign: `center`, color: `primary.main` }}
+                    >
+                      {formatBigNumWithDecimals(
+                        BigInt(nativeCurrency.amount),
+                        nativeCurrency.decimals,
+                      )}
+                      {` `}
+                      {nativeCurrency.unitName || `units`}
+                    </Typography>
                     <FormControlLabel
                       control={
                         <Switch
-                          checked={chain === ChainType.MainNet}
+                          checked={selectedChain === ChainType.MainNet}
                           onChange={() => {
                             const newValue =
-                              chain === ChainType.MainNet
+                              selectedChain === ChainType.MainNet
                                 ? ChainType.TestNet
                                 : ChainType.MainNet;
-
-                            if (typeof window !== `undefined`) {
-                              localStorage.setItem(`ChainType`, newValue);
-                            }
 
                             dispatch(switchChain(newValue));
                           }}
@@ -407,7 +431,37 @@ const NavBar = () => {
                   </Menu>
                 </>
               ) : (
-                <>
+                <Stack
+                  direction="column"
+                  sx={{
+                    alignItems: `center`,
+                    pb: 1,
+                    pt: 1,
+                  }}
+                >
+                  <FormControlLabel
+                    labelPlacement="start"
+                    control={
+                      <Switch
+                        size="small"
+                        checked={selectedChain === ChainType.MainNet}
+                        onChange={() => {
+                          const newValue =
+                            selectedChain === ChainType.MainNet
+                              ? ChainType.TestNet
+                              : ChainType.MainNet;
+
+                          dispatch(switchChain(newValue));
+                        }}
+                      />
+                    }
+                    sx={{ color: `primary.main` }}
+                    label={
+                      selectedChain === ChainType.MainNet
+                        ? `MainNet`
+                        : `TestNet`
+                    }
+                  />
                   <Button
                     id="connect-wallet-button"
                     onClick={() => {
@@ -417,7 +471,7 @@ const NavBar = () => {
                   >
                     Connect Wallet
                   </Button>
-                </>
+                </Stack>
               )}
             </Box>
           </Toolbar>

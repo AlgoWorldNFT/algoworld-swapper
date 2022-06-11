@@ -144,10 +144,16 @@ export const walletConnectSlice = createSlice({
   initialState,
   reducers: {
     switchChain(state, action: PayloadAction<ChainType>) {
-      state.chain = action.payload;
-      state.selectedOfferingAssets = [];
-      state.selectedRequestingAssets = [];
-      state.swaps = [];
+      if (action.payload && state.chain !== action.payload) {
+        state.chain = action.payload;
+        state.selectedOfferingAssets = [];
+        state.selectedRequestingAssets = [];
+        state.swaps = [];
+
+        if (typeof window !== `undefined`) {
+          localStorage.setItem(`ChainType`, action.payload);
+        }
+      }
     },
     setOfferingAssets(state, action: PayloadAction<Asset[]>) {
       state.selectedOfferingAssets = action.payload;
