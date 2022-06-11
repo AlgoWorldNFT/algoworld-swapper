@@ -141,7 +141,7 @@ export const ToAssetPickerDialog = ({
               <TextField
                 {...params}
                 label="Requesting assets"
-                placeholder="Pick the assets you want to offer"
+                placeholder="Pick the assets you want to receive"
                 InputProps={{
                   ...params.InputProps,
                   endAdornment: (
