@@ -1,9 +1,8 @@
-<p align="center"><img  width=100%  src="https://imgur.com/Sv4A6cq.png"  alt="687474703a2f2f6936332e74696e797069632e636f6d2f333031336c67342e706e67"  border="0" /></p>
+<p align="center"><img  width=100%  src="https://imgur.com/Sv4A6cq.png"  alt="687474703a2f2f6936332e74696e797069632e636f6d2f333031336c67342e706e67" /></p>
 
 <p align="center">
     <a href="https://algorand.com"><img src="https://img.shields.io/badge/Powered by-Algorand-black.svg" /></a>
     <a href="https://algoworld.io"><img src="https://img.shields.io/badge/AlgoWorld-Website-purple.svg" /></a>
-    <a href="https://github.com/MShawon/github-clone-count-badge"><img src="https://img.shields.io/badge/dynamic/json?color=success&label=Clone&query=count&url=https://gist.githubusercontent.com/aorumbayev/ec038d0e28f865f4056bdf69af201b78/raw/clone.json&logo=github" /></a>
     <br/>
     <a href="https://github.com/AlgoWorldNFT/algoworld-swapper/actions/workflows/release.yml"><img src="https://github.com/AlgoWorldNFT/algoworld-swapper/actions/workflows/release.yml/badge.svg?branch=main" /></a>
     <a href="https://algoworldexplorer.io"><img src="https://img.shields.io/badge/AlgoWorldExplorer-Platform-orange.svg" /></a>
@@ -54,7 +53,22 @@ There are two different types of smart signatures available:
 
 ## ⚙️ Development guide
 
-To start the project locally, run:
+To start the project locally:
+
+1. Create virtual environment for python functions:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+2. Install all dependencies
+
+```bash
+pip install -r api/swappers/requirements.txt
+```
+
+3. Run the client locally:
 
 ```bash
 vercel dev
@@ -80,7 +94,7 @@ For running locally create a file called `.env.local` and fill it with the follo
 - [`public`](./public) — Static assets such as robots.txt, images, and favicon.<br>
 - [`src`](./src) — Application source code, including pages, components, styles.
 - [`api`](./api) — Serverless vercel functions, contract compilation is using `python` and `pyteal` and ipfs storage is done with `node`.
-- [`.pre-commit-config.yaml`](.pre-commit-config.yaml) — pre commit coniguration for formatting python serverless functions.<br></br>
+- [`.pre-commit-config.yaml`](.pre-commit-config.yaml) — pre commit coniguration for formatting python serverless functions.
 
 ### Scripts
 

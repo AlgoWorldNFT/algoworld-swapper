@@ -350,7 +350,7 @@ const NavBar = () => {
                             </Typography>
                             <Typography variant="caption" color="primary">
                               {`${
-                                selectedChain === ChainType.MainNet
+                                selectedChain === `mainnet`
                                   ? `MainNet`
                                   : `TestNet`
                               }`}
@@ -418,7 +418,7 @@ const NavBar = () => {
                         />
                       }
                       label={
-                        chain === ChainType.MainNet ? `MainNet` : `TestNet`
+                        selectedChain === `mainnet` ? `MainNet` : `TestNet`
                       }
                       sx={{ ml: 1, mr: 2 }}
                     />
@@ -460,11 +460,7 @@ const NavBar = () => {
                       />
                     }
                     sx={{ color: `primary.main` }}
-                    label={
-                      selectedChain === ChainType.MainNet
-                        ? `MainNet`
-                        : `TestNet`
-                    }
+                    label={selectedChain === `mainnet` ? `MainNet` : `TestNet`}
                   />
                   <Button
                     id="connect-wallet-button"
