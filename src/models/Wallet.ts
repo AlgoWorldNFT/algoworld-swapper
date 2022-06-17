@@ -19,6 +19,7 @@
 export enum WalletType {
   PeraWallet,
   MyAlgoWallet,
+  Mnemonic,
 }
 
 export type WalletClient = {

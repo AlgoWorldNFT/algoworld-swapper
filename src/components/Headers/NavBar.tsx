@@ -209,6 +209,8 @@ const NavBar = () => {
     dispatch(setIsWalletPopupOpen(false));
     if (client.type === WalletType.PeraWallet) {
       connect();
+    } else if (client.type === WalletType.Mnemonic) {
+      //
     }
   };
 

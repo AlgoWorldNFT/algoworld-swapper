@@ -32,6 +32,14 @@ const walletClients = [
   { type: WalletType.MyAlgoWallet, title: `🚧 MyAlgoWallet`, supported: false },
 ] as WalletClient[];
 
+if (process.env.NEXT_PUBLIC_E2E_TESTS) {
+  walletClients.push({
+    type: WalletType.Mnemonic,
+    title: `Mnemonic`,
+    supported: true,
+  });
+}
+
 type Props = {
   open: boolean;
   onClientSelected: (client: WalletClient) => void;
