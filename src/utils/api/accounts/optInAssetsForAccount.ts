@@ -18,7 +18,6 @@
 
 import { ChainType } from '@/models/Chain';
 import { TransactionToSignType } from '@/models/Transaction';
-import WalletConnect from '@walletconnect/client';
 import algosdk from 'algosdk';
 import createTransactionToSign from '../transactions/createTransactionToSign';
 import getTransactionParams from '../transactions/getTransactionParams';
@@ -28,11 +27,12 @@ import submitTransactions from '../transactions/submitTransactions';
 import { setLoadingIndicator } from '@/redux/slices/applicationSlice';
 import { Dispatch } from '@reduxjs/toolkit';
 import { getAccountAssets } from '@/redux/slices/walletConnectSlice';
+import WalletManager from '@/utils/wallets/walletManager';
 
 export default async function optInAssets(
   chain: ChainType,
   assetIndexes: number[],
-  creatorWallet: WalletConnect,
+  creatorWallet: WalletManager,
   creatorAddress: string,
   dispatch: Dispatch,
 ) {

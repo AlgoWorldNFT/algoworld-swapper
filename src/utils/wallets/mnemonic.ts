@@ -1,33 +1,54 @@
-import WalletConnect from '@walletconnect/client';
-import IAlgoWorldWallet from './walletClient';
-import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
-import { Transaction } from 'algosdk';
+import { TransactionToSign } from '@/models/Transaction';
+import { AlgoWorldWallet } from '@/models/Wallet';
+import algosdk, { Account, Transaction } from 'algosdk';
 
-const connectProps = {
-  bridge: `https://bridge.walletconnect.org`,
-  qrcodeModal: QRCodeModal,
-};
+export default class MnemonicClient implements AlgoWorldWallet {
+  private client: Account | undefined;
+  private mnemonic: string;
 
-export default class MnemonicClient implements IAlgoWorldWallet {
-  private client: WalletConnect;
-
-  constructor() {
-    this.client = new WalletConnect(connectProps);
+  constructor(mnemonic: string) {
+    this.mnemonic = mnemonic;
+    this.client = algosdk.mnemonicToSecretKey(mnemonic);
   }
 
   public connect = async () => {
-    return;
+    this.client = algosdk.mnemonicToSecretKey(this.mnemonic);
+    return Promise.resolve();
   };
 
   public address = () => {
-    return ``;
+    if (this.client) {
+      return this.client.addr;
+    } else {
+      throw new Error(`Client not connected`);
+    }
   };
 
-  public signTransactions = async (transactions: Transaction[]) => {
-    return [];
+  public accounts = () => {
+    if (this.client) {
+      return [this.client.addr];
+    } else {
+      throw new Error(`Client not connected`);
+    }
+  };
+
+  public signTransactions = async (
+    transactionsToSign: TransactionToSign[],
+    txnGroup: Transaction[],
+  ) => {
+    return Promise.resolve();
   };
 
   public disconnect = async () => {
+    this.client = undefined;
     return;
+  };
+
+  public connected = () => {
+    return this.client !== undefined;
+  };
+
+  public pending = () => {
+    return false;
   };
 }

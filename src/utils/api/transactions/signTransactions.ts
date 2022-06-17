@@ -16,37 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransactionToSign, TransactionToSignType } from '@/models/Transaction';
-import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
-import WalletConnect from '@walletconnect/client';
+import { TransactionToSign } from '@/models/Transaction';
+import WalletManager from '@/utils/wallets/walletManager';
 import {
   assignGroupID,
   LogicSigAccount,
   signLogicSigTransactionObject,
 } from 'algosdk';
-import getWalletConnectTxn from './walletConnect/getWalletConnectTxn';
 
 export default async function signTransactions(
   transactions: TransactionToSign[],
-  userWallet: WalletConnect,
+  userWallet: WalletManager,
 ) {
   const rawTxns = [...transactions.map((txn) => txn.transaction)];
   const txnGroup = assignGroupID(rawTxns);
 
-  const userRequest = formatJsonRpcRequest(`algo_signTxn`, [
-    txnGroup.map((value, index) => {
-      if (
-        transactions[index].type === TransactionToSignType.UserTransaction ||
-        transactions[index].type === TransactionToSignType.UserFeeTransaction
-      ) {
-        return getWalletConnectTxn(value, true);
-      } else {
-        return getWalletConnectTxn(value, false);
-      }
-    }),
-  ]);
-  const signedUserTransactionsResult = await userWallet.sendCustomRequest(
-    userRequest,
+  const signedUserTransactionsResult = await userWallet.signTranscations(
+    transactions,
+    txnGroup,
   );
 
   const signedUserTransactions: (Uint8Array | null)[] =

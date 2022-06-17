@@ -19,6 +19,7 @@
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import { TransactionToSignType } from '@/models/Transaction';
+import WalletManager from '@/utils/wallets/walletManager';
 import WalletConnect from '@walletconnect/client';
 import algosdk, { LogicSigAccount } from 'algosdk';
 import getAccountInfo from '../accounts/getAccountInfo';
@@ -28,7 +29,7 @@ import getTransactionParams from '../transactions/getTransactionParams';
 export default async function createSwapDepositTxns(
   chain: ChainType,
   creatorAddress: string,
-  creatorWallet: WalletConnect,
+  creatorWallet: WalletManager,
   escrow: LogicSigAccount,
   offeringAssets: Asset[],
   fundingFee: number,

@@ -30,12 +30,10 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
 import { useContext, useEffect } from 'react';
-import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
 import { ConnectContext } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import {
   onSessionUpdate,
-  reset,
   getAccountAssets,
   selectAssets,
   getAccountSwaps,
@@ -93,15 +91,15 @@ const NavBar = () => {
 
   const connector = useContext(ConnectContext);
 
-  const connect = async () => {
+  const connect = async (clientType: WalletType) => {
     if (connector.connected) return;
-    if (connector.pending) return QRCodeModal.open(connector.uri, null);
-    await connector.createSession();
+    connector.setWalletClient(clientType);
+    await connector.connect();
   };
 
-  const disconnect = () => {
-    connector
-      .killSession()
+  const disconnect = async () => {
+    await connector
+      .disconnect()
       .catch((err: { message: any }) => console.error(err.message));
   };
 
@@ -120,7 +118,7 @@ const NavBar = () => {
     setAnchorElUser(null);
   };
 
-  const handleClickUserMenu = (event: any) => {
+  const handleClickUserMenu = async (event: any) => {
     setAnchorElUser(null);
 
     if (!event || !event.target) {
@@ -132,45 +130,16 @@ const NavBar = () => {
     }
 
     if (event.target.textContent === `Logout`) {
-      disconnect();
+      await disconnect();
     }
   };
 
   useEffect(() => {
     // Check if connection is already established
     if (connector.connected) {
-      const { accounts } = connector;
+      const accounts = connector.accounts();
       dispatch(onSessionUpdate(accounts));
     }
-
-    // Subscribe to connection events
-    console.log(`%cin subscribeToEvents`, `background: yellow`);
-    connector.on(`connect`, (error, payload) => {
-      console.log(`%cOn connect`, `background: yellow`);
-      if (error) {
-        throw error;
-      }
-      const { accounts } = payload.params[0];
-      dispatch(onSessionUpdate(accounts));
-      QRCodeModal.close();
-    });
-
-    connector.on(`session_update`, (error, payload) => {
-      console.log(`%cOn session_update`, `background: yellow`);
-      if (error) {
-        throw error;
-      }
-      const { accounts } = payload.params[0];
-      dispatch(onSessionUpdate(accounts));
-    });
-
-    connector.on(`disconnect`, (error) => {
-      console.log(`%cOn disconnect`, `background: yellow`);
-      if (error) {
-        throw error;
-      }
-      dispatch(reset());
-    });
 
     if (typeof window !== `undefined`) {
       const persistedChainType =
@@ -195,9 +164,6 @@ const NavBar = () => {
 
     return () => {
       console.log(`%cin unsubscribeFromEvents`, `background: yellow`);
-      connector.off(`connect`);
-      connector.off(`session_update`);
-      connector.off(`disconnect`);
     };
   }, [dispatch, connector, address, selectedChain, chain]);
 
@@ -207,11 +173,7 @@ const NavBar = () => {
 
   const handleOnClientSelected = (client: WalletClient) => {
     dispatch(setIsWalletPopupOpen(false));
-    if (client.type === WalletType.PeraWallet) {
-      connect();
-    } else if (client.type === WalletType.Mnemonic) {
-      //
-    }
+    connect(client.type);
   };
 
   return (
@@ -329,7 +291,7 @@ const NavBar = () => {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-              {address ? (
+              {connector.connected ? (
                 <>
                   <Grid container alignItems={`center`} spacing={1}>
                     <Grid item xs>

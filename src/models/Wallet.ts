@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Transaction } from 'algosdk';
+import { TransactionToSign } from './Transaction';
+
 export enum WalletType {
   PeraWallet,
   MyAlgoWallet,
@@ -27,3 +30,16 @@ export type WalletClient = {
   supported: boolean;
   title: string;
 };
+
+export interface AlgoWorldWallet {
+  address: () => string;
+  signTransactions: (
+    transactionsToSign: TransactionToSign[],
+    txnGroup: Transaction[],
+  ) => Promise<any[]>;
+  connect(): Promise<void>;
+  disconnect(): Promise<void>;
+  accounts(): string[];
+  connected(): boolean;
+  pending(): boolean;
+}
