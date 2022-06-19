@@ -32,7 +32,7 @@ export default function Dashboard() {
       swapPageUrl: `/swappers/asa-to-asa`,
     },
     {
-      title: `ASAs to Algo `,
+      title: `ASAs to Algo`,
       description: `Swap up to 5 Assets for desired Algo amount or vice versa.`,
       type: SwapType.MULTI_ASA_TO_ALGO,
       emoji: `x🎴↔️💰`,

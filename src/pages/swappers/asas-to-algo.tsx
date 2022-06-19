@@ -66,6 +66,7 @@ import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
 import PageHeader from '@/components/Headers/PageHeader';
 import { CoinType } from '@/models/CoinType';
 import getCompiledMultiSwap from '@/utils/api/swaps/getCompiledMultiSwap';
+import { ASAS_TO_ALGO_PAGE_HEADER_ID, CREATE_SWAP_BTN_ID } from '../_constants';
 
 export default function MultiAsaToAlgo() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
@@ -369,6 +370,7 @@ export default function MultiAsaToAlgo() {
     <>
       <div>
         <PageHeader
+          id={ASAS_TO_ALGO_PAGE_HEADER_ID}
           title="🎴💰 ASAs to Algo Swap"
           description="Select up to 5 assets to offer and requesting algo amount to create a multi ASA to Algo Swap"
         />
@@ -400,6 +402,7 @@ export default function MultiAsaToAlgo() {
               >
                 {address && assetsToOptIn.length === 0 ? (
                   <LoadingButton
+                    id={CREATE_SWAP_BTN_ID}
                     disabled={
                       offeringAssets.length === 0 ||
                       requestingAssets.length === 0

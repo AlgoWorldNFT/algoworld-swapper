@@ -26,6 +26,7 @@ import { useAppSelector, useAppDispatch } from '@/redux/store/hooks';
 import { CoinType } from '@/models/CoinType';
 import { ToAlgoPickerDialog } from '../Dialogs/ToAlgoPickerDialog';
 import { ToAssetPickerDialog } from '../Dialogs/ToAssetPickerDialog';
+import { TO_SWAP_REQUESTING_BTN_ID } from './constants';
 
 type Props = {
   cardTitle: string;
@@ -110,6 +111,7 @@ const ToSwapCard = ({
         <CardContent>
           <Stack spacing={2}>
             <Button
+              id={TO_SWAP_REQUESTING_BTN_ID}
               variant="outlined"
               disabled={
                 requestingAssets.length >= maxAssets || !address || disabled

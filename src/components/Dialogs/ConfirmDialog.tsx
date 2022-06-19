@@ -25,6 +25,11 @@ import {
   Divider,
   Typography,
 } from '@mui/material';
+import {
+  CONFIRM_DIALOG_ID,
+  DIALOG_CANCEL_BTN_ID,
+  DIALOG_SELECT_BTN_ID,
+} from './constants';
 
 type Props = {
   title: string;
@@ -45,6 +50,7 @@ const ConfirmDialog = ({
 }: Props) => {
   return (
     <Dialog
+      id={CONFIRM_DIALOG_ID}
       open={open}
       onClose={() => setOpen(false)}
       aria-labelledby="confirm-dialog"
@@ -63,10 +69,15 @@ const ConfirmDialog = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpen(false)} color="secondary">
+        <Button
+          id={DIALOG_CANCEL_BTN_ID}
+          onClick={() => setOpen(false)}
+          color="secondary"
+        >
           Cancel
         </Button>
         <Button
+          id={DIALOG_SELECT_BTN_ID}
           onClick={() => {
             setOpen(false);
             onConfirm();

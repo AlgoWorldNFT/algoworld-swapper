@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "exclude": ["node_modules", "api"],
+  "include": [
+    "next-env.d.ts",
+    "desc.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/pages/_error.js",
+    "**/*.spec.ts"
+  ]
+}

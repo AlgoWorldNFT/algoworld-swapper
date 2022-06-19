@@ -49,6 +49,12 @@ import getAssetsForAccount from '@/utils/api/accounts/getAssetsForAccount';
 import { Asset } from '@/models/Asset';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import AssetsTable from '../Tables/AssetsTable';
+import {
+  SIGN_DEPOSIT_TXN_MESSAGE,
+  SWAP_DEACTIVATION_PERFORMED_MESSAGE,
+  SWAP_DEPOSIT_PERFORMED_MESSAGE,
+  SWAP_REMOVED_FROM_PROXY_MESSAGE,
+} from './constants';
 
 type Props = {
   open: boolean;
@@ -107,7 +113,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
     setDepositLoading(true);
-    enqueueSnackbar(`Open your wallet to sign the deposit transactions...`, {
+    enqueueSnackbar(SIGN_DEPOSIT_TXN_MESSAGE, {
       variant: `info`,
     });
 
@@ -147,7 +153,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
 
-    enqueueSnackbar(`Deposit of offering asset performed...`, {
+    enqueueSnackbar(SWAP_DEPOSIT_PERFORMED_MESSAGE, {
       variant: `success`,
       action: () => (
         <ViewOnAlgoExplorerButton chain={chain} txId={depositTxnId} />
@@ -242,7 +248,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
 
-    enqueueSnackbar(`Swap removed from proxy configuration...`, {
+    enqueueSnackbar(SWAP_REMOVED_FROM_PROXY_MESSAGE, {
       variant: `success`,
       action: () => (
         <ViewOnAlgoExplorerButton
@@ -252,7 +258,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       ),
     });
 
-    enqueueSnackbar(`Deactivation of swap performed...`, {
+    enqueueSnackbar(SWAP_DEACTIVATION_PERFORMED_MESSAGE, {
       variant: `success`,
       action: () => (
         <ViewOnAlgoExplorerButton chain={chain} txId={deactivateTxnId} />

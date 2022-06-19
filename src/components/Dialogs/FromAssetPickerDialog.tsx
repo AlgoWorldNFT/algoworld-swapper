@@ -30,6 +30,12 @@ import { Autocomplete } from '@mui/material';
 import CryptoTextField from '../TextFields/CryptoTextField';
 import formatAmount from '@/utils/formatAmount';
 import { CoinType } from '@/models/CoinType';
+import {
+  DIALOG_CANCEL_BTN_ID,
+  DIALOG_SELECT_BTN_ID,
+  FROM_ASSET_PICKER_DIALOG_ID,
+  FROM_ASSET_PICKER_DIALOG_SEARCH_ID,
+} from './constants';
 
 type Props = {
   open: boolean;
@@ -72,7 +78,7 @@ export const FromAssetPickerDialog = ({
 
   return (
     <div>
-      <Dialog open={open}>
+      <Dialog id={FROM_ASSET_PICKER_DIALOG_ID} open={open}>
         <DialogTitle>Pick Asset</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -80,7 +86,7 @@ export const FromAssetPickerDialog = ({
           </DialogContentText>
 
           <Autocomplete
-            id="owned-assets-picker"
+            id={FROM_ASSET_PICKER_DIALOG_SEARCH_ID}
             autoComplete
             sx={{ marginTop: 2 }}
             isOptionEqualToValue={(option, value) =>
@@ -131,6 +137,7 @@ export const FromAssetPickerDialog = ({
         </DialogContent>
         <DialogActions>
           <Button
+            id={DIALOG_CANCEL_BTN_ID}
             onClick={() => {
               setSelectedAsset(undefined);
               setSelectedAssetAmount(undefined);
@@ -141,6 +148,7 @@ export const FromAssetPickerDialog = ({
           </Button>
 
           <Button
+            id={DIALOG_SELECT_BTN_ID}
             disabled={!selectedAssetAmount}
             onClick={() => {
               if (selectedAsset && selectedAssetAmount) {

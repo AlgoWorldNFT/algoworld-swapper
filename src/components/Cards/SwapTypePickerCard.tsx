@@ -22,6 +22,7 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { CardActionArea, Grid } from '@mui/material';
 import Link from 'next/link';
+import { SWAP_TYPE_PICKER_CARD_ID } from './constants';
 
 type Props = {
   title: string;
@@ -40,6 +41,7 @@ const SwapTypePickerCard = ({
 }: Props) => {
   return (
     <Card
+      id={SWAP_TYPE_PICKER_CARD_ID(title)}
       sx={{
         maxWidth: 345,
         minWidth: 150,

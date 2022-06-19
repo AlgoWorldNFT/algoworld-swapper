@@ -53,6 +53,16 @@ import { CONNECTED_WALLET_TYPE } from '@/common/constants';
 import { useEffectOnce } from 'react-use';
 import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
 import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
+import {
+  NAV_BAR_CHAIN_SWITCH_ID,
+  NAV_BAR_CONNECT_BTN_ID,
+  NAV_BAR_HOME_BTN_ID,
+  NAV_BAR_ID,
+  NAV_BAR_MENU_APPBAR_ID,
+  NAV_BAR_MENU_APPBAR_ITEM_ID,
+  NAV_BAR_SETTINGS_BTN_ID,
+  NAV_BAR_SETTINGS_MENU_ITEM_ID,
+} from './constants';
 
 type PageConfiguration = {
   title: string;
@@ -200,11 +210,12 @@ const NavBar = () => {
           setIsAboutPopupOpen(state);
         }}
       />
-      <AppBar position="static">
+      <AppBar id={NAV_BAR_ID} position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Link href="/">
               <IconButton
+                id={NAV_BAR_HOME_BTN_ID}
                 size="medium"
                 sx={{ display: { xs: `none`, md: `flex` }, mr: 1 }}
                 aria-label="home icon"
@@ -223,6 +234,7 @@ const NavBar = () => {
 
             <Box sx={{ flexGrow: 1, display: { xs: `flex`, md: `none` } }}>
               <IconButton
+                id={NAV_BAR_HOME_BTN_ID}
                 size="large"
                 aria-label="home button"
                 aria-controls="menu-appbar"
@@ -238,7 +250,7 @@ const NavBar = () => {
                 />
               </IconButton>
               <Menu
-                id="menu-appbar"
+                id={NAV_BAR_MENU_APPBAR_ID}
                 anchorEl={anchorElNav}
                 anchorOrigin={{
                   vertical: `bottom`,
@@ -256,7 +268,11 @@ const NavBar = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <Link key={page.title} href={page.url}>
+                  <Link
+                    id={NAV_BAR_MENU_APPBAR_ITEM_ID(page.title)}
+                    key={page.title}
+                    href={page.url}
+                  >
                     <MenuItem
                       onClick={() => {
                         handleCloseNavMenu();
@@ -267,6 +283,7 @@ const NavBar = () => {
                   </Link>
                 ))}
                 <MenuItem
+                  id={NAV_BAR_MENU_APPBAR_ITEM_ID(`about`)}
                   key={`about`}
                   onClick={() => {
                     setIsAboutPopupOpen(!isAboutPopupOpen);
@@ -280,7 +297,11 @@ const NavBar = () => {
 
             <Box sx={{ flexGrow: 1, display: { xs: `none`, md: `flex` } }}>
               {pages.map((page) => (
-                <Link key={page.title} href={page.url}>
+                <Link
+                  id={NAV_BAR_MENU_APPBAR_ITEM_ID(page.title)}
+                  key={page.title}
+                  href={page.url}
+                >
                   <Button
                     key={page.title}
                     disabled={page.disabled}
@@ -292,6 +313,7 @@ const NavBar = () => {
                 </Link>
               ))}
               <Button
+                id={NAV_BAR_MENU_APPBAR_ITEM_ID(`about`)}
                 key={`about`}
                 onClick={() => {
                   setIsAboutPopupOpen(true);
@@ -338,6 +360,7 @@ const NavBar = () => {
                     <Grid item xs>
                       <Tooltip title="Open settings">
                         <IconButton
+                          id={NAV_BAR_SETTINGS_BTN_ID}
                           onClick={handleOpenUserMenu}
                           sx={{ p: 0, borderRadius: 1 }}
                         >
@@ -382,6 +405,7 @@ const NavBar = () => {
                     <FormControlLabel
                       control={
                         <Switch
+                          id={NAV_BAR_CHAIN_SWITCH_ID}
                           checked={selectedChain === ChainType.MainNet}
                           onChange={() => {
                             const newValue =
@@ -401,6 +425,7 @@ const NavBar = () => {
                     <Divider />
                     {settings.map((setting) => (
                       <MenuItem
+                        id={NAV_BAR_SETTINGS_MENU_ITEM_ID(setting)}
                         sx={{ justifyContent: `center` }}
                         key={setting}
                         onClick={handleClickUserMenu}
@@ -423,6 +448,7 @@ const NavBar = () => {
                     labelPlacement="start"
                     control={
                       <Switch
+                        id={NAV_BAR_CHAIN_SWITCH_ID}
                         size="small"
                         checked={selectedChain === ChainType.MainNet}
                         onChange={() => {
@@ -439,7 +465,7 @@ const NavBar = () => {
                     label={selectedChain === `mainnet` ? `MainNet` : `TestNet`}
                   />
                   <Button
-                    id="connect-wallet-button"
+                    id={NAV_BAR_CONNECT_BTN_ID}
                     onClick={() => {
                       dispatch(setIsWalletPopupOpen(true));
                     }}

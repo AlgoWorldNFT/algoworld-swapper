@@ -60,6 +60,10 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
 import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
 import PageHeader from '@/components/Headers/PageHeader';
+import {
+  ASA_TO_ASA_PAGE_HEADER_ID,
+  CREATE_SWAP_BTN_ID,
+} from '@/pages/_constants';
 
 export default function AsaToAsa() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
@@ -369,6 +373,7 @@ export default function AsaToAsa() {
     <>
       <div>
         <PageHeader
+          id={ASA_TO_ASA_PAGE_HEADER_ID}
           title="🎴 ASA to ASA Swap"
           description="Create a simple single ASA to ASA swap"
         />
@@ -399,6 +404,7 @@ export default function AsaToAsa() {
               >
                 {address && assetsToOptIn.length === 0 ? (
                   <LoadingButton
+                    id={CREATE_SWAP_BTN_ID}
                     disabled={
                       offeringAssets.length === 0 ||
                       requestingAssets.length === 0
