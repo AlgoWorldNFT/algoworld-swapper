@@ -42,7 +42,6 @@ import swapExists from '@/utils/api/swaps/swapExists';
 import accountExists from '@/utils/api/accounts/accountExists';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import createInitSwapTxns from '@/utils/api/swaps/createInitSwapTxns';
-import signTransactions from '@/utils/api/transactions/signTransactions';
 import submitTransactions from '@/utils/api/transactions/submitTransactions';
 import { Asset } from '@/models/Asset';
 import createSaveSwapConfigTxns from '@/utils/api/swaps/createSaveSwapConfigTxns';
@@ -155,21 +154,19 @@ export default function MultiAsaToAlgo() {
     const initSwapTxns = await createInitSwapTxns(
       chain,
       address,
-      connector,
       escrow,
       ASA_TO_ALGO_FUNDING_BASE_FEE * offeringAssets.length,
       offeringAssets,
     );
 
-    const signedInitSwapTxns = await signTransactions(
-      initSwapTxns,
-      connector,
-    ).catch(() => {
-      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-        variant: `error`,
+    const signedInitSwapTxns = await connector
+      .signTransactions(initSwapTxns)
+      .catch(() => {
+        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+          variant: `error`,
+        });
+        return undefined;
       });
-      return undefined;
-    });
 
     if (!signedInitSwapTxns) {
       return undefined;
@@ -196,20 +193,18 @@ export default function MultiAsaToAlgo() {
     const saveSwapConfigTxns = await createSaveSwapConfigTxns(
       chain,
       address,
-      connector,
       proxy,
       (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
       cidData,
     );
-    const signedSaveSwapConfigTxns = await signTransactions(
-      saveSwapConfigTxns,
-      connector,
-    ).catch(() => {
-      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-        variant: `error`,
+    const signedSaveSwapConfigTxns = await connector
+      .signTransactions(saveSwapConfigTxns)
+      .catch(() => {
+        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+          variant: `error`,
+        });
+        return undefined;
       });
-      return undefined;
-    });
 
     if (!signedSaveSwapConfigTxns) {
       return undefined;
@@ -230,21 +225,19 @@ export default function MultiAsaToAlgo() {
     const swapDepositTxns = await createSwapDepositTxns(
       chain,
       address,
-      connector,
       escrow,
       offeringAssets,
       ASA_TO_ASA_FUNDING_FEE,
     );
 
-    const signedSwapDepositTxns = await signTransactions(
-      swapDepositTxns,
-      connector,
-    ).catch(() => {
-      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-        variant: `error`,
+    const signedSwapDepositTxns = await connector
+      .signTransactions(swapDepositTxns)
+      .catch(() => {
+        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+          variant: `error`,
+        });
+        return undefined;
       });
-      return undefined;
-    });
 
     if (!signedSwapDepositTxns) {
       return undefined;
@@ -376,10 +369,8 @@ export default function MultiAsaToAlgo() {
     <>
       <div>
         <PageHeader
-          title="🎴💰 Multi ASA to Algo Swap"
-          description="Create a safe atomic swap powered by Algorand Smart Signatures.
-          Currently supports ASA to ASA and multi ASA to Algo swaps. Choose
-          and click on the required swap type below."
+          title="🎴💰 ASAs to Algo Swap"
+          description="Select up to 5 assets to offer and requesting algo amount to create a multi ASA to Algo Swap"
         />
 
         <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
@@ -477,7 +468,6 @@ export default function MultiAsaToAlgo() {
       </ConfirmDialog>
 
       <ShareSwapDialog
-        title="Share AlgoWorld Swap"
         open={shareSwapDialogOpen}
         swapConfiguration={swapConfiguration}
         setOpen={setShareSwapDialogOpen}

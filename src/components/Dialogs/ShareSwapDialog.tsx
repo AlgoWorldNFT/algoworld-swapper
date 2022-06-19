@@ -30,10 +30,10 @@ import { useSnackbar } from 'notistack';
 import { useCopyToClipboard } from 'react-use';
 
 type Props = {
-  title: string;
   children: React.ReactNode;
   open: boolean;
   swapConfiguration?: SwapConfiguration;
+  title?: string;
   setOpen?: (open: boolean) => void;
   onClose?: () => void;
   onConfirm?: () => void;
@@ -41,10 +41,10 @@ type Props = {
 };
 
 const ShareSwapDialog = ({
-  title,
   children,
   open,
   swapConfiguration,
+  title = `Share AlgoWorld Swap`,
   setOpen,
   onClose,
 }: Props) => {

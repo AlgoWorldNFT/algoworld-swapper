@@ -1,25 +1,33 @@
+import { CONNECTED_WALLET_TYPE } from '@/common/constants';
 import { TransactionToSign } from '@/models/Transaction';
 import { AlgoWorldWallet, WalletType } from '@/models/Wallet';
-import { Transaction } from 'algosdk';
+import {
+  assignGroupID,
+  LogicSigAccount,
+  signLogicSigTransactionObject,
+} from 'algosdk';
 import MnemonicClient from './mnemonic';
 import WalletConnectClient from './walletConnect';
 
 export default class WalletManager {
-  private static _instance: WalletManager;
+  private clientType: WalletType | undefined;
   private client: AlgoWorldWallet | undefined;
 
-  public setWalletClient = (walletType: WalletType) => {
+  public setWalletClient = async (walletType: WalletType) => {
+    this.clientType = walletType;
+
     if (walletType === WalletType.PeraWallet) {
       this.client = new WalletConnectClient();
     } else {
       const mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? ``;
-      // this.client = new MnemonicClient(mnemonic);
+      this.client = new MnemonicClient(mnemonic);
     }
   };
 
   public connect = async (): Promise<void> => {
     if (this.client) {
-      return this.client.connect();
+      localStorage.setItem(CONNECTED_WALLET_TYPE, this.clientType ?? ``);
+      return await this.client.connect();
     } else {
       throw new Error(`Client not set`);
     }
@@ -27,18 +35,43 @@ export default class WalletManager {
 
   public disconnect = async (): Promise<void> => {
     if (this.client) {
-      return this.client.disconnect();
+      this.client.disconnect();
+      localStorage.removeItem(CONNECTED_WALLET_TYPE);
     } else {
       throw new Error(`Client not set`);
     }
   };
 
-  public signTranscations = (
-    transactionsToSign: TransactionToSign[],
-    txnGroup: Transaction[],
-  ) => {
+  public signTransactions = async (transactions: TransactionToSign[]) => {
     if (this.client) {
-      return this.client.signTransactions(transactionsToSign, txnGroup);
+      const rawTxns = [...transactions.map((txn) => txn.transaction)];
+      const txnGroup = assignGroupID(rawTxns);
+
+      const signedUserTransactionsResult = await this.client.signTransactions(
+        txnGroup,
+      );
+
+      const signedUserTransactions: (Uint8Array | null)[] =
+        signedUserTransactionsResult.map((element: string) => {
+          return element
+            ? new Uint8Array(Buffer.from(element, `base64`))
+            : null;
+        });
+
+      const signedTxs = signedUserTransactions.map((signedTx, index) => {
+        if (signedTx === null) {
+          const signedEscrowTx = signLogicSigTransactionObject(
+            txnGroup[index],
+            transactions[index].signer as LogicSigAccount,
+          );
+
+          return signedEscrowTx.blob;
+        } else {
+          return signedTx;
+        }
+      }) as Uint8Array[];
+
+      return signedTxs;
     } else {
       throw new Error(`Client not set`);
     }

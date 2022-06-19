@@ -17,12 +17,11 @@
  */
 
 import { Transaction } from 'algosdk';
-import { TransactionToSign } from './Transaction';
 
 export enum WalletType {
-  PeraWallet,
-  MyAlgoWallet,
-  Mnemonic,
+  PeraWallet = `PeraWallet`,
+  MyAlgoWallet = `MyAlgoWallet`,
+  Mnemonic = `Mnemonic`,
 }
 
 export type WalletClient = {
@@ -33,10 +32,7 @@ export type WalletClient = {
 
 export interface AlgoWorldWallet {
   address: () => string;
-  signTransactions: (
-    transactionsToSign: TransactionToSign[],
-    txnGroup: Transaction[],
-  ) => Promise<any[]>;
+  signTransactions: (txnGroup: Transaction[]) => Promise<any[]>;
   connect(): Promise<void>;
   disconnect(): Promise<void>;
   accounts(): string[];

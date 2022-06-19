@@ -138,7 +138,7 @@ const columns: GridColDef[] = [
     headerClassName: `super-app-theme--header`,
     align: `center`,
     valueFormatter: ({ value }) => {
-      return value === SwapType.ASA_TO_ASA ? `Asa to Asa` : `Multi Asa to Algo`;
+      return value === SwapType.ASA_TO_ASA ? `Asa to Asa` : `Asas to Algo`;
     },
   },
   {

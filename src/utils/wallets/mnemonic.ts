@@ -1,6 +1,7 @@
-import { TransactionToSign } from '@/models/Transaction';
 import { AlgoWorldWallet } from '@/models/Wallet';
-import algosdk, { Account, Transaction } from 'algosdk';
+import { onSessionUpdate } from '@/redux/slices/walletConnectSlice';
+import store from '@/redux/store';
+import algosdk, { Account, encodeAddress, Transaction } from 'algosdk';
 
 export default class MnemonicClient implements AlgoWorldWallet {
   private client: Account | undefined;
@@ -13,6 +14,7 @@ export default class MnemonicClient implements AlgoWorldWallet {
 
   public connect = async () => {
     this.client = algosdk.mnemonicToSecretKey(this.mnemonic);
+    store.dispatch(onSessionUpdate([this.client.addr]));
     return Promise.resolve();
   };
 
@@ -32,11 +34,14 @@ export default class MnemonicClient implements AlgoWorldWallet {
     }
   };
 
-  public signTransactions = async (
-    transactionsToSign: TransactionToSign[],
-    txnGroup: Transaction[],
-  ) => {
-    return Promise.resolve();
+  public signTransactions = async (txnGroup: Transaction[]) => {
+    return txnGroup.map((txn) => {
+      if (this.client?.addr === encodeAddress(txn.from.publicKey)) {
+        return txn.signTxn(this.client.sk);
+      } else {
+        return null;
+      }
+    });
   };
 
   public disconnect = async () => {

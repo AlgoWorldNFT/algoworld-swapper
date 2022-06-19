@@ -18,7 +18,8 @@
     "type-check": "tsc",
     "lint": "eslint --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\"",
     "format": "prettier --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\" --write",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --workers=1",
+    "test:e2e:debug": "playwright test --workers=1 --headed",
     "commit": "cz"
   },
   "lint-staged": {

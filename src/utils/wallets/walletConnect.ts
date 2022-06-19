@@ -1,10 +1,9 @@
 import { AlgoWorldWallet } from '@/models/Wallet';
 import WalletConnect from '@walletconnect/client';
 import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
-import { Transaction } from 'algosdk';
+import { encodeAddress, Transaction } from 'algosdk';
 import store from '@/redux/store';
 import { onSessionUpdate, reset } from '@/redux/slices/walletConnectSlice';
-import { TransactionToSign, TransactionToSignType } from '@/models/Transaction';
 import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
 import getWalletConnectTxn from '../api/transactions/walletConnect/getWalletConnectTxn';
 
@@ -12,13 +11,11 @@ const connectProps = {
   bridge: `https://bridge.walletconnect.org`,
   qrcodeModal: QRCodeModal,
 };
-
-const walletConnect = new WalletConnect(connectProps);
 export default class WalletConnectClient implements AlgoWorldWallet {
   private client: WalletConnect;
 
   constructor() {
-    this.client = walletConnect;
+    this.client = new WalletConnect(connectProps);
 
     // Subscribe to connection events
     console.log(`%cin subscribeToEvents`, `background: yellow`);
@@ -64,17 +61,11 @@ export default class WalletConnectClient implements AlgoWorldWallet {
     return this.client.accounts;
   };
 
-  public signTransactions = async (
-    transactionsToSign: TransactionToSign[],
-    txnGroup: Transaction[],
-  ) => {
+  public signTransactions = async (txnGroup: Transaction[]) => {
     const userRequest = formatJsonRpcRequest(`algo_signTxn`, [
-      txnGroup.map((value, index) => {
+      txnGroup.map((value) => {
         if (
-          transactionsToSign[index].type ===
-            TransactionToSignType.UserTransaction ||
-          transactionsToSign[index].type ===
-            TransactionToSignType.UserFeeTransaction
+          this.client.accounts.includes(encodeAddress(value.from.publicKey))
         ) {
           return getWalletConnectTxn(value, true);
         } else {

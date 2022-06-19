@@ -21,13 +21,13 @@ import { TransactionToSignType } from '@/models/Transaction';
 import algosdk from 'algosdk';
 import createTransactionToSign from '../transactions/createTransactionToSign';
 import getTransactionParams from '../transactions/getTransactionParams';
-import signTransactions from '../transactions/signTransactions';
 import submitTransactions from '../transactions/submitTransactions';
 
 import { setLoadingIndicator } from '@/redux/slices/applicationSlice';
 import { Dispatch } from '@reduxjs/toolkit';
 import { getAccountAssets } from '@/redux/slices/walletConnectSlice';
 import WalletManager from '@/utils/wallets/walletManager';
+import { connector } from '@/redux/store/connector';
 
 export default async function optInAssets(
   chain: ChainType,
@@ -61,7 +61,7 @@ export default async function optInAssets(
           ),
           suggestedParams,
         }),
-        creatorWallet,
+        undefined,
         TransactionToSignType.UserTransaction,
       ),
     );
@@ -74,13 +74,12 @@ export default async function optInAssets(
     }),
   );
 
-  const signedSaveSwapConfigTxns = await signTransactions(
-    optInTxns,
-    creatorWallet,
-  ).catch(() => {
-    dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
-    return undefined;
-  });
+  const signedSaveSwapConfigTxns = await connector
+    .signTransactions(optInTxns)
+    .catch(() => {
+      dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
+      return undefined;
+    });
 
   if (!signedSaveSwapConfigTxns) {
     dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));

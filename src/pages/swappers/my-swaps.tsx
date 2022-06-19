@@ -62,7 +62,6 @@ export default function MySwaps() {
       ></ManageSwapDialog>
 
       <ShareSwapDialog
-        title="Share AlgoWorld Swap"
         open={isShareSwapPopupOpen}
         swapConfiguration={selectedManageSwap}
         onClose={() => {

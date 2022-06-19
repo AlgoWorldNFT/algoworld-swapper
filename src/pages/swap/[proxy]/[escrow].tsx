@@ -38,7 +38,6 @@ import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
 import createPerformSwapTxns from '@/utils/api/swaps/createPerformSwapTxns';
 import loadSwapConfigurations from '@/utils/api/swaps/loadSwapConfigurations';
-import signTransactions from '@/utils/api/transactions/signTransactions';
 import submitTransactions from '@/utils/api/transactions/submitTransactions';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
@@ -280,20 +279,18 @@ const PerformSwap = () => {
     const performSwapTxns = await createPerformSwapTxns(
       selectedChain,
       address,
-      connector,
       escrow,
       swapConfiguration,
     );
 
-    const signedPerformSwapTxns = await signTransactions(
-      performSwapTxns,
-      connector,
-    ).catch(() => {
-      enqueueSnackbar(`You have cancelled transactions signing...`, {
-        variant: `error`,
+    const signedPerformSwapTxns = await connector
+      .signTransactions(performSwapTxns)
+      .catch(() => {
+        enqueueSnackbar(`You have cancelled transactions signing...`, {
+          variant: `error`,
+        });
+        return undefined;
       });
-      return undefined;
-    });
 
     if (!signedPerformSwapTxns) {
       return undefined;

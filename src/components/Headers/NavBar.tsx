@@ -33,7 +33,6 @@ import { useContext, useEffect } from 'react';
 import { ConnectContext } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import {
-  onSessionUpdate,
   getAccountAssets,
   selectAssets,
   getAccountSwaps,
@@ -50,6 +49,10 @@ import { Divider, FormControlLabel, Grid, Stack, Switch } from '@mui/material';
 import AboutDialog from '../Dialogs/AboutDialog';
 import { ChainType } from '@/models/Chain';
 import Link from 'next/link';
+import { CONNECTED_WALLET_TYPE } from '@/common/constants';
+import { useEffectOnce } from 'react-use';
+import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
+import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
 
 type PageConfiguration = {
   title: string;
@@ -59,7 +62,7 @@ type PageConfiguration = {
 
 const pages = [{ title: `Home`, url: `/` }] as PageConfiguration[];
 
-const settings = [`My Swaps`, `Logout`];
+const settings = [`AlgoExplorer`, `My Swaps`, `Logout`];
 
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -93,7 +96,7 @@ const NavBar = () => {
 
   const connect = async (clientType: WalletType) => {
     if (connector.connected) return;
-    connector.setWalletClient(clientType);
+    await connector.setWalletClient(clientType);
     await connector.connect();
   };
 
@@ -125,6 +128,17 @@ const NavBar = () => {
       return;
     }
 
+    if (event.target.textContent === `AlgoExplorer`) {
+      window.open(
+        createAlgoExplorerUrl(
+          selectedChain,
+          address,
+          AlgoExplorerUrlType.Address,
+        ),
+        `_blank`,
+      );
+    }
+
     if (event.target.textContent === `My Swaps`) {
       router.push(`/swappers/my-swaps`);
     }
@@ -134,13 +148,16 @@ const NavBar = () => {
     }
   };
 
-  useEffect(() => {
+  useEffectOnce(() => {
     // Check if connection is already established
-    if (connector.connected) {
-      const accounts = connector.accounts();
-      dispatch(onSessionUpdate(accounts));
+    const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
+    if (!connectedWalletType || connectedWalletType === ``) {
+      return;
     }
+    connect(connectedWalletType as WalletType);
+  });
 
+  useEffect(() => {
     if (typeof window !== `undefined`) {
       const persistedChainType =
         chain !== undefined
@@ -149,7 +166,6 @@ const NavBar = () => {
             : ChainType.TestNet
           : (localStorage.getItem(`ChainType`) as ChainType) ??
             ChainType.TestNet;
-      console.log(persistedChainType);
       dispatch(switchChain(persistedChainType));
     }
 
@@ -161,10 +177,6 @@ const NavBar = () => {
       dispatch(getProxy({ address, chain: selectedChain }));
       dispatch(getAccountSwaps({ chain: selectedChain, address }));
     }
-
-    return () => {
-      console.log(`%cin unsubscribeFromEvents`, `background: yellow`);
-    };
   }, [dispatch, connector, address, selectedChain, chain]);
 
   const nativeCurrency = assets.find(

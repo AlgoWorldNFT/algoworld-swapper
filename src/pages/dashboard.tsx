@@ -32,7 +32,7 @@ export default function Dashboard() {
       swapPageUrl: `/swappers/asa-to-asa`,
     },
     {
-      title: `Multi ASA to Algo `,
+      title: `ASAs to Algo `,
       description: `Swap up to 5 Assets for desired Algo amount or vice versa.`,
       type: SwapType.MULTI_ASA_TO_ALGO,
       emoji: `x🎴↔️💰`,
@@ -46,7 +46,7 @@ export default function Dashboard() {
       <PageHeader
         title="🏠 Dashboard"
         description="Create atomic swaps powered by Algorand Smart Signatures.
-        Currently supports ASA to ASA and multi ASA to Algo swaps."
+        Currently supports ASA to ASA and ASAs to Algo swaps."
       />
 
       <Container component="main" sx={{ pt: 5, pb: 5 }}>
