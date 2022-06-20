@@ -8,13 +8,14 @@ const config: PlaywrightTestConfig = {
       use: { ...devices[`Desktop Chrome`] },
     },
   ],
+  reporter: `html`,
   use: {
     baseURL: BASE_URL,
   },
 };
 
-if (BASE_URL.includes('localhost:3000')) {
-  config['webServer'] = {
+if (BASE_URL.includes(`localhost:3000`)) {
+  config[`webServer`] = {
     command: `vercel dev`,
     url: `http://localhost:3000/`,
     timeout: 120 * 1000,
