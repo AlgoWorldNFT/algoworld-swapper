@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
 jobs:
-  test:
+  e2e_test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -17,7 +17,7 @@ jobs:
         run: yarn
 
       - name: Install Playwright Browsers
-        run: npx playwright install chrome
+        run: npx playwright install chromium
 
       - name: Deploy preview
         uses: amondnet/vercel-action@v25
