@@ -67,10 +67,14 @@ import {
 type PageConfiguration = {
   title: string;
   url: string;
+  target?: string;
   disabled?: boolean;
 };
 
-const pages = [{ title: `Home`, url: `/` }] as PageConfiguration[];
+const pages = [
+  { title: `Home`, url: `/` },
+  { title: `Docs`, url: `https://docs.algoworld.io`, target: '_blank' },
+] as PageConfiguration[];
 
 const settings = [`AlgoExplorer`, `My Swaps`, `Logout`];
 
@@ -273,13 +277,19 @@ const NavBar = () => {
                     key={page.title}
                     href={page.url}
                   >
-                    <MenuItem
-                      onClick={() => {
-                        handleCloseNavMenu();
-                      }}
+                    <a
+                      target={page.target}
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: 'none', color: 'white' }}
                     >
-                      <Typography textAlign="center">{page.title}</Typography>
-                    </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleCloseNavMenu();
+                        }}
+                      >
+                        <Typography textAlign="center">{page.title}</Typography>
+                      </MenuItem>
+                    </a>
                   </Link>
                 ))}
                 <MenuItem
@@ -302,14 +312,20 @@ const NavBar = () => {
                   key={page.title}
                   href={page.url}
                 >
-                  <Button
-                    key={page.title}
-                    disabled={page.disabled}
-                    onClick={handleCloseNavMenu}
-                    sx={{ my: 2, color: `white`, display: `block` }}
+                  <a
+                    target={page.target}
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none', color: 'white' }}
                   >
-                    {page.title}
-                  </Button>
+                    <Button
+                      key={page.title}
+                      disabled={page.disabled}
+                      onClick={handleCloseNavMenu}
+                      sx={{ my: 2, color: `white`, display: `block` }}
+                    >
+                      {page.title}
+                    </Button>
+                  </a>
                 </Link>
               ))}
               <Button
