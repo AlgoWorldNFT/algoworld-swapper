@@ -17,7 +17,7 @@ jobs:
         run: yarn
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install chrome
 
       - name: Deploy preview
         uses: amondnet/vercel-action@v25
@@ -25,7 +25,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
+          vercel-project-id: ${{ secrets.VERCEL_STAGING_PROJECT_ID}} #Required
           working-directory: ./
           alias-domains: |
             pr-{{PR_NUMBER}}.vercel-action.millionalgos.com
