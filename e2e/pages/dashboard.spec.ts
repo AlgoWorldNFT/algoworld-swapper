@@ -7,11 +7,11 @@ test(`should navigate to the about page`, async ({ page }) => {
 
   await page.locator(`button:has-text("About")`).click();
   await expect(
-    page.locator(`text=AlgoWorld Swapper v0.2.0`).first(),
+    page.locator(`text=AlgoWorld Swapper v0.2.2`).first(),
   ).toBeVisible();
 
   await page.locator(`button:has-text("Close")`).click();
   await expect(
-    page.locator(`text=AlgoWorld Swapper v0.2.0`).first(),
+    page.locator(`text=AlgoWorld Swapper v0.2.2`).first(),
   ).toBeHidden();
 });
