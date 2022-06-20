@@ -51,7 +51,7 @@ const ConnectWalletDialog = ({ open, onClientSelected }: Props) => {
 
   return (
     <Dialog id={CONNECT_WALLET_DIALOG_ID} open={open}>
-      <DialogTitle>Select wallet client:</DialogTitle>
+      <DialogTitle>Connect a wallet</DialogTitle>
       <List sx={{ pt: 0 }}>
         {walletClients.map((client) => (
           <ListItem
