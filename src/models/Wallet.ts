@@ -28,6 +28,7 @@ export type WalletClient = {
   type: WalletType;
   supported: boolean;
   title: string;
+  iconPath?: string;
 };
 
 export interface AlgoWorldWallet {
@@ -37,5 +38,4 @@ export interface AlgoWorldWallet {
   disconnect(): Promise<void>;
   accounts(): string[];
   connected(): boolean;
-  pending(): boolean;
 }

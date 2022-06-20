@@ -49,7 +49,7 @@ export default function AboutDialog({ open, setOpen }: Props) {
         aria-describedby="scroll-dialog-description"
       >
         <DialogTitle color={`primary`} id="scroll-dialog-title">
-          AlgoWorld Swapper v0.2.2
+          AlgoWorld Swapper v0.3.0
         </DialogTitle>
         <DialogContent dividers={true}>
           <DialogContentText ref={descriptionElementRef} tabIndex={-1}>

@@ -7,6 +7,7 @@ import {
   signLogicSigTransactionObject,
 } from 'algosdk';
 import MnemonicClient from './mnemonic';
+import MyAlgoWalletClient from './myAlgoWallet';
 import WalletConnectClient from './walletConnect';
 
 export default class WalletManager {
@@ -18,6 +19,8 @@ export default class WalletManager {
 
     if (walletType === WalletType.PeraWallet) {
       this.client = new WalletConnectClient();
+    } else if (walletType === WalletType.MyAlgoWallet) {
+      this.client = new MyAlgoWalletClient();
     } else {
       const mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? ``;
       this.client = new MnemonicClient(mnemonic);
@@ -35,8 +38,8 @@ export default class WalletManager {
 
   public disconnect = async (): Promise<void> => {
     if (this.client) {
-      this.client.disconnect();
       localStorage.removeItem(CONNECTED_WALLET_TYPE);
+      await this.client.disconnect();
     } else {
       throw new Error(`Client not set`);
     }
@@ -50,6 +53,8 @@ export default class WalletManager {
       const signedUserTransactionsResult = await this.client.signTransactions(
         txnGroup,
       );
+
+      console.log(`sgns`, signedUserTransactionsResult);
 
       const signedUserTransactions: (Uint8Array | null)[] =
         signedUserTransactionsResult.map((element: string) => {
@@ -95,9 +100,5 @@ export default class WalletManager {
 
   get connected(): boolean {
     return Boolean(this.client && this.client.connected());
-  }
-
-  get pending(): boolean {
-    return Boolean(this.client && this.client.pending());
   }
 }

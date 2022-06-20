@@ -9,7 +9,7 @@ export default class MnemonicClient implements AlgoWorldWallet {
 
   constructor(mnemonic: string) {
     this.mnemonic = mnemonic;
-    this.client = algosdk.mnemonicToSecretKey(mnemonic);
+    this.client = undefined;
   }
 
   public connect = async () => {
@@ -51,9 +51,5 @@ export default class MnemonicClient implements AlgoWorldWallet {
 
   public connected = () => {
     return this.client !== undefined;
-  };
-
-  public pending = () => {
-    return false;
   };
 }
