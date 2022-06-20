@@ -281,7 +281,7 @@ const NavBar = () => {
                     <a
                       target={page.target}
                       rel="noopener noreferrer"
-                      style={{ textDecoration: 'none', color: 'white' }}
+                      style={{ textDecoration: `none`, color: `white` }}
                     >
                       <MenuItem
                         onClick={() => {
@@ -317,7 +317,7 @@ const NavBar = () => {
                   <a
                     target={page.target}
                     rel="noopener noreferrer"
-                    style={{ textDecoration: 'none', color: 'white' }}
+                    style={{ textDecoration: `none`, color: `white` }}
                   >
                     <Button
                       key={page.title}
