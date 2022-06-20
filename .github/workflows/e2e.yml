@@ -23,8 +23,8 @@ jobs:
         with:
           node-version: '16.x'
 
-      - name: Install dependencies
-        run: yarn
+      - name: Install dependencies (with cache)
+        uses: bahmutov/npm-install@v1
 
       - name: Install Playwright Browsers
         run: npx playwright install chromium
