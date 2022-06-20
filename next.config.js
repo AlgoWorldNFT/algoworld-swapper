@@ -3,8 +3,6 @@
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-const { withSentryConfig } = require('@sentry/nextjs');
-
 const moduleExports = {
   reactStrictMode: true,
   images: {
@@ -21,9 +19,11 @@ const moduleExports = {
   },
 };
 
-if (process.env.E2E_TESTS_BASE_URL) {
+if (process.env.CI) {
   module.exports = moduleExports;
 } else {
+  const { withSentryConfig } = require('@sentry/nextjs');
+
   const sentryWebpackPluginOptions = {
     silent: true, // Suppresses all logs
     // For all available options, see:
