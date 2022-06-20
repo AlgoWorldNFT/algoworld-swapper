@@ -28,6 +28,7 @@ export type WalletClient = {
   type: WalletType;
   supported: boolean;
   title: string;
+  iconPath?: string;
 };
 
 export interface AlgoWorldWallet {

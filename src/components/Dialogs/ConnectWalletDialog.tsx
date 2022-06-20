@@ -25,12 +25,23 @@ import Dialog from '@mui/material/Dialog';
 import { WalletClient, WalletType } from '@/models/Wallet';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { useAppDispatch } from '@/redux/store/hooks';
-import { DialogActions, Button } from '@mui/material';
+import { DialogActions, Button, Avatar, ListItemAvatar } from '@mui/material';
 import { CONNECT_WALLET_DIALOG_ID } from './constants';
+import Image from 'next/image';
 
 const walletClients = [
-  { type: WalletType.PeraWallet, title: `PeraWallet`, supported: true },
-  { type: WalletType.MyAlgoWallet, title: `MyAlgoWallet`, supported: true },
+  {
+    type: WalletType.PeraWallet,
+    title: `PeraWallet`,
+    supported: true,
+    iconPath: `/perawallet_logo.svg`,
+  },
+  {
+    type: WalletType.MyAlgoWallet,
+    title: `MyAlgoWallet`,
+    supported: true,
+    iconPath: `/myalgowallet_logo.svg`,
+  },
 ] as WalletClient[];
 
 if (process.env.NEXT_PUBLIC_CI) {
@@ -60,6 +71,18 @@ const ConnectWalletDialog = ({ open, onClientSelected }: Props) => {
             key={client.title}
             disabled={!client.supported}
           >
+            {client.iconPath && (
+              <ListItemAvatar>
+                <Avatar>
+                  <Image
+                    src={client.iconPath}
+                    alt={`${client.title} Logo`}
+                    height={40}
+                    width={40}
+                  />
+                </Avatar>
+              </ListItemAvatar>
+            )}
             <ListItemText primary={client.title} />
           </ListItem>
         ))}

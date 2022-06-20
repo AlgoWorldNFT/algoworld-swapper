@@ -169,9 +169,12 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
     setDeleteLoading(true);
-    enqueueSnackbar(`Open your wallet to sign the delete transactions...`, {
-      variant: `info`,
-    });
+    enqueueSnackbar(
+      `Open your wallet to sign the delete transaction 1 of 2...`,
+      {
+        variant: `info`,
+      },
+    );
 
     const swapDeactivateTxns = await createSwapDeactivateTxns(
       chain,
@@ -212,6 +215,13 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     });
     const cidResponse = await saveSwapConfigurations(newSwapConfigs);
     const cidData = await cidResponse.data;
+
+    enqueueSnackbar(
+      `Open your wallet to sign the delete transaction 2 of 2...`,
+      {
+        variant: `info`,
+      },
+    );
 
     const saveSwapConfigTxns = await createSaveSwapConfigTxns(
       chain,

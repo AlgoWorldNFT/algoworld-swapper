@@ -29,7 +29,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
-import { useCallback, useContext, useEffect, useMemo } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import { ConnectContext } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import {
@@ -63,7 +63,6 @@ import {
   NAV_BAR_SETTINGS_BTN_ID,
   NAV_BAR_SETTINGS_MENU_ITEM_ID,
 } from './constants';
-import { useEffectOnce } from 'react-use';
 
 type PageConfiguration = {
   title: string;
@@ -107,14 +106,6 @@ const NavBar = () => {
 
   const dispatch = useAppDispatch();
 
-  useMemo(() => {
-    if (address) {
-      dispatch(getAccountAssets({ chain: selectedChain, address }));
-      dispatch(getProxy({ address, chain: selectedChain }));
-      dispatch(getAccountSwaps({ chain: selectedChain, address }));
-    }
-  }, [address, dispatch, selectedChain]);
-
   const connector = useContext(ConnectContext);
 
   const connect = useCallback(
@@ -145,8 +136,10 @@ const NavBar = () => {
   };
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    console.log(`called handle open nav menu`);
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -186,15 +179,6 @@ const NavBar = () => {
     }
   };
 
-  useEffectOnce(() => {
-    const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
-    if (!connectedWalletType || connectedWalletType === ``) {
-      return;
-    } else {
-      connect(connectedWalletType as WalletType, false);
-    }
-  });
-
   useEffect(() => {
     if (typeof window !== `undefined`) {
       const persistedChainType =
@@ -205,6 +189,19 @@ const NavBar = () => {
           : (localStorage.getItem(`ChainType`) as ChainType) ??
             ChainType.TestNet;
       dispatch(switchChain(persistedChainType));
+    }
+
+    const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
+    if (!connectedWalletType || connectedWalletType === ``) {
+      return;
+    } else {
+      connect(connectedWalletType as WalletType, false);
+    }
+
+    if (address) {
+      dispatch(getAccountAssets({ chain: selectedChain, address }));
+      dispatch(getProxy({ address, chain: selectedChain }));
+      dispatch(getAccountSwaps({ chain: selectedChain, address }));
     }
   }, [dispatch, connector, address, selectedChain, chain, connect]);
 
