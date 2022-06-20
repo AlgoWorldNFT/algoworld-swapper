@@ -1,11 +1,7 @@
 import { PlaywrightTestConfig, devices } from '@playwright/test';
+
+const BASE_URL = process.env.E2E_TESTS_BASE_URL ?? `http://localhost:3000/`;
 const config: PlaywrightTestConfig = {
-  webServer: {
-    command: `vercel dev`,
-    url: `http://localhost:3000/`,
-    timeout: 120 * 1000,
-    reuseExistingServer: !process.env.CI,
-  },
   projects: [
     {
       name: `chromium`,
@@ -13,7 +9,17 @@ const config: PlaywrightTestConfig = {
     },
   ],
   use: {
-    baseURL: `http://localhost:3000/`,
+    baseURL: BASE_URL,
   },
 };
+
+if (BASE_URL.includes('localhost:3000')) {
+  config['webServer'] = {
+    command: `vercel dev`,
+    url: `http://localhost:3000/`,
+    timeout: 120 * 1000,
+    reuseExistingServer: !process.env.CI,
+  };
+}
+
 export default config;

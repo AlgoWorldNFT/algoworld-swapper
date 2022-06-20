@@ -66,7 +66,10 @@ import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
 import PageHeader from '@/components/Headers/PageHeader';
 import { CoinType } from '@/models/CoinType';
 import getCompiledMultiSwap from '@/utils/api/swaps/getCompiledMultiSwap';
-import { ASAS_TO_ALGO_PAGE_HEADER_ID, CREATE_SWAP_BTN_ID } from '../_constants';
+import {
+  ASAS_TO_ALGO_PAGE_HEADER_ID,
+  CREATE_SWAP_BTN_ID,
+} from '@/common/constants';
 
 export default function MultiAsaToAlgo() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =

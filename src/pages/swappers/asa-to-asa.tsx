@@ -63,7 +63,7 @@ import PageHeader from '@/components/Headers/PageHeader';
 import {
   ASA_TO_ASA_PAGE_HEADER_ID,
   CREATE_SWAP_BTN_ID,
-} from '@/pages/_constants';
+} from '@/common/constants';
 
 export default function AsaToAsa() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =

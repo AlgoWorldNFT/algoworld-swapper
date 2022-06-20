@@ -27,7 +27,7 @@ import {
   ASA_TO_ASA_PAGE_HEADER_ID,
   CREATE_SWAP_BTN_ID,
   MY_SWAPS_PAGE_HEADER_ID,
-} from '@/pages/_constants';
+} from '@/common/constants';
 import { MY_SWAPS_TABLE_MANAGE_BTN_ID } from '@/components/Tables/constants';
 import { CRYPTO_TEXT_FIELD_ID } from '@/components/TextFields/constants';
 
