@@ -6,17 +6,25 @@ import {
   LogicSigAccount,
   signLogicSigTransactionObject,
 } from 'algosdk';
+import MnemonicClient from './mnemonic';
+import MyAlgoWalletClient from './myAlgoWallet';
+import WalletConnectClient from './walletConnect';
 
 export default class WalletManager {
   private clientType: WalletType | undefined;
   private client: AlgoWorldWallet | undefined;
 
-  public setWalletClient = (
-    walletType: WalletType,
-    walletInstance: AlgoWorldWallet,
-  ) => {
+  public setWalletClient = (walletType: WalletType) => {
     this.clientType = walletType;
-    this.client = walletInstance;
+
+    if (walletType === WalletType.PeraWallet) {
+      this.client = new WalletConnectClient();
+    } else if (walletType === WalletType.MyAlgoWallet) {
+      this.client = new MyAlgoWalletClient();
+    } else {
+      const mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? ``;
+      this.client = new MnemonicClient(mnemonic);
+    }
   };
 
   public connect = async (): Promise<void> => {
@@ -45,6 +53,8 @@ export default class WalletManager {
       const signedUserTransactionsResult = await this.client.signTransactions(
         txnGroup,
       );
+
+      console.log(`sgns`, signedUserTransactionsResult);
 
       const signedUserTransactions: (Uint8Array | null)[] =
         signedUserTransactionsResult.map((element: string) => {

@@ -35,9 +35,7 @@ export default class MyAlgoWalletClient implements AlgoWorldWallet {
         store.dispatch(onSessionUpdate(this.userAccounts));
         return Promise.resolve();
       } catch (error) {
-        if (error instanceof Error) {
-          console.log(error.message.includes(`Windows is opened`));
-        }
+        console.log(error);
       }
     } else {
       throw new Error(`Client not connected`);
@@ -69,7 +67,19 @@ export default class MyAlgoWalletClient implements AlgoWorldWallet {
         .map((txn) => {
           return txn.toByte();
         });
-      return this.client.signTransaction(userTxns);
+
+      const signedTxns = await this.client.signTransaction(userTxns);
+      const signedTxnsMap = Object.assign(
+        {},
+        ...signedTxns.map((txn) => ({ [txn.txID]: txn.blob })),
+      );
+      const signedTxnsIds = Object.keys(signedTxnsMap);
+
+      return txnGroup.map((originalTxn) => {
+        if (signedTxnsIds.includes(originalTxn.txID())) {
+          return signedTxnsMap[originalTxn.txID()];
+        } else return null;
+      });
     } else {
       throw new Error(`Client not connected`);
     }

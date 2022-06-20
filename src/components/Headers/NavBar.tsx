@@ -64,9 +64,6 @@ import {
   NAV_BAR_SETTINGS_MENU_ITEM_ID,
 } from './constants';
 import { useEffectOnce } from 'react-use';
-import MnemonicClient from '@/utils/wallets/mnemonic';
-import MyAlgoWalletClient from '@/utils/wallets/myAlgoWallet';
-import WalletConnectClient from '@/utils/wallets/walletConnect';
 
 type PageConfiguration = {
   title: string;
@@ -96,11 +93,6 @@ const NavBar = () => {
     chain?: string;
   };
 
-  const walletClients = {
-    [WalletType.Mnemonic]: new MnemonicClient(),
-    [WalletType.PeraWallet]: new WalletConnectClient(),
-  };
-
   const assets = useAppSelector(selectAssets);
 
   const { fetching: loading, address } = useAppSelector(
@@ -126,18 +118,24 @@ const NavBar = () => {
   const connector = useContext(ConnectContext);
 
   const connect = useCallback(
-    async (clientType: WalletType) => {
+    async (clientType: WalletType, fromClickEvent: boolean) => {
+      // MyAlgo Connect doesn't work if invoked oustide of click event
+      // Hence this work around
+      if (!fromClickEvent && clientType === WalletType.MyAlgoWallet) {
+        return;
+      }
+
       if (connector.connected) {
         const accounts = connector.accounts();
         accounts.length > 0
           ? dispatch(onSessionUpdate(accounts))
           : await connector.connect();
       } else {
-        connector.setWalletClient(clientType, walletClients[clientType]);
+        connector.setWalletClient(clientType);
         await connector.connect();
       }
     },
-    [connector, dispatch, walletClients],
+    [connector, dispatch],
   );
 
   const disconnect = async () => {
@@ -193,10 +191,8 @@ const NavBar = () => {
     if (!connectedWalletType || connectedWalletType === ``) {
       return;
     } else {
-      connect(connectedWalletType as WalletType);
+      connect(connectedWalletType as WalletType, false);
     }
-
-    walletClients[WalletType.MyAlgoWallet] = new MyAlgoWalletClient();
   });
 
   useEffect(() => {
@@ -218,7 +214,7 @@ const NavBar = () => {
 
   const handleOnClientSelected = async (client: WalletClient) => {
     dispatch(setIsWalletPopupOpen(false));
-    await connect(client.type);
+    await connect(client.type, true);
   };
 
   return (

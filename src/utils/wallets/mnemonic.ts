@@ -7,8 +7,8 @@ export default class MnemonicClient implements AlgoWorldWallet {
   private client: Account | undefined;
   private mnemonic: string;
 
-  constructor() {
-    this.mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? ``;
+  constructor(mnemonic: string) {
+    this.mnemonic = mnemonic;
     this.client = undefined;
   }
 
