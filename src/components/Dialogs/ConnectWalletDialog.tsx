@@ -33,7 +33,7 @@ const walletClients = [
   { type: WalletType.MyAlgoWallet, title: `🚧 MyAlgoWallet`, supported: false },
 ] as WalletClient[];
 
-if (process.env.NEXT_PUBLIC_E2E_TESTS) {
+if (process.env.NEXT_PUBLIC_CI) {
   walletClients.push({
     type: WalletType.Mnemonic,
     title: `Mnemonic`,
