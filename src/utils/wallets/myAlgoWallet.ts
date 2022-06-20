@@ -87,7 +87,8 @@ export default class MyAlgoWalletClient implements AlgoWorldWallet {
 
   public disconnect = async () => {
     this.client = undefined;
-    return;
+    this.userAccounts = [];
+    return Promise.resolve();
   };
 
   public connected = () => {

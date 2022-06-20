@@ -38,8 +38,8 @@ export default class WalletManager {
 
   public disconnect = async (): Promise<void> => {
     if (this.client) {
-      this.client.disconnect();
       localStorage.removeItem(CONNECTED_WALLET_TYPE);
+      await this.client.disconnect();
     } else {
       throw new Error(`Client not set`);
     }
