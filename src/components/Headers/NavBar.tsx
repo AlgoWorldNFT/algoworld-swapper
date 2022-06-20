@@ -276,6 +276,7 @@ const NavBar = () => {
                     id={NAV_BAR_MENU_APPBAR_ITEM_ID(page.title)}
                     key={page.title}
                     href={page.url}
+                    passHref
                   >
                     <a
                       target={page.target}
@@ -311,6 +312,7 @@ const NavBar = () => {
                   id={NAV_BAR_MENU_APPBAR_ITEM_ID(page.title)}
                   key={page.title}
                   href={page.url}
+                  passHref
                 >
                   <a
                     target={page.target}
