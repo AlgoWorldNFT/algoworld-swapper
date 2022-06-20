@@ -53,6 +53,11 @@ test.describe(`Asas to Algo Swap`, () => {
     await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
   });
 
+  test(`should be restore login session on page reload`, async () => {
+    await page.reload();
+    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
+  });
+
   test(`should be able to navigate to Asas to Algo page`, async () => {
     await expect(
       page.locator(`id=${ASAS_TO_ALGO_PAGE_HEADER_ID}`),

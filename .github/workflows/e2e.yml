@@ -12,6 +12,11 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/checkout@v2
 
       - name: Expose e2e base url
@@ -23,8 +28,8 @@ jobs:
         with:
           node-version: '16.x'
 
-      - name: Install dependencies
-        run: yarn
+      - name: Install dependencies (with cache)
+        uses: bahmutov/npm-install@v1
 
       - name: Install Playwright Browsers
         run: npx playwright install chromium

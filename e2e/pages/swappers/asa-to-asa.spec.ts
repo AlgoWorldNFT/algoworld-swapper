@@ -56,6 +56,11 @@ test.describe(`Asa to Asa Swap`, () => {
     await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
   });
 
+  test(`should be restore login session on page reload`, async () => {
+    await page.reload();
+    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
+  });
+
   test(`should be able to navigate to Asa to Asa page`, async () => {
     await expect(page.locator(`id=${ASA_TO_ASA_PAGE_HEADER_ID}`)).toBeHidden();
     await Promise.all([

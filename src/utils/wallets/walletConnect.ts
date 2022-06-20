@@ -50,7 +50,7 @@ export default class WalletConnectClient implements AlgoWorldWallet {
   public connect = async () => {
     if (this.client.connected) return;
     if (this.client.pending) return QRCodeModal.open(this.client.uri, null);
-    await this.client.createSession();
+    return this.client.createSession();
   };
 
   public address = () => {
