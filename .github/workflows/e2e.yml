@@ -9,10 +9,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: tmp test
+      - name: Expose e2e base url
         run: |
-          E2E_TESTS_BASE_URL=${{ format('https://pr-/{0}.vercel-action.millionalgos.com', {{ PR_NUMBER }}) }}
+          echo ::set-env name=PR_CNT::$(echo "$GITHUB_REF" | awk -F / '{print $3}')
+          echo ::set-env name=E2E_TESTS_BASE_URL::${{ format('https://pr-/{0}.vercel-action.millionalgos.com', $PR_CNT) }}
           echo $E2E_TESTS_BASE_URL
+        shell: bash
 
       - uses: actions/setup-node@v2
         with:
