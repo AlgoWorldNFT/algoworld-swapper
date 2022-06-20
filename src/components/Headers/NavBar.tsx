@@ -73,7 +73,7 @@ type PageConfiguration = {
 
 const pages = [
   { title: `Home`, url: `/` },
-  { title: `Docs`, url: `https://docs.algoworld.io`, target: '_blank' },
+  { title: `Docs`, url: `https://docs.algoworld.io`, target: `_blank` },
 ] as PageConfiguration[];
 
 const settings = [`AlgoExplorer`, `My Swaps`, `Logout`];
