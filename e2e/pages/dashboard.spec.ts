@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { AW_SWAPPER_BASE_URL } from '../consts';
 
 test(`should navigate to the about page`, async ({ page }) => {
-  await page.goto(`http://localhost:3000/`);
+  await page.goto(AW_SWAPPER_BASE_URL);
   await expect(page.locator(`h1`)).toContainText(`🏠 Dashboard`);
 
   await page.locator(`button:has-text("About")`).click();

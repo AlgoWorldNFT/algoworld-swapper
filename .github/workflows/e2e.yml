@@ -31,7 +31,7 @@ jobs:
             pr-{{PR_NUMBER}}.vercel-action.millionalgos.com
 
       - name: Run Playwright tests
-        run: E2E_TESTS_BASE_URL=https://pr-{{PR_NUMBER}}.vercel-action.millionalgos.com yarn run test:e2e:ci
+        run: E2E_TESTS_BASE_URL="https://pr-{{PR_NUMBER}}.vercel-action.millionalgos.com" yarn run test:e2e:ci
 
       - uses: actions/upload-artifact@v2
         if: always()
