@@ -41,7 +41,6 @@ import swapExists from '@/utils/api/swaps/swapExists';
 import accountExists from '@/utils/api/accounts/accountExists';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import createInitSwapTxns from '@/utils/api/swaps/createInitSwapTxns';
-import signTransactions from '@/utils/api/transactions/signTransactions';
 import submitTransactions from '@/utils/api/transactions/submitTransactions';
 import { Asset } from '@/models/Asset';
 import createSaveSwapConfigTxns from '@/utils/api/swaps/createSaveSwapConfigTxns';
@@ -61,6 +60,10 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
 import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
 import PageHeader from '@/components/Headers/PageHeader';
+import {
+  ASA_TO_ASA_PAGE_HEADER_ID,
+  CREATE_SWAP_BTN_ID,
+} from '@/common/constants';
 
 export default function AsaToAsa() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
@@ -155,21 +158,19 @@ export default function AsaToAsa() {
     const initSwapTxns = await createInitSwapTxns(
       chain,
       address,
-      connector,
       escrow,
       ASA_TO_ASA_FUNDING_FEE,
       [offeringAsset],
     );
 
-    const signedInitSwapTxns = await signTransactions(
-      initSwapTxns,
-      connector,
-    ).catch(() => {
-      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-        variant: `error`,
+    const signedInitSwapTxns = await connector
+      .signTransactions(initSwapTxns)
+      .catch(() => {
+        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+          variant: `error`,
+        });
+        return undefined;
       });
-      return undefined;
-    });
 
     if (!signedInitSwapTxns) {
       return undefined;
@@ -196,20 +197,18 @@ export default function AsaToAsa() {
     const saveSwapConfigTxns = await createSaveSwapConfigTxns(
       chain,
       address,
-      connector,
       proxy,
       (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
       cidData,
     );
-    const signedSaveSwapConfigTxns = await signTransactions(
-      saveSwapConfigTxns,
-      connector,
-    ).catch(() => {
-      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-        variant: `error`,
+    const signedSaveSwapConfigTxns = await connector
+      .signTransactions(saveSwapConfigTxns)
+      .catch(() => {
+        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+          variant: `error`,
+        });
+        return undefined;
       });
-      return undefined;
-    });
 
     if (!signedSaveSwapConfigTxns) {
       return undefined;
@@ -230,21 +229,19 @@ export default function AsaToAsa() {
     const swapDepositTxns = await createSwapDepositTxns(
       chain,
       address,
-      connector,
       escrow,
       [offeringAsset],
       ASA_TO_ASA_FUNDING_FEE,
     );
 
-    const signedSwapDepositTxns = await signTransactions(
-      swapDepositTxns,
-      connector,
-    ).catch(() => {
-      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-        variant: `error`,
+    const signedSwapDepositTxns = await connector
+      .signTransactions(swapDepositTxns)
+      .catch(() => {
+        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+          variant: `error`,
+        });
+        return undefined;
       });
-      return undefined;
-    });
 
     if (!signedSwapDepositTxns) {
       return undefined;
@@ -376,10 +373,9 @@ export default function AsaToAsa() {
     <>
       <div>
         <PageHeader
+          id={ASA_TO_ASA_PAGE_HEADER_ID}
           title="🎴 ASA to ASA Swap"
-          description="Create a safe atomic swap powered by Algorand Smart Signatures.
-          Currently supports ASA to ASA and multi ASA to Algo swaps. Choose
-          and click on the required swap type below."
+          description="Create a simple single ASA to ASA swap"
         />
 
         <Container maxWidth="sm" sx={{ textAlign: `center` }} component="main">
@@ -408,6 +404,7 @@ export default function AsaToAsa() {
               >
                 {address && assetsToOptIn.length === 0 ? (
                   <LoadingButton
+                    id={CREATE_SWAP_BTN_ID}
                     disabled={
                       offeringAssets.length === 0 ||
                       requestingAssets.length === 0
@@ -473,7 +470,6 @@ export default function AsaToAsa() {
       </ConfirmDialog>
 
       <ShareSwapDialog
-        title="Share AlgoWorld Swap"
         open={shareSwapDialogOpen}
         swapConfiguration={swapConfiguration}
         setOpen={setShareSwapDialogOpen}

@@ -17,12 +17,11 @@
  */
 
 import { TransactionToSign, TransactionToSignType } from '@/models/Transaction';
-import WalletConnect from '@walletconnect/client';
 import { Transaction, LogicSigAccount } from 'algosdk';
 
 export default function createTransactionToSign(
   transaction: Transaction,
-  signer: WalletConnect | LogicSigAccount,
+  signer: undefined | LogicSigAccount,
   type: TransactionToSignType,
 ) {
   return {

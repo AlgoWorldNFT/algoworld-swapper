@@ -17,6 +17,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
+      "@/e2e/*": ["./e2e/*"],
       "@/public/*": ["./public/*"]
     },
     "incremental": true

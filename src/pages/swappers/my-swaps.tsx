@@ -28,6 +28,7 @@ import {
 import { getAccountSwaps } from '@/redux/slices/walletConnectSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { Box, Container, LinearProgress } from '@mui/material';
+import { MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
 
 export default function MySwaps() {
   const swaps = useAppSelector((state) => state.walletConnect.swaps);
@@ -62,7 +63,6 @@ export default function MySwaps() {
       ></ManageSwapDialog>
 
       <ShareSwapDialog
-        title="Share AlgoWorld Swap"
         open={isShareSwapPopupOpen}
         swapConfiguration={selectedManageSwap}
         onClose={() => {
@@ -79,6 +79,7 @@ export default function MySwaps() {
       </ShareSwapDialog>
 
       <PageHeader
+        id={MY_SWAPS_PAGE_HEADER_ID}
         title="📜 My Swaps"
         description="Activate, update or deactivate your existing swaps."
       />

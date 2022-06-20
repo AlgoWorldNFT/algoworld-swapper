@@ -19,15 +19,22 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import { DEFAULT_PAGE_HEADER_ID } from './constants';
 
 type Props = {
   title: string;
   description: string;
+  id?: string;
 };
 
-const PageHeader = ({ title, description }: Props) => {
+const PageHeader = ({
+  title,
+  description,
+  id = DEFAULT_PAGE_HEADER_ID,
+}: Props) => {
   return (
     <Container
+      id={id}
       component="main"
       maxWidth="sm"
       sx={{

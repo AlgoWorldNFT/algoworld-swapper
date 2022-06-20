@@ -24,6 +24,7 @@ import { FromAssetPickerDialog } from '../Dialogs/FromAssetPickerDialog';
 import AssetListView from '../Lists/AssetListView';
 import { useAppSelector, useAppDispatch } from '@/redux/store/hooks';
 import { setOfferingAssets } from '@/redux/slices/walletConnectSlice';
+import { FROM_SWAP_OFFERING_ASSET_BTN_ID } from './constants';
 
 type Props = {
   cardTitle: string;
@@ -73,6 +74,7 @@ const FromSwapCard = ({ cardTitle, maxAssets, disabled = false }: Props) => {
           <Stack spacing={2}>
             <Stack spacing={2}>
               <Button
+                id={FROM_SWAP_OFFERING_ASSET_BTN_ID}
                 disabled={
                   offeringAssets.length >= maxAssets || !address || disabled
                 }

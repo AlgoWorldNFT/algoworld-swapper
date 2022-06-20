@@ -26,7 +26,6 @@ import { useAppSelector } from '@/redux/store/hooks';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import createSwapDepositTxns from '@/utils/api/swaps/createSwapDepositTxns';
 import LoadingButton from '@mui/lab/LoadingButton';
-import signTransactions from '@/utils/api/transactions/signTransactions';
 import submitTransactions from '@/utils/api/transactions/submitTransactions';
 import {
   Dialog,
@@ -50,6 +49,12 @@ import getAssetsForAccount from '@/utils/api/accounts/getAssetsForAccount';
 import { Asset } from '@/models/Asset';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import AssetsTable from '../Tables/AssetsTable';
+import {
+  SIGN_DEPOSIT_TXN_MESSAGE,
+  SWAP_DEACTIVATION_PERFORMED_MESSAGE,
+  SWAP_DEPOSIT_PERFORMED_MESSAGE,
+  SWAP_REMOVED_FROM_PROXY_MESSAGE,
+} from './constants';
 
 type Props = {
   open: boolean;
@@ -108,29 +113,27 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
     setDepositLoading(true);
-    enqueueSnackbar(`Open your wallet to sign the deposit transactions...`, {
+    enqueueSnackbar(SIGN_DEPOSIT_TXN_MESSAGE, {
       variant: `info`,
     });
 
     const swapDepositTxns = await createSwapDepositTxns(
       chain,
       selectedManageSwap.creator,
-      connector,
       escrow,
       selectedManageSwap.offering,
       ASA_TO_ASA_FUNDING_FEE,
     );
 
-    const signedSwapDepositTxns = await signTransactions(
-      swapDepositTxns,
-      connector,
-    ).catch(() => {
-      setDepositLoading(false);
-      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-        variant: `error`,
+    const signedSwapDepositTxns = await connector
+      .signTransactions(swapDepositTxns)
+      .catch(() => {
+        setDepositLoading(false);
+        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+          variant: `error`,
+        });
+        return;
       });
-      return;
-    });
 
     if (!signedSwapDepositTxns) {
       return;
@@ -150,7 +153,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
 
-    enqueueSnackbar(`Deposit of offering asset performed...`, {
+    enqueueSnackbar(SWAP_DEPOSIT_PERFORMED_MESSAGE, {
       variant: `success`,
       action: () => (
         <ViewOnAlgoExplorerButton chain={chain} txId={depositTxnId} />
@@ -173,21 +176,19 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     const swapDeactivateTxns = await createSwapDeactivateTxns(
       chain,
       selectedManageSwap.creator,
-      connector,
       escrow,
       selectedManageSwap.offering,
     );
 
-    const signedSwapDeactivateTxns = await signTransactions(
-      swapDeactivateTxns,
-      connector,
-    ).catch(() => {
-      setDeleteLoading(false);
-      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-        variant: `error`,
+    const signedSwapDeactivateTxns = await connector
+      .signTransactions(swapDeactivateTxns)
+      .catch(() => {
+        setDeleteLoading(false);
+        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+          variant: `error`,
+        });
+        return;
       });
-      return;
-    });
 
     if (!signedSwapDeactivateTxns) {
       return;
@@ -215,21 +216,20 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     const saveSwapConfigTxns = await createSaveSwapConfigTxns(
       chain,
       selectedManageSwap.creator,
-      connector,
       proxy,
       (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
       cidData,
     );
-    const signedSaveSwapConfigTxns = await signTransactions(
-      saveSwapConfigTxns,
-      connector,
-    ).catch(() => {
-      setDeleteLoading(false);
-      enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-        variant: `error`,
+
+    const signedSaveSwapConfigTxns = await connector
+      .signTransactions(saveSwapConfigTxns)
+      .catch(() => {
+        setDeleteLoading(false);
+        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+          variant: `error`,
+        });
+        return;
       });
-      return;
-    });
 
     if (!signedSaveSwapConfigTxns) {
       return;
@@ -248,7 +248,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
 
-    enqueueSnackbar(`Swap removed from proxy configuration...`, {
+    enqueueSnackbar(SWAP_REMOVED_FROM_PROXY_MESSAGE, {
       variant: `success`,
       action: () => (
         <ViewOnAlgoExplorerButton
@@ -258,7 +258,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       ),
     });
 
-    enqueueSnackbar(`Deactivation of swap performed...`, {
+    enqueueSnackbar(SWAP_DEACTIVATION_PERFORMED_MESSAGE, {
       variant: `success`,
       action: () => (
         <ViewOnAlgoExplorerButton chain={chain} txId={deactivateTxnId} />

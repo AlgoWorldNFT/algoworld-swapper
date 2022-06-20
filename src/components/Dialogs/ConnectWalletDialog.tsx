@@ -26,11 +26,20 @@ import { WalletClient, WalletType } from '@/models/Wallet';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { useAppDispatch } from '@/redux/store/hooks';
 import { DialogActions, Button } from '@mui/material';
+import { CONNECT_WALLET_DIALOG_ID } from './constants';
 
 const walletClients = [
   { type: WalletType.PeraWallet, title: `PeraWallet`, supported: true },
   { type: WalletType.MyAlgoWallet, title: `🚧 MyAlgoWallet`, supported: false },
 ] as WalletClient[];
+
+if (process.env.NEXT_PUBLIC_CI) {
+  walletClients.push({
+    type: WalletType.Mnemonic,
+    title: `Mnemonic`,
+    supported: true,
+  });
+}
 
 type Props = {
   open: boolean;
@@ -41,7 +50,7 @@ const ConnectWalletDialog = ({ open, onClientSelected }: Props) => {
   const dispatch = useAppDispatch();
 
   return (
-    <Dialog open={open}>
+    <Dialog id={CONNECT_WALLET_DIALOG_ID} open={open}>
       <DialogTitle>Select wallet client:</DialogTitle>
       <List sx={{ pt: 0 }}>
         {walletClients.map((client) => (

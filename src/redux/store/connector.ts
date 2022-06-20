@@ -16,13 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import WalletConnect from '@walletconnect/client';
 import { createContext } from 'react';
-import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
+import WalletManager from '@/utils/wallets/walletManager';
 
-const connectProps = {
-  bridge: `https://bridge.walletconnect.org`,
-  qrcodeModal: QRCodeModal,
-};
-export const connector = new WalletConnect(connectProps);
+export const connector = new WalletManager();
 export const ConnectContext = createContext(connector);

@@ -18,7 +18,6 @@
 
 import { ChainType } from '@/models/Chain';
 import { TransactionToSignType } from '@/models/Transaction';
-import WalletConnect from '@walletconnect/client';
 import algosdk, { LogicSigAccount } from 'algosdk';
 import createTransactionToSign from '../transactions/createTransactionToSign';
 import getTransactionParams from '../transactions/getTransactionParams';
@@ -26,7 +25,6 @@ import getTransactionParams from '../transactions/getTransactionParams';
 export default async function createSaveSwapConfigTxns(
   chain: ChainType,
   creatorAddress: string,
-  creatorWallet: WalletConnect,
   proxyLsig: LogicSigAccount,
   fundingFee: number,
   swapConfigurationCID: string,
@@ -49,7 +47,7 @@ export default async function createSaveSwapConfigTxns(
 
   const feeTxn = createTransactionToSign(
     rawFeeTxn,
-    creatorWallet,
+    undefined,
     TransactionToSignType.UserFeeTransaction,
   );
 

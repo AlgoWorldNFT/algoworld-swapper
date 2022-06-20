@@ -19,7 +19,6 @@
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import { TransactionToSignType } from '@/models/Transaction';
-import WalletConnect from '@walletconnect/client';
 import algosdk, { LogicSigAccount } from 'algosdk';
 import createTransactionToSign from '../transactions/createTransactionToSign';
 import getTransactionParams from '../transactions/getTransactionParams';
@@ -27,7 +26,6 @@ import getTransactionParams from '../transactions/getTransactionParams';
 export default async function createInitSwapTxns(
   chain: ChainType,
   creatorAddress: string,
-  creatorWallet: WalletConnect,
   escrowLsig: LogicSigAccount,
   fundingFee: number,
   offeringAssets: Asset[],
@@ -48,7 +46,7 @@ export default async function createInitSwapTxns(
       ),
       suggestedParams,
     }),
-    creatorWallet,
+    undefined, // TODO: refactor
     TransactionToSignType.UserFeeTransaction,
   );
 

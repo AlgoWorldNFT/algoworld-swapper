@@ -30,12 +30,9 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
 import { useContext, useEffect } from 'react';
-import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
 import { ConnectContext } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import {
-  onSessionUpdate,
-  reset,
   getAccountAssets,
   selectAssets,
   getAccountSwaps,
@@ -52,16 +49,34 @@ import { Divider, FormControlLabel, Grid, Stack, Switch } from '@mui/material';
 import AboutDialog from '../Dialogs/AboutDialog';
 import { ChainType } from '@/models/Chain';
 import Link from 'next/link';
+import { CONNECTED_WALLET_TYPE } from '@/common/constants';
+import { useEffectOnce } from 'react-use';
+import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
+import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
+import {
+  NAV_BAR_CHAIN_SWITCH_ID,
+  NAV_BAR_CONNECT_BTN_ID,
+  NAV_BAR_HOME_BTN_ID,
+  NAV_BAR_ID,
+  NAV_BAR_MENU_APPBAR_ID,
+  NAV_BAR_MENU_APPBAR_ITEM_ID,
+  NAV_BAR_SETTINGS_BTN_ID,
+  NAV_BAR_SETTINGS_MENU_ITEM_ID,
+} from './constants';
 
 type PageConfiguration = {
   title: string;
   url: string;
+  target?: string;
   disabled?: boolean;
 };
 
-const pages = [{ title: `Home`, url: `/` }] as PageConfiguration[];
+const pages = [
+  { title: `Home`, url: `/` },
+  { title: `Docs`, url: `https://docs.algoworld.io`, target: `_blank` },
+] as PageConfiguration[];
 
-const settings = [`My Swaps`, `Logout`];
+const settings = [`AlgoExplorer`, `My Swaps`, `Logout`];
 
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -93,15 +108,15 @@ const NavBar = () => {
 
   const connector = useContext(ConnectContext);
 
-  const connect = async () => {
+  const connect = async (clientType: WalletType) => {
     if (connector.connected) return;
-    if (connector.pending) return QRCodeModal.open(connector.uri, null);
-    await connector.createSession();
+    await connector.setWalletClient(clientType);
+    await connector.connect();
   };
 
-  const disconnect = () => {
-    connector
-      .killSession()
+  const disconnect = async () => {
+    await connector
+      .disconnect()
       .catch((err: { message: any }) => console.error(err.message));
   };
 
@@ -120,11 +135,22 @@ const NavBar = () => {
     setAnchorElUser(null);
   };
 
-  const handleClickUserMenu = (event: any) => {
+  const handleClickUserMenu = async (event: any) => {
     setAnchorElUser(null);
 
     if (!event || !event.target) {
       return;
+    }
+
+    if (event.target.textContent === `AlgoExplorer`) {
+      window.open(
+        createAlgoExplorerUrl(
+          selectedChain,
+          address,
+          AlgoExplorerUrlType.Address,
+        ),
+        `_blank`,
+      );
     }
 
     if (event.target.textContent === `My Swaps`) {
@@ -132,46 +158,20 @@ const NavBar = () => {
     }
 
     if (event.target.textContent === `Logout`) {
-      disconnect();
+      await disconnect();
     }
   };
 
-  useEffect(() => {
+  useEffectOnce(() => {
     // Check if connection is already established
-    if (connector.connected) {
-      const { accounts } = connector;
-      dispatch(onSessionUpdate(accounts));
+    const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
+    if (!connectedWalletType || connectedWalletType === ``) {
+      return;
     }
+    connect(connectedWalletType as WalletType);
+  });
 
-    // Subscribe to connection events
-    console.log(`%cin subscribeToEvents`, `background: yellow`);
-    connector.on(`connect`, (error, payload) => {
-      console.log(`%cOn connect`, `background: yellow`);
-      if (error) {
-        throw error;
-      }
-      const { accounts } = payload.params[0];
-      dispatch(onSessionUpdate(accounts));
-      QRCodeModal.close();
-    });
-
-    connector.on(`session_update`, (error, payload) => {
-      console.log(`%cOn session_update`, `background: yellow`);
-      if (error) {
-        throw error;
-      }
-      const { accounts } = payload.params[0];
-      dispatch(onSessionUpdate(accounts));
-    });
-
-    connector.on(`disconnect`, (error) => {
-      console.log(`%cOn disconnect`, `background: yellow`);
-      if (error) {
-        throw error;
-      }
-      dispatch(reset());
-    });
-
+  useEffect(() => {
     if (typeof window !== `undefined`) {
       const persistedChainType =
         chain !== undefined
@@ -180,7 +180,6 @@ const NavBar = () => {
             : ChainType.TestNet
           : (localStorage.getItem(`ChainType`) as ChainType) ??
             ChainType.TestNet;
-      console.log(persistedChainType);
       dispatch(switchChain(persistedChainType));
     }
 
@@ -192,13 +191,6 @@ const NavBar = () => {
       dispatch(getProxy({ address, chain: selectedChain }));
       dispatch(getAccountSwaps({ chain: selectedChain, address }));
     }
-
-    return () => {
-      console.log(`%cin unsubscribeFromEvents`, `background: yellow`);
-      connector.off(`connect`);
-      connector.off(`session_update`);
-      connector.off(`disconnect`);
-    };
   }, [dispatch, connector, address, selectedChain, chain]);
 
   const nativeCurrency = assets.find(
@@ -207,9 +199,7 @@ const NavBar = () => {
 
   const handleOnClientSelected = (client: WalletClient) => {
     dispatch(setIsWalletPopupOpen(false));
-    if (client.type === WalletType.PeraWallet) {
-      connect();
-    }
+    connect(client.type);
   };
 
   return (
@@ -224,11 +214,12 @@ const NavBar = () => {
           setIsAboutPopupOpen(state);
         }}
       />
-      <AppBar position="static">
+      <AppBar id={NAV_BAR_ID} position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Link href="/">
               <IconButton
+                id={NAV_BAR_HOME_BTN_ID}
                 size="medium"
                 sx={{ display: { xs: `none`, md: `flex` }, mr: 1 }}
                 aria-label="home icon"
@@ -247,6 +238,7 @@ const NavBar = () => {
 
             <Box sx={{ flexGrow: 1, display: { xs: `flex`, md: `none` } }}>
               <IconButton
+                id={NAV_BAR_HOME_BTN_ID}
                 size="large"
                 aria-label="home button"
                 aria-controls="menu-appbar"
@@ -262,7 +254,7 @@ const NavBar = () => {
                 />
               </IconButton>
               <Menu
-                id="menu-appbar"
+                id={NAV_BAR_MENU_APPBAR_ID}
                 anchorEl={anchorElNav}
                 anchorOrigin={{
                   vertical: `bottom`,
@@ -280,17 +272,29 @@ const NavBar = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <Link key={page.title} href={page.url}>
-                    <MenuItem
-                      onClick={() => {
-                        handleCloseNavMenu();
-                      }}
+                  <Link
+                    id={NAV_BAR_MENU_APPBAR_ITEM_ID(page.title)}
+                    key={page.title}
+                    href={page.url}
+                    passHref
+                  >
+                    <a
+                      target={page.target}
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: `none`, color: `white` }}
                     >
-                      <Typography textAlign="center">{page.title}</Typography>
-                    </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleCloseNavMenu();
+                        }}
+                      >
+                        <Typography textAlign="center">{page.title}</Typography>
+                      </MenuItem>
+                    </a>
                   </Link>
                 ))}
                 <MenuItem
+                  id={NAV_BAR_MENU_APPBAR_ITEM_ID(`about`)}
                   key={`about`}
                   onClick={() => {
                     setIsAboutPopupOpen(!isAboutPopupOpen);
@@ -304,18 +308,30 @@ const NavBar = () => {
 
             <Box sx={{ flexGrow: 1, display: { xs: `none`, md: `flex` } }}>
               {pages.map((page) => (
-                <Link key={page.title} href={page.url}>
-                  <Button
-                    key={page.title}
-                    disabled={page.disabled}
-                    onClick={handleCloseNavMenu}
-                    sx={{ my: 2, color: `white`, display: `block` }}
+                <Link
+                  id={NAV_BAR_MENU_APPBAR_ITEM_ID(page.title)}
+                  key={page.title}
+                  href={page.url}
+                  passHref
+                >
+                  <a
+                    target={page.target}
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: `none`, color: `white` }}
                   >
-                    {page.title}
-                  </Button>
+                    <Button
+                      key={page.title}
+                      disabled={page.disabled}
+                      onClick={handleCloseNavMenu}
+                      sx={{ my: 2, color: `white`, display: `block` }}
+                    >
+                      {page.title}
+                    </Button>
+                  </a>
                 </Link>
               ))}
               <Button
+                id={NAV_BAR_MENU_APPBAR_ITEM_ID(`about`)}
                 key={`about`}
                 onClick={() => {
                   setIsAboutPopupOpen(true);
@@ -327,7 +343,7 @@ const NavBar = () => {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-              {address ? (
+              {connector.connected ? (
                 <>
                   <Grid container alignItems={`center`} spacing={1}>
                     <Grid item xs>
@@ -362,6 +378,7 @@ const NavBar = () => {
                     <Grid item xs>
                       <Tooltip title="Open settings">
                         <IconButton
+                          id={NAV_BAR_SETTINGS_BTN_ID}
                           onClick={handleOpenUserMenu}
                           sx={{ p: 0, borderRadius: 1 }}
                         >
@@ -406,6 +423,7 @@ const NavBar = () => {
                     <FormControlLabel
                       control={
                         <Switch
+                          id={NAV_BAR_CHAIN_SWITCH_ID}
                           checked={selectedChain === ChainType.MainNet}
                           onChange={() => {
                             const newValue =
@@ -425,6 +443,7 @@ const NavBar = () => {
                     <Divider />
                     {settings.map((setting) => (
                       <MenuItem
+                        id={NAV_BAR_SETTINGS_MENU_ITEM_ID(setting)}
                         sx={{ justifyContent: `center` }}
                         key={setting}
                         onClick={handleClickUserMenu}
@@ -447,6 +466,7 @@ const NavBar = () => {
                     labelPlacement="start"
                     control={
                       <Switch
+                        id={NAV_BAR_CHAIN_SWITCH_ID}
                         size="small"
                         checked={selectedChain === ChainType.MainNet}
                         onChange={() => {
@@ -463,7 +483,7 @@ const NavBar = () => {
                     label={selectedChain === `mainnet` ? `MainNet` : `TestNet`}
                   />
                   <Button
-                    id="connect-wallet-button"
+                    id={NAV_BAR_CONNECT_BTN_ID}
                     onClick={() => {
                       dispatch(setIsWalletPopupOpen(true));
                     }}

@@ -36,6 +36,12 @@ import CryptoTextField from '../TextFields/CryptoTextField';
 import { CoinType } from '@/models/CoinType';
 import axios from 'axios';
 import { useAppSelector } from '@/redux/store/hooks';
+import {
+  DIALOG_CANCEL_BTN_ID,
+  DIALOG_SELECT_BTN_ID,
+  TO_ASSET_PICKER_DIALOG_ID,
+  TO_ASSET_PICKER_DIALOG_SEARCH_ID,
+} from './constants';
 
 type Props = {
   open: boolean;
@@ -109,7 +115,7 @@ export const ToAssetPickerDialog = ({
 
   return (
     <div>
-      <Dialog open={open}>
+      <Dialog id={TO_ASSET_PICKER_DIALOG_ID} open={open}>
         <DialogTitle>Pick Asset</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -117,7 +123,7 @@ export const ToAssetPickerDialog = ({
           </DialogContentText>
 
           <Autocomplete
-            id="requiring-assets-picker"
+            id={TO_ASSET_PICKER_DIALOG_SEARCH_ID}
             autoComplete
             open={autocompleteOpen}
             onOpen={() => {
@@ -172,6 +178,7 @@ export const ToAssetPickerDialog = ({
         </DialogContent>
         <DialogActions>
           <Button
+            id={DIALOG_CANCEL_BTN_ID}
             onClick={() => {
               setSelectedAsset(undefined);
               setSelectedAssetAmount(undefined);
@@ -182,6 +189,7 @@ export const ToAssetPickerDialog = ({
           </Button>
 
           <Button
+            id={DIALOG_SELECT_BTN_ID}
             onClick={() => {
               if (selectedAsset && selectedAssetAmount) {
                 onAssetSelected(selectedAsset, selectedAssetAmount);

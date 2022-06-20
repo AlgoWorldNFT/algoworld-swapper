@@ -28,12 +28,17 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useCopyToClipboard } from 'react-use';
+import {
+  DIALOG_CANCEL_BTN_ID,
+  SHARE_SWAP_COPY_BTN_ID,
+  SHARE_SWAP_DIALOG_ID,
+} from './constants';
 
 type Props = {
-  title: string;
   children: React.ReactNode;
   open: boolean;
   swapConfiguration?: SwapConfiguration;
+  title?: string;
   setOpen?: (open: boolean) => void;
   onClose?: () => void;
   onConfirm?: () => void;
@@ -41,10 +46,10 @@ type Props = {
 };
 
 const ShareSwapDialog = ({
-  title,
   children,
   open,
   swapConfiguration,
+  title = `Share AlgoWorld Swap`,
   setOpen,
   onClose,
 }: Props) => {
@@ -55,7 +60,9 @@ const ShareSwapDialog = ({
 
   return (
     <Dialog
+      id={SHARE_SWAP_DIALOG_ID}
       open={open}
+      sx={{ visibility: open ? `visible` : `hidden` }}
       onClose={() => {
         if (setOpen) setOpen(false);
       }}
@@ -65,6 +72,7 @@ const ShareSwapDialog = ({
       <DialogContent>{children}</DialogContent>
       <DialogActions>
         <Button
+          id={DIALOG_CANCEL_BTN_ID}
           onClick={() => {
             if (setOpen) {
               setOpen(false);
@@ -77,6 +85,7 @@ const ShareSwapDialog = ({
           Close
         </Button>
         <Button
+          id={SHARE_SWAP_COPY_BTN_ID}
           onClick={() => {
             if (swapConfiguration) {
               copyToClipboard(

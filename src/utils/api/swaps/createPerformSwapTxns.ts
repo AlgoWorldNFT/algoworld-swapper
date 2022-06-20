@@ -21,7 +21,6 @@ import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import { SwapConfiguration, SwapType } from '@/models/Swap';
 import { TransactionToSignType } from '@/models/Transaction';
-import WalletConnect from '@walletconnect/client';
 import algosdk, { LogicSigAccount } from 'algosdk';
 import createTransactionToSign from '../transactions/createTransactionToSign';
 import getTransactionParams from '../transactions/getTransactionParams';
@@ -29,7 +28,6 @@ import getTransactionParams from '../transactions/getTransactionParams';
 async function createAsaToAsaSwapPerformTxns(
   chain: ChainType,
   userAddress: string,
-  userWallet: WalletConnect,
   creatorAddress: string,
   escrowLsig: LogicSigAccount,
   offering: Asset,
@@ -65,7 +63,7 @@ async function createAsaToAsaSwapPerformTxns(
       note: new Uint8Array(Buffer.from(note)),
       suggestedParams,
     }),
-    userWallet,
+    undefined,
     TransactionToSignType.UserTransaction,
   );
   txns.push(requestedAsaXferTxn);
@@ -78,7 +76,7 @@ async function createAsaToAsaSwapPerformTxns(
       note: new Uint8Array(Buffer.from(note)),
       suggestedParams,
     }),
-    userWallet,
+    undefined,
     TransactionToSignType.UserFeeTransaction,
   );
   txns.push(incentiveFeeTxn);
@@ -89,7 +87,6 @@ async function createAsaToAsaSwapPerformTxns(
 async function createAsasToAlgoSwapPerformTxns(
   chain: ChainType,
   userAddress: string,
-  userWallet: WalletConnect,
   creatorAddress: string,
   escrowLsig: LogicSigAccount,
   offering: Asset[],
@@ -108,7 +105,7 @@ async function createAsasToAlgoSwapPerformTxns(
       note: new Uint8Array(Buffer.from(note)),
       suggestedParams,
     }),
-    userWallet,
+    undefined,
     TransactionToSignType.UserFeeTransaction,
   );
   txns.push(incentiveFeeTxn);
@@ -121,7 +118,7 @@ async function createAsasToAlgoSwapPerformTxns(
       note: new Uint8Array(Buffer.from(note)),
       suggestedParams,
     }),
-    userWallet,
+    undefined,
     TransactionToSignType.UserTransaction,
   );
   txns.push(requestedAlgoTxn);
@@ -149,7 +146,6 @@ async function createAsasToAlgoSwapPerformTxns(
 export default async function createPerformSwapTxns(
   chain: ChainType,
   userAddress: string,
-  userWallet: WalletConnect,
   escrowLsig: LogicSigAccount,
   swapConfiguration: SwapConfiguration,
 ) {
@@ -158,7 +154,6 @@ export default async function createPerformSwapTxns(
       ? await createAsaToAsaSwapPerformTxns(
           chain,
           userAddress,
-          userWallet,
           swapConfiguration.creator,
           escrowLsig,
           swapConfiguration.offering[0],
@@ -167,7 +162,6 @@ export default async function createPerformSwapTxns(
       : await createAsasToAlgoSwapPerformTxns(
           chain,
           userAddress,
-          userWallet,
           swapConfiguration.creator,
           escrowLsig,
           swapConfiguration.offering,

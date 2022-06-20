@@ -27,6 +27,7 @@ import {
   setIsManageSwapPopupOpen,
   setSelectedManageSwap,
 } from '@/redux/slices/applicationSlice';
+import { MY_SWAPS_TABLE_MANAGE_BTN_ID } from './constants';
 
 const assetsToRowString = (assets: Asset[], offering = true) => {
   let response = ``;
@@ -138,7 +139,7 @@ const columns: GridColDef[] = [
     headerClassName: `super-app-theme--header`,
     align: `center`,
     valueFormatter: ({ value }) => {
-      return value === SwapType.ASA_TO_ASA ? `Asa to Asa` : `Multi Asa to Algo`;
+      return value === SwapType.ASA_TO_ASA ? `Asa to Asa` : `Asas to Algo`;
     },
   },
   {
@@ -155,6 +156,7 @@ const columns: GridColDef[] = [
     renderCell: (params) => {
       return (
         <Button
+          id={MY_SWAPS_TABLE_MANAGE_BTN_ID(params.row.escrow)}
           onClick={() => {
             store.dispatch(setSelectedManageSwap(params.row));
             store.dispatch(setIsManageSwapPopupOpen(true));

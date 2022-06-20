@@ -29,6 +29,11 @@ import CryptoTextField from '../TextFields/CryptoTextField';
 import { CoinType } from '@/models/CoinType';
 import { selectAssets } from '@/redux/slices/walletConnectSlice';
 import { useAppSelector } from '@/redux/store/hooks';
+import {
+  DIALOG_CANCEL_BTN_ID,
+  DIALOG_SELECT_BTN_ID,
+  TO_ALGO_PICKER_DIALOG_ID,
+} from './constants';
 
 type Props = {
   open: boolean;
@@ -54,7 +59,7 @@ export const ToAlgoPickerDialog = ({
 
   return (
     <div>
-      <Dialog open={open}>
+      <Dialog id={TO_ALGO_PICKER_DIALOG_ID} open={open}>
         <DialogTitle>Input amount</DialogTitle>
         <DialogContent>
           <DialogContentText>Enter the requested Algo amount</DialogContentText>
@@ -75,6 +80,7 @@ export const ToAlgoPickerDialog = ({
         </DialogContent>
         <DialogActions>
           <Button
+            id={DIALOG_CANCEL_BTN_ID}
             onClick={() => {
               setSelectedAlgoAmount(undefined);
               onCancel();
@@ -84,6 +90,7 @@ export const ToAlgoPickerDialog = ({
           </Button>
 
           <Button
+            id={DIALOG_SELECT_BTN_ID}
             onClick={() => {
               if (selectedAlgoAmount) {
                 onAlgoAmoutSelected(algoAsset, selectedAlgoAmount);
