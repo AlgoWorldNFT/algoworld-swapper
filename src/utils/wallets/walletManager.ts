@@ -6,22 +6,17 @@ import {
   LogicSigAccount,
   signLogicSigTransactionObject,
 } from 'algosdk';
-import MnemonicClient from './mnemonic';
-import WalletConnectClient from './walletConnect';
 
 export default class WalletManager {
   private clientType: WalletType | undefined;
   private client: AlgoWorldWallet | undefined;
 
-  public setWalletClient = (walletType: WalletType) => {
+  public setWalletClient = (
+    walletType: WalletType,
+    walletInstance: AlgoWorldWallet,
+  ) => {
     this.clientType = walletType;
-
-    if (walletType === WalletType.PeraWallet) {
-      this.client = new WalletConnectClient();
-    } else {
-      const mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? ``;
-      this.client = new MnemonicClient(mnemonic);
-    }
+    this.client = walletInstance;
   };
 
   public connect = async (): Promise<void> => {
@@ -95,9 +90,5 @@ export default class WalletManager {
 
   get connected(): boolean {
     return Boolean(this.client && this.client.connected());
-  }
-
-  get pending(): boolean {
-    return Boolean(this.client && this.client.pending());
   }
 }

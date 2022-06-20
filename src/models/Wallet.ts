@@ -37,5 +37,4 @@ export interface AlgoWorldWallet {
   disconnect(): Promise<void>;
   accounts(): string[];
   connected(): boolean;
-  pending(): boolean;
 }

@@ -16,7 +16,9 @@ export default class WalletConnectClient implements AlgoWorldWallet {
 
   constructor() {
     this.client = new WalletConnect(connectProps);
+  }
 
+  private subsribeToEvents = async () => {
     // Subscribe to connection events
     console.log(`%cin subscribeToEvents`, `background: yellow`);
     this.client.on(`connect`, (error, payload) => {
@@ -45,12 +47,13 @@ export default class WalletConnectClient implements AlgoWorldWallet {
       }
       store.dispatch(reset());
     });
-  }
+  };
 
   public connect = async () => {
     if (this.client.connected) return;
     if (this.client.pending) return QRCodeModal.open(this.client.uri, null);
-    return this.client.createSession();
+    await this.client.createSession();
+    await this.subsribeToEvents();
   };
 
   public address = () => {
@@ -89,9 +92,5 @@ export default class WalletConnectClient implements AlgoWorldWallet {
 
   public connected = () => {
     return this.client.connected;
-  };
-
-  public pending = () => {
-    return this.client.pending;
   };
 }

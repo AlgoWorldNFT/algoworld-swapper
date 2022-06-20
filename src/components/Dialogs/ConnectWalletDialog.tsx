@@ -30,7 +30,7 @@ import { CONNECT_WALLET_DIALOG_ID } from './constants';
 
 const walletClients = [
   { type: WalletType.PeraWallet, title: `PeraWallet`, supported: true },
-  { type: WalletType.MyAlgoWallet, title: `🚧 MyAlgoWallet`, supported: false },
+  { type: WalletType.MyAlgoWallet, title: `MyAlgoWallet`, supported: true },
 ] as WalletClient[];
 
 if (process.env.NEXT_PUBLIC_CI) {

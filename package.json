@@ -40,6 +40,7 @@
     "@mui/lab": "5.0.0-alpha.85",
     "@mui/material": "5.8.3",
     "@mui/x-data-grid": "5.12.1",
+    "@randlabs/myalgo-connect": "1.2.0",
     "@reduxjs/toolkit": "1.8.2",
     "@sentry/nextjs": "7.1.1",
     "@walletconnect/client": "1.7.8",

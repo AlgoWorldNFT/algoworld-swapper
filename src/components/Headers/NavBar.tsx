@@ -63,6 +63,10 @@ import {
   NAV_BAR_SETTINGS_BTN_ID,
   NAV_BAR_SETTINGS_MENU_ITEM_ID,
 } from './constants';
+import { useEffectOnce } from 'react-use';
+import MnemonicClient from '@/utils/wallets/mnemonic';
+import MyAlgoWalletClient from '@/utils/wallets/myAlgoWallet';
+import WalletConnectClient from '@/utils/wallets/walletConnect';
 
 type PageConfiguration = {
   title: string;
@@ -90,6 +94,11 @@ const NavBar = () => {
   const router = useRouter();
   const { chain } = router.query as {
     chain?: string;
+  };
+
+  const walletClients = {
+    [WalletType.Mnemonic]: new MnemonicClient(),
+    [WalletType.PeraWallet]: new WalletConnectClient(),
   };
 
   const assets = useAppSelector(selectAssets);
@@ -124,11 +133,11 @@ const NavBar = () => {
           ? dispatch(onSessionUpdate(accounts))
           : await connector.connect();
       } else {
-        connector.setWalletClient(clientType);
+        connector.setWalletClient(clientType, walletClients[clientType]);
         await connector.connect();
       }
     },
-    [connector, dispatch],
+    [connector, dispatch, walletClients],
   );
 
   const disconnect = async () => {
@@ -179,6 +188,17 @@ const NavBar = () => {
     }
   };
 
+  useEffectOnce(() => {
+    const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
+    if (!connectedWalletType || connectedWalletType === ``) {
+      return;
+    } else {
+      connect(connectedWalletType as WalletType);
+    }
+
+    walletClients[WalletType.MyAlgoWallet] = new MyAlgoWalletClient();
+  });
+
   useEffect(() => {
     if (typeof window !== `undefined`) {
       const persistedChainType =
@@ -189,13 +209,6 @@ const NavBar = () => {
           : (localStorage.getItem(`ChainType`) as ChainType) ??
             ChainType.TestNet;
       dispatch(switchChain(persistedChainType));
-    }
-
-    const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
-    if (!connectedWalletType || connectedWalletType === ``) {
-      return;
-    } else {
-      connect(connectedWalletType as WalletType);
     }
   }, [dispatch, connector, address, selectedChain, chain, connect]);
 
