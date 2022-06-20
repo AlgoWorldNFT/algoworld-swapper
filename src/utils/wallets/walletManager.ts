@@ -13,7 +13,7 @@ export default class WalletManager {
   private clientType: WalletType | undefined;
   private client: AlgoWorldWallet | undefined;
 
-  public setWalletClient = async (walletType: WalletType) => {
+  public setWalletClient = (walletType: WalletType) => {
     this.clientType = walletType;
 
     if (walletType === WalletType.PeraWallet) {
@@ -27,7 +27,7 @@ export default class WalletManager {
   public connect = async (): Promise<void> => {
     if (this.client) {
       localStorage.setItem(CONNECTED_WALLET_TYPE, this.clientType ?? ``);
-      return await this.client.connect();
+      return this.client.connect();
     } else {
       throw new Error(`Client not set`);
     }

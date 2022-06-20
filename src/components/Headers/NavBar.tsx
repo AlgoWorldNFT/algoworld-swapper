@@ -29,7 +29,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
-import { useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { ConnectContext } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import {
@@ -38,6 +38,7 @@ import {
   getAccountSwaps,
   getProxy,
   switchChain,
+  onSessionUpdate,
 } from '@/redux/slices/walletConnectSlice';
 import { formatBigNumWithDecimals } from '@/redux/helpers/utilities';
 import { Asset } from '@/models/Asset';
@@ -50,7 +51,6 @@ import AboutDialog from '../Dialogs/AboutDialog';
 import { ChainType } from '@/models/Chain';
 import Link from 'next/link';
 import { CONNECTED_WALLET_TYPE } from '@/common/constants';
-import { useEffectOnce } from 'react-use';
 import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
 import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
 import {
@@ -106,13 +106,30 @@ const NavBar = () => {
 
   const dispatch = useAppDispatch();
 
+  useMemo(() => {
+    if (address) {
+      dispatch(getAccountAssets({ chain: selectedChain, address }));
+      dispatch(getProxy({ address, chain: selectedChain }));
+      dispatch(getAccountSwaps({ chain: selectedChain, address }));
+    }
+  }, [address, dispatch, selectedChain]);
+
   const connector = useContext(ConnectContext);
 
-  const connect = async (clientType: WalletType) => {
-    if (connector.connected) return;
-    await connector.setWalletClient(clientType);
-    await connector.connect();
-  };
+  const connect = useCallback(
+    async (clientType: WalletType) => {
+      if (connector.connected) {
+        const accounts = connector.accounts();
+        accounts.length > 0
+          ? dispatch(onSessionUpdate(accounts))
+          : await connector.connect();
+      } else {
+        connector.setWalletClient(clientType);
+        await connector.connect();
+      }
+    },
+    [connector, dispatch],
+  );
 
   const disconnect = async () => {
     await connector
@@ -162,15 +179,6 @@ const NavBar = () => {
     }
   };
 
-  useEffectOnce(() => {
-    // Check if connection is already established
-    const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
-    if (!connectedWalletType || connectedWalletType === ``) {
-      return;
-    }
-    connect(connectedWalletType as WalletType);
-  });
-
   useEffect(() => {
     if (typeof window !== `undefined`) {
       const persistedChainType =
@@ -183,23 +191,21 @@ const NavBar = () => {
       dispatch(switchChain(persistedChainType));
     }
 
-    // Retrieve assets info
-    if (address?.length > 0) {
-      console.log(`chain: `, selectedChain);
-
-      dispatch(getAccountAssets({ chain: selectedChain, address }));
-      dispatch(getProxy({ address, chain: selectedChain }));
-      dispatch(getAccountSwaps({ chain: selectedChain, address }));
+    const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
+    if (!connectedWalletType || connectedWalletType === ``) {
+      return;
+    } else {
+      connect(connectedWalletType as WalletType);
     }
-  }, [dispatch, connector, address, selectedChain, chain]);
+  }, [dispatch, connector, address, selectedChain, chain, connect]);
 
   const nativeCurrency = assets.find(
     (asset: Asset) => asset.index === 0,
   ) as Asset;
 
-  const handleOnClientSelected = (client: WalletClient) => {
+  const handleOnClientSelected = async (client: WalletClient) => {
     dispatch(setIsWalletPopupOpen(false));
-    connect(client.type);
+    await connect(client.type);
   };
 
   return (
