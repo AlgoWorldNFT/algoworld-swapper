@@ -24,7 +24,11 @@ import {
   Button,
   Divider,
   Typography,
+  Checkbox,
+  FormControlLabel,
+  Tooltip,
 } from '@mui/material';
+import { useState } from 'react';
 import {
   CONFIRM_DIALOG_ID,
   DIALOG_CANCEL_BTN_ID,
@@ -36,8 +40,9 @@ type Props = {
   children: React.ReactNode;
   open: boolean;
   setOpen: (open: boolean) => void;
-  onConfirm: () => void;
+  onConfirm: (autoShare?: boolean) => void;
   transactionsFee?: number | string;
+  showAutoShareSwitch?: boolean;
 };
 
 const ConfirmDialog = ({
@@ -47,7 +52,14 @@ const ConfirmDialog = ({
   setOpen,
   onConfirm,
   transactionsFee,
+  showAutoShareSwitch = true,
 }: Props) => {
+  const [autoShare, setAutoShare] = useState(false);
+
+  const handleSetAutoShare = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAutoShare(event.target.checked);
+  };
+
   return (
     <Dialog
       id={CONFIRM_DIALOG_ID}
@@ -67,6 +79,23 @@ const ConfirmDialog = ({
             </Typography>
           </>
         )}
+
+        {showAutoShareSwitch && (
+          <>
+            <Divider sx={{ pt: 1 }}></Divider>
+            <Tooltip
+              enterTouchDelay={0}
+              title="Automatically share swap URL with AlgoWorld community (Telegram and Discord). Do not select this option if you want to keep this swap private."
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox checked={autoShare} onChange={handleSetAutoShare} />
+                }
+                label="Auto share swap url"
+              />
+            </Tooltip>
+          </>
+        )}
       </DialogContent>
       <DialogActions>
         <Button
@@ -80,7 +109,7 @@ const ConfirmDialog = ({
           id={DIALOG_SELECT_BTN_ID}
           onClick={() => {
             setOpen(false);
-            onConfirm();
+            showAutoShareSwitch ? onConfirm(autoShare) : onConfirm();
           }}
         >
           Proceed

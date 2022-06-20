@@ -287,6 +287,8 @@ export default function AsaToAsa() {
 
     resetLoading();
     setShareSwapDialogOpen(true);
+
+    return depositTxnId;
   };
 
   const handleStoreConfiguration = async () => {
@@ -318,7 +320,7 @@ export default function AsaToAsa() {
     });
   };
 
-  const handleSwap = async () => {
+  const handleSwap = async (autoShare = false) => {
     setLoading(`Setting up swap, please sign initialization transactions...`);
 
     if (escrowState.error || !escrowState.value) {
@@ -356,7 +358,10 @@ export default function AsaToAsa() {
       await handleStoreConfiguration();
     }
 
-    await handleDepositSwap();
+    const depositTxn = await handleDepositSwap();
+    if (depositTxn && autoShare) {
+      //TODO: refactor
+    }
   };
 
   const resetStates = () => {
@@ -463,6 +468,7 @@ export default function AsaToAsa() {
         setOpen={setConfirmSwapDialogOpen}
         onConfirm={handleSwap}
         transactionsFee={0.32}
+        showAutoShareSwitch
       >
         A swapper escrow contract will be created, a small fixed fee in algos
         will be charged to fund the wallet and your offering asa will be then
