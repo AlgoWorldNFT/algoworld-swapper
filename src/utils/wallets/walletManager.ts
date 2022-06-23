@@ -29,7 +29,6 @@ export default class WalletManager {
 
   public connect = async (): Promise<void> => {
     if (this.client) {
-      localStorage.setItem(CONNECTED_WALLET_TYPE, this.clientType ?? ``);
       return this.client.connect();
     } else {
       throw new Error(`Client not set`);
