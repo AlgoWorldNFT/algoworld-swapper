@@ -1,4 +1,5 @@
-import { AlgoWorldWallet } from '@/models/Wallet';
+import { CONNECTED_WALLET_TYPE } from '@/common/constants';
+import { AlgoWorldWallet, WalletType } from '@/models/Wallet';
 import { onSessionUpdate } from '@/redux/slices/walletConnectSlice';
 import store from '@/redux/store';
 import algosdk, { Account, encodeAddress, Transaction } from 'algosdk';
@@ -15,6 +16,7 @@ export default class MnemonicClient implements AlgoWorldWallet {
   public connect = async () => {
     this.client = algosdk.mnemonicToSecretKey(this.mnemonic);
     store.dispatch(onSessionUpdate([this.client.addr]));
+    localStorage.setItem(CONNECTED_WALLET_TYPE, WalletType.Mnemonic);
     return Promise.resolve();
   };
 

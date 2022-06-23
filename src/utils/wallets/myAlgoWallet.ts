@@ -1,4 +1,5 @@
-import { AlgoWorldWallet } from '@/models/Wallet';
+import { CONNECTED_WALLET_TYPE } from '@/common/constants';
+import { AlgoWorldWallet, WalletType } from '@/models/Wallet';
 import { onSessionUpdate } from '@/redux/slices/walletConnectSlice';
 import store from '@/redux/store';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
@@ -33,6 +34,7 @@ export default class MyAlgoWalletClient implements AlgoWorldWallet {
         });
         this.userAccounts = accounts.map((account) => account.address);
         store.dispatch(onSessionUpdate(this.userAccounts));
+        localStorage.setItem(CONNECTED_WALLET_TYPE, WalletType.MyAlgoWallet);
         return Promise.resolve();
       } catch (error) {
         console.log(error);

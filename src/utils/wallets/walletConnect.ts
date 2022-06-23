@@ -1,4 +1,4 @@
-import { AlgoWorldWallet } from '@/models/Wallet';
+import { AlgoWorldWallet, WalletType } from '@/models/Wallet';
 import WalletConnect from '@walletconnect/client';
 import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
 import { encodeAddress, Transaction } from 'algosdk';
@@ -6,6 +6,7 @@ import store from '@/redux/store';
 import { onSessionUpdate, reset } from '@/redux/slices/walletConnectSlice';
 import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
 import getWalletConnectTxn from '../api/transactions/walletConnect/getWalletConnectTxn';
+import { CONNECTED_WALLET_TYPE } from '@/common/constants';
 
 const connectProps = {
   bridge: `https://bridge.walletconnect.org`,
@@ -29,6 +30,7 @@ export default class WalletConnectClient implements AlgoWorldWallet {
       const { accounts } = payload.params[0];
       store.dispatch(onSessionUpdate(accounts));
       QRCodeModal.close();
+      localStorage.setItem(CONNECTED_WALLET_TYPE, WalletType.PeraWallet);
     });
 
     this.client.on(`session_update`, (error, payload) => {
