@@ -51,6 +51,13 @@ lib-cov
 *.spec.ts
 *.spec.tsx
 
+jest.config.js
+jest.setup.js
+playwright.config.js
+/e2e
+/.github
+/.vscode
+
 playwright-report
 
 #python
