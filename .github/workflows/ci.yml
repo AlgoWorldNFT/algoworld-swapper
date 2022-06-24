@@ -33,6 +33,9 @@ jobs:
       - name: Run TypeScript lint
         run: yarn lint
 
+      - name: Run unit tests
+        run: yarn test:ci
+
       - uses: pre-commit/action@v2.0.3
         name: 'Run pre-commit checks'
         with:
