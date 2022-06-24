@@ -13,6 +13,7 @@ const customJestConfig = {
     // Handle module aliases (this will be automatically configured for you soon)
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  testPathIgnorePatterns: ['<rootDir>/.vercel'],
   testEnvironment: 'jest-environment-jsdom',
   collectCoverageFrom: ['**/*.{ts,tsx}'],
 };

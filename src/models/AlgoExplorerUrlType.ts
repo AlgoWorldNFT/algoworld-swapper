@@ -17,9 +17,9 @@
  */
 
 enum AlgoExplorerUrlType {
-  Transaction,
-  Address,
-  Asset,
+  Transaction = `Transaction`,
+  Address = `Address`,
+  Asset = `Asset`,
 }
 
 export default AlgoExplorerUrlType;
