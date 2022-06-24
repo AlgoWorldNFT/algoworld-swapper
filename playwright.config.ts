@@ -8,6 +8,7 @@ const config: PlaywrightTestConfig = {
       use: { ...devices[`Desktop Chrome`] },
     },
   ],
+  testDir: `e2e`,
   reporter: `html`,
   use: {
     baseURL: BASE_URL,
