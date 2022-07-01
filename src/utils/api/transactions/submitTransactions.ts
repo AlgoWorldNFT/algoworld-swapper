@@ -18,7 +18,6 @@
 
 import { ChainType } from '@/models/Chain';
 import { SubmitTransactionResponse } from '@/models/Transaction';
-import captureError from '@/utils/errors/captureError';
 import { algodForChain } from '../algorand';
 import waitForTransaction from './waitForTransaction';
 
@@ -34,7 +33,7 @@ export default async function submitTransactions(
     txIdResponse = txId;
     confirmedRound = await waitForTransaction(chain, txId);
   } catch (e) {
-    captureError(e);
+    console.log(e);
   }
 
   return {
