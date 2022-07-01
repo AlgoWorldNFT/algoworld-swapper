@@ -3,6 +3,9 @@
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
+const withPWA = require('next-pwa');
+const runtimeCaching = require('next-pwa/cache');
+
 const moduleExports = {
   reactStrictMode: true,
   images: {
@@ -19,4 +22,7 @@ const moduleExports = {
   },
 };
 
-module.exports = moduleExports;
+module.exports = withPWA({
+  ...moduleExports,
+  pwa: { dest: 'public', runtimeCaching },
+});
