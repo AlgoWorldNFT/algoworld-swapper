@@ -1,6 +1,6 @@
 import { CONNECTED_WALLET_TYPE } from '@/common/constants';
 import { AlgoWorldWallet, WalletType } from '@/models/Wallet';
-import { onSessionUpdate } from '@/redux/slices/walletConnectSlice';
+import { onSessionUpdate, reset } from '@/redux/slices/walletConnectSlice';
 import store from '@/redux/store';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 import { encodeAddress, Transaction } from 'algosdk';
@@ -90,6 +90,7 @@ export default class MyAlgoWalletClient implements AlgoWorldWallet {
   public disconnect = async () => {
     this.client = undefined;
     this.userAccounts = [];
+    store.dispatch(reset());
     return Promise.resolve();
   };
 

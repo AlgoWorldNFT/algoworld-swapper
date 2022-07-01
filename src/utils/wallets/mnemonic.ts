@@ -1,6 +1,6 @@
 import { CONNECTED_WALLET_TYPE } from '@/common/constants';
 import { AlgoWorldWallet, WalletType } from '@/models/Wallet';
-import { onSessionUpdate } from '@/redux/slices/walletConnectSlice';
+import { onSessionUpdate, reset } from '@/redux/slices/walletConnectSlice';
 import store from '@/redux/store';
 import algosdk, { Account, encodeAddress, Transaction } from 'algosdk';
 
@@ -48,6 +48,7 @@ export default class MnemonicClient implements AlgoWorldWallet {
 
   public disconnect = async () => {
     this.client = undefined;
+    store.dispatch(reset());
     return;
   };
 

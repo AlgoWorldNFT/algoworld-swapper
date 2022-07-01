@@ -49,7 +49,7 @@ export default function Dashboard() {
         Currently supports ASA to ASA and ASAs to Algo swaps."
       />
 
-      <Container component="main" sx={{ pt: 5, pb: 5 }}>
+      <Container component="main" sx={{ pt: 5, pb: 15 }}>
         <Stack
           justifyContent={`center`}
           alignItems={`center`}
