@@ -45,7 +45,22 @@ export default function MyApp(props: MyAppProps) {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <meta charSet="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+        />
+        <meta
+          name="description"
+          content="⚡️ Free and trustless ASA swapper, powered by Algorand"
+        />
+        <meta
+          name="keywords"
+          content="Algorand, AlgoWorld, Swapper, ASA, NFT, Blockchain"
+        />
+        <title>AlgoWorld Swapper</title>
+
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />
       </Head>
