@@ -24,6 +24,7 @@ const initialState = {
   isWalletPopupOpen: false,
   isManageSwapPopupOpen: false,
   isShareSwapPopupOpen: false,
+  isAboutPopupOpen: false,
   loadingIndicator: {
     isLoading: false,
     message: undefined,
@@ -48,6 +49,9 @@ export const applicationSlice = createSlice({
     setIsShareSwapPopupOpen: (state, action: PayloadAction<boolean>) => {
       state.isShareSwapPopupOpen = action.payload;
     },
+    setIsAboutPopupOpen: (state, action: PayloadAction<boolean>) => {
+      state.isAboutPopupOpen = action.payload;
+    },
     setSelectedManageSwap: (
       state,
       action: PayloadAction<SwapConfiguration | undefined>,
@@ -67,6 +71,7 @@ export const {
   setIsWalletPopupOpen,
   setIsManageSwapPopupOpen,
   setIsShareSwapPopupOpen,
+  setIsAboutPopupOpen,
   setLoadingIndicator,
   setSelectedManageSwap,
   setTheme,
