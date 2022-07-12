@@ -26,10 +26,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 type Props = {
   open: boolean;
-  setOpen: (open: boolean) => void;
+  changeState: (open: boolean) => void;
 };
 
-export default function AboutDialog({ open, setOpen }: Props) {
+export default function AboutDialog({ open, changeState }: Props) {
   const descriptionElementRef = React.useRef<HTMLElement>(null);
   React.useEffect(() => {
     if (open) {
@@ -49,7 +49,7 @@ export default function AboutDialog({ open, setOpen }: Props) {
         aria-describedby="scroll-dialog-description"
       >
         <DialogTitle color={`primary`} id="scroll-dialog-title">
-          AlgoWorld Swapper v0.3.0
+          AlgoWorld Swapper v0.4.0
         </DialogTitle>
         <DialogContent dividers={true}>
           <DialogContentText ref={descriptionElementRef} tabIndex={-1}>
@@ -60,7 +60,7 @@ export default function AboutDialog({ open, setOpen }: Props) {
         <DialogActions>
           <Button
             onClick={() => {
-              setOpen(false);
+              changeState(false);
             }}
           >
             Close

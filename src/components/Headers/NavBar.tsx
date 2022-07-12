@@ -43,11 +43,13 @@ import {
 import { formatBigNumWithDecimals } from '@/redux/helpers/utilities';
 import { Asset } from '@/models/Asset';
 import ConnectWalletDialog from '../Dialogs/ConnectWalletDialog';
-import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
+import {
+  setIsAboutPopupOpen,
+  setIsWalletPopupOpen,
+} from '@/redux/slices/applicationSlice';
 import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
 import { Divider, FormControlLabel, Grid, Stack, Switch } from '@mui/material';
-import AboutDialog from '../Dialogs/AboutDialog';
 import { ChainType } from '@/models/Chain';
 import Link from 'next/link';
 import { CONNECTED_WALLET_TYPE } from '@/common/constants';
@@ -77,6 +79,7 @@ const pages = [
 ] as PageConfiguration[];
 
 const settings = [`AlgoExplorer`, `My Swaps`, `Logout`];
+const BUG_REPORT_URL = `https://github.com/AlgoWorldNFT/algoworld-swapper/issues/new`;
 
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -85,8 +88,6 @@ const NavBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   );
-  const [isAboutPopupOpen, setIsAboutPopupOpen] =
-    React.useState<boolean>(false);
   const router = useRouter();
   const { chain } = router.query as {
     chain?: string;
@@ -102,6 +103,10 @@ const NavBar = () => {
 
   const isWalletPopupOpen = useAppSelector(
     (state) => state.application.isWalletPopupOpen,
+  );
+
+  const isAboutPopupOpen = useAppSelector(
+    (state) => state.application.isAboutPopupOpen,
   );
 
   const dispatch = useAppDispatch();
@@ -214,17 +219,15 @@ const NavBar = () => {
     await connect(client.type, true);
   };
 
+  const openBugReport = () => {
+    window.open(BUG_REPORT_URL, `_blank`);
+  };
+
   return (
     <>
       <ConnectWalletDialog
         open={isWalletPopupOpen}
         onClientSelected={handleOnClientSelected}
-      />
-      <AboutDialog
-        open={isAboutPopupOpen}
-        setOpen={(state) => {
-          setIsAboutPopupOpen(state);
-        }}
       />
       <AppBar id={NAV_BAR_ID} position="static">
         <Container maxWidth="xl">
@@ -309,11 +312,21 @@ const NavBar = () => {
                   id={NAV_BAR_MENU_APPBAR_ITEM_ID(`about`)}
                   key={`about`}
                   onClick={() => {
-                    setIsAboutPopupOpen(!isAboutPopupOpen);
+                    dispatch(setIsAboutPopupOpen(!isAboutPopupOpen));
                     handleCloseNavMenu();
                   }}
                 >
                   <Typography textAlign="center">{`About`}</Typography>
+                </MenuItem>
+                <MenuItem
+                  id={NAV_BAR_MENU_APPBAR_ITEM_ID(`bug`)}
+                  key={`bug`}
+                  onClick={() => {
+                    openBugReport();
+                    handleCloseNavMenu();
+                  }}
+                >
+                  <Typography textAlign="center">{`Bug report`}</Typography>
                 </MenuItem>
               </Menu>
             </Box>
@@ -346,11 +359,21 @@ const NavBar = () => {
                 id={NAV_BAR_MENU_APPBAR_ITEM_ID(`about`)}
                 key={`about`}
                 onClick={() => {
-                  setIsAboutPopupOpen(true);
+                  dispatch(setIsAboutPopupOpen(!isAboutPopupOpen));
                 }}
                 sx={{ my: 2, color: `white`, display: `block` }}
               >
                 About
+              </Button>
+              <Button
+                id={NAV_BAR_MENU_APPBAR_ITEM_ID(`bug`)}
+                key={`bug`}
+                onClick={() => {
+                  openBugReport();
+                }}
+                sx={{ my: 2, color: `white`, display: `block` }}
+              >
+                Bug report
               </Button>
             </Box>
 
