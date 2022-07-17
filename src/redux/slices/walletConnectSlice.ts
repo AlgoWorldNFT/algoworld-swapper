@@ -36,7 +36,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { LogicSigAccount } from 'algosdk';
-import { RootState } from '../store';
+import { RootState } from '@/redux/store';
 import optInAssetsForAccount from '@/utils/api/accounts/optInAssetsForAccount';
 import WalletManager from '@/utils/wallets/walletManager';
 

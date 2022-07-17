@@ -7,7 +7,7 @@ import {
   signLogicSigTransactionObject,
 } from 'algosdk';
 import MnemonicClient from './mnemonic';
-import MyAlgoWalletClient from './myAlgoWallet';
+import MyAlgoWalletClient, { MyAlgoSingleton } from './myAlgoWallet';
 import WalletConnectClient from './walletConnect';
 
 export default class WalletManager {
@@ -20,7 +20,7 @@ export default class WalletManager {
     if (walletType === WalletType.PeraWallet) {
       this.client = new WalletConnectClient();
     } else if (walletType === WalletType.MyAlgoWallet) {
-      this.client = new MyAlgoWalletClient();
+      this.client = new MyAlgoWalletClient(MyAlgoSingleton.Instance);
     } else {
       const mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? ``;
       this.client = new MnemonicClient(mnemonic);
@@ -37,7 +37,6 @@ export default class WalletManager {
 
   public disconnect = async (): Promise<void> => {
     if (this.client) {
-      localStorage.removeItem(CONNECTED_WALLET_TYPE);
       await this.client.disconnect();
     } else {
       throw new Error(`Client not set`);

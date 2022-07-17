@@ -1,20 +1,25 @@
-const nextJest = require('next/jest');
+/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+
+const nextJest = require(`next/jest`);
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
-  dir: './',
+  dir: `./`,
 });
 
 // Add any custom config to be passed to Jest
 const customJestConfig = {
-  roots: ['<rootDir>/src/'],
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  preset: `ts-jest`,
+  roots: [`<rootDir>/src/`],
+  setupFilesAfterEnv: [`<rootDir>/jest.setup.js`],
   moduleNameMapper: {
     // Handle module aliases (this will be automatically configured for you soon)
-    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/(.*)$': `<rootDir>/src/$1`,
   },
-  testEnvironment: 'jest-environment-jsdom',
-  collectCoverageFrom: ['**/*.{ts,tsx}'],
+  testPathIgnorePatterns: [`<rootDir>/.vercel`],
+  testEnvironment: `jest-environment-jsdom`,
+  collectCoverageFrom: [`**/*.{ts,tsx}`],
+  coverageReporters: ['text', 'cobertura'],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

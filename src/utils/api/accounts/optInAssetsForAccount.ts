@@ -19,15 +19,14 @@
 import { ChainType } from '@/models/Chain';
 import { TransactionToSignType } from '@/models/Transaction';
 import algosdk from 'algosdk';
-import createTransactionToSign from '../transactions/createTransactionToSign';
-import getTransactionParams from '../transactions/getTransactionParams';
-import submitTransactions from '../transactions/submitTransactions';
+import createTransactionToSign from '@/utils/api/transactions/createTransactionToSign';
+import getTransactionParams from '@/utils/api/transactions/getTransactionParams';
+import submitTransactions from '@/utils/api/transactions/submitTransactions';
 
 import { setLoadingIndicator } from '@/redux/slices/applicationSlice';
 import { Dispatch } from '@reduxjs/toolkit';
 import { getAccountAssets } from '@/redux/slices/walletConnectSlice';
 import WalletManager from '@/utils/wallets/walletManager';
-import { connector } from '@/redux/store/connector';
 
 export default async function optInAssets(
   chain: ChainType,
@@ -74,7 +73,7 @@ export default async function optInAssets(
     }),
   );
 
-  const signedSaveSwapConfigTxns = await connector
+  const signedSaveSwapConfigTxns = await creatorWallet
     .signTransactions(optInTxns)
     .catch(() => {
       dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
