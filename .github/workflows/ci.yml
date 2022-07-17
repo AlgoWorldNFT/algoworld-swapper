@@ -26,8 +26,6 @@ jobs:
 
       - name: Install dependencies (with cache)
         uses: bahmutov/npm-install@v1
-        with:
-          useLockFile: false
 
       - name: Run TypeScript type check
         run: yarn type-check
