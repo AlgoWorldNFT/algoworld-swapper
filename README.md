@@ -3,6 +3,9 @@
 <p align="center">
     <a href="https://algorand.com"><img src="https://img.shields.io/badge/Powered by-Algorand-black.svg" /></a>
     <a href="https://algoworld.io"><img src="https://img.shields.io/badge/AlgoWorld-Website-purple.svg" /></a>
+    <a href="https://codecov.io/gh/AlgoWorldNFT/algoworld-swapper" >
+    <img src="https://codecov.io/gh/AlgoWorldNFT/algoworld-swapper/branch/main/graph/badge.svg?token=GMm9d4g3Ol"/>
+    </a>
     <br/>
     <a href="https://github.com/AlgoWorldNFT/algoworld-swapper/actions/workflows/release.yml"><img src="https://github.com/AlgoWorldNFT/algoworld-swapper/actions/workflows/release.yml/badge.svg?branch=main" /></a>
     <a href="https://algoworldexplorer.io"><img src="https://img.shields.io/badge/AlgoWorldExplorer-Platform-orange.svg" /></a>
