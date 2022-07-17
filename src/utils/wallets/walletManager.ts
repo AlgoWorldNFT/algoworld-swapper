@@ -1,4 +1,3 @@
-import { CONNECTED_WALLET_TYPE } from '@/common/constants';
 import { TransactionToSign } from '@/models/Transaction';
 import { AlgoWorldWallet, WalletType } from '@/models/Wallet';
 import {
@@ -8,17 +7,14 @@ import {
 } from 'algosdk';
 import MnemonicClient from './mnemonic';
 import MyAlgoWalletClient, { MyAlgoSingleton } from './myAlgoWallet';
-import WalletConnectClient from './walletConnect';
+import WalletConnectClient, { WalletConnectSingleton } from './walletConnect';
 
 export default class WalletManager {
-  private clientType: WalletType | undefined;
   private client: AlgoWorldWallet | undefined;
 
   public setWalletClient = (walletType: WalletType) => {
-    this.clientType = walletType;
-
     if (walletType === WalletType.PeraWallet) {
-      this.client = new WalletConnectClient();
+      this.client = new WalletConnectClient(WalletConnectSingleton.Instance);
     } else if (walletType === WalletType.MyAlgoWallet) {
       this.client = new MyAlgoWalletClient(MyAlgoSingleton.Instance);
     } else {
