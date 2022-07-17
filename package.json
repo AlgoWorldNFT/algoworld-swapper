@@ -1,5 +1,5 @@
 {
-  "name": "src",
+  "name": "algoworld-swapper",
   "description": "Free and trustless ASA swapper, powered by Algorand ⚡️",
   "version": "0.4.0",
   "private": true,
