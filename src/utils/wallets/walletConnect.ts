@@ -8,15 +8,30 @@ import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
 import getWalletConnectTxn from '../api/transactions/walletConnect/getWalletConnectTxn';
 import { CONNECTED_WALLET_TYPE } from '@/common/constants';
 
-const connectProps = {
-  bridge: `https://bridge.walletconnect.org`,
-  qrcodeModal: QRCodeModal,
-};
+export class WalletConnectSingleton {
+  private static _instance: WalletConnect;
+
+  private constructor() {
+    //...
+  }
+
+  public static get Instance() {
+    // Do you need arguments? Make it a regular static method instead.
+    return (
+      this._instance ||
+      (this._instance = new WalletConnect({
+        bridge: `https://bridge.walletconnect.org`,
+        qrcodeModal: QRCodeModal,
+      }))
+    );
+  }
+}
+
 export default class WalletConnectClient implements AlgoWorldWallet {
   private client: WalletConnect;
 
-  constructor() {
-    this.client = new WalletConnect(connectProps);
+  constructor(client: WalletConnect) {
+    this.client = client;
   }
 
   private subsribeToEvents = async () => {
