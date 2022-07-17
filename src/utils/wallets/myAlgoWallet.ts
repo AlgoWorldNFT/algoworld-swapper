@@ -5,7 +5,7 @@ import store from '@/redux/store';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 import { encodeAddress, Transaction } from 'algosdk';
 
-class MyAlgoSingleton {
+export class MyAlgoSingleton {
   private static _instance: MyAlgoConnect;
 
   private constructor() {
@@ -22,8 +22,8 @@ export default class MyAlgoWalletClient implements AlgoWorldWallet {
   private client: MyAlgoConnect | undefined;
   private userAccounts: string[] = [];
 
-  constructor() {
-    this.client = MyAlgoSingleton.Instance;
+  constructor(client: MyAlgoConnect) {
+    this.client = client;
   }
 
   public connect = async () => {
@@ -89,6 +89,7 @@ export default class MyAlgoWalletClient implements AlgoWorldWallet {
 
   public disconnect = async () => {
     this.client = undefined;
+    localStorage.removeItem(CONNECTED_WALLET_TYPE);
     this.userAccounts = [];
     store.dispatch(reset());
     return Promise.resolve();

@@ -28,6 +28,8 @@
     "desc.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "src/pages/_error.js"
+    "src/pages/_error.js",
+    "jest.setup.js",
+    "jest.config.js"
   ]
 }

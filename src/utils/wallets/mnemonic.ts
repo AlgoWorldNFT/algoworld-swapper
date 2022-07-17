@@ -48,6 +48,7 @@ export default class MnemonicClient implements AlgoWorldWallet {
 
   public disconnect = async () => {
     this.client = undefined;
+    localStorage.removeItem(CONNECTED_WALLET_TYPE);
     store.dispatch(reset());
     return;
   };

@@ -44,6 +44,7 @@ export default class WalletConnectClient implements AlgoWorldWallet {
 
     this.client.on(`disconnect`, (error) => {
       console.log(`%cOn disconnect`, `background: yellow`);
+      localStorage.removeItem(CONNECTED_WALLET_TYPE);
       if (error) {
         throw error;
       }
