@@ -8,6 +8,7 @@ const config: PlaywrightTestConfig = {
       use: { ...devices[`Desktop Chrome`] },
     },
   ],
+  timeout: 5 * 60 * 1000,
   testDir: `e2e`,
   reporter: `html`,
   use: {
