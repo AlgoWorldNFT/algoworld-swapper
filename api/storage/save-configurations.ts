@@ -33,7 +33,10 @@ function getAccessToken() {
 }
 
 function makeStorageClient() {
-  return new Web3Storage({ token: getAccessToken() });
+  return new Web3Storage({
+    token: getAccessToken(),
+    endpoint: new URL(`https://api.web3.storage`),
+  });
 }
 
 const makeFileObjects = (configuration: any) => {
