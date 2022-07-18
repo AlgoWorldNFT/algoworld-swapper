@@ -49,12 +49,12 @@ export default function AboutDialog({ open, changeState }: Props) {
         aria-describedby="scroll-dialog-description"
       >
         <DialogTitle color={`primary`} id="scroll-dialog-title">
-          AlgoWorld Swapper v0.4.0
+          AlgoWorld Swapper v0.4.1
         </DialogTitle>
         <DialogContent dividers={true}>
           <DialogContentText ref={descriptionElementRef} tabIndex={-1}>
             {`AlgoWorld Swapper is a free and open-source tool for swapping assets on Algorand blockchain. Distributed under GPLv3 license.
-            Swaps are powered by Algorand Smart Signatures and were developed in collaboration with a Solution Architect from Algorand (credits: @cusma). AlgoWorld currently charges 0.5 Algo fee per swap as an incentive fee for further development and hosting.`}
+            Swaps are powered by Algorand Smart Signatures and were developed in collaboration with a Solution Architect from Algorand (credits: @cusma). AlgoWorld currently charges 0.5 Algo fee per swap, the fee is then periodically transfered to AWT/ALGO pair on Tinyman to increase liquidity for AlgoWorld Token.`}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
