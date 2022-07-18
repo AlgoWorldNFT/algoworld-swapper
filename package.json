@@ -31,10 +31,10 @@
     ]
   },
   "dependencies": {
-    "@emotion/cache": "11.7.1",
-    "@emotion/react": "11.9.0",
+    "@emotion/cache": "11.9.3",
+    "@emotion/react": "11.9.3",
     "@emotion/server": "11.4.0",
-    "@emotion/styled": "11.8.1",
+    "@emotion/styled": "11.9.3",
     "@fontsource/roboto": "4.5.7",
     "@hookform/resolvers": "2.9.6",
     "@json-rpc-tools/utils": "1.7.6",
