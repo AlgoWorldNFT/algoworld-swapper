@@ -36,13 +36,13 @@ jobs:
       - name: Run TypeScript lint
         run: yarn lint
 
-      - uses: pre-commit/action@v2.0.3
+      - uses: pre-commit/action@v3.0.0
         name: 'Run pre-commit checks'
         with:
           extra_args: --all-files --show-diff-on-failure
 
       - name: Check commits messages
-        uses: wagoid/commitlint-github-action@v4
+        uses: wagoid/commitlint-github-action@v5
 
       - name: Run unit tests
         run: yarn test:ci
