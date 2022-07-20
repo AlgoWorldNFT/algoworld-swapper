@@ -19,7 +19,7 @@
 import ManageSwapDialog from '@/components/Dialogs/ManageSwapDialog';
 import ShareSwapDialog from '@/components/Dialogs/ShareSwapDialog';
 import PageHeader from '@/components/Headers/PageHeader';
-import MySwapsTable from '@/components/Tables/MySwapsTable';
+import PublicSwapsTable from '@/components/Tables/PublicSwapsTable';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import {
   setIsShareSwapPopupOpen,
@@ -31,7 +31,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { Box, Button, Container, LinearProgress } from '@mui/material';
 import { MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
 
-export default function MySwaps() {
+export default function PublicSwaps() {
   const swaps = useAppSelector((state) => state.walletConnect.swaps);
   const fetchingSwaps = useAppSelector(
     (state) => state.walletConnect.fetchingSwaps,
@@ -81,8 +81,8 @@ export default function MySwaps() {
 
       <PageHeader
         id={MY_SWAPS_PAGE_HEADER_ID}
-        title="📜 My Swaps"
-        description="Activate, update or deactivate your existing swaps"
+        title="📣 Public Swaps"
+        description="Browse available public swap listings"
       />
 
       <Container
@@ -106,7 +106,7 @@ export default function MySwaps() {
             <LinearProgress />
           </Box>
         ) : (
-          <MySwapsTable swapConfigurations={swaps}></MySwapsTable>
+          <PublicSwapsTable></PublicSwapsTable>
         )}
       </Container>
     </>

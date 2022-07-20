@@ -75,6 +75,7 @@ type PageConfiguration = {
 
 const pages = [
   { title: `Home`, url: `/` },
+  { title: `Public Swaps`, url: `/public-swaps` },
   { title: `Docs`, url: `https://docs.algoworld.io`, target: `_blank` },
 ] as PageConfiguration[];
 
