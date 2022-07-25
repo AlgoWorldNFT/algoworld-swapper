@@ -16,22 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore } from '@reduxjs/toolkit';
+import {
+  configureStore,
+  PreloadedState,
+  combineReducers,
+} from '@reduxjs/toolkit';
 import walletConnectReducer from '../slices/walletConnectSlice';
 import applicationReducer from '../slices/applicationSlice';
 import logger from '../middleware/logger';
 
-const store = configureStore({
-  reducer: {
-    walletConnect: walletConnectReducer,
-    application: applicationReducer,
-  },
-  preloadedState: {},
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }).concat(logger),
+const rootReducer = combineReducers({
+  walletConnect: walletConnectReducer,
+  application: applicationReducer,
 });
+
+export const setupStore = (preloadedState?: PreloadedState<any>) => {
+  return configureStore({
+    reducer: rootReducer,
+    preloadedState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }).concat(logger),
+  });
+};
+
+const store = setupStore({});
 
 export type StoreGetSate = typeof store.getState;
 export type RootState = ReturnType<StoreGetSate>;
