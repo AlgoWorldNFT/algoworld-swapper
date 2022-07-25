@@ -234,7 +234,12 @@ const PerformSwap = () => {
           later...
         </Typography>
       );
-    } else if (!address) {
+    } else if (
+      !address &&
+      !swapConfigsState.error &&
+      !swapAssetsState.loading &&
+      swapConfigsState.value
+    ) {
       return (
         <Button
           onClick={() => {
@@ -265,6 +270,7 @@ const PerformSwap = () => {
     swapConfiguration,
     address,
     swapConfigsState,
+    swapAssetsState.loading,
     hasZeroBalanceAssets,
     swapIsActive,
     assetsToOptIn,
