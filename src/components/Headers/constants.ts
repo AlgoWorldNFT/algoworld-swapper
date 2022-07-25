@@ -7,6 +7,7 @@ export const NAV_BAR_MENU_APPBAR_ITEM_ID = (title: string) => {
 };
 export const NAV_BAR_SETTINGS_BTN_ID = `AWNavigationBarSettingsButton`;
 export const NAV_BAR_CHAIN_SWITCH_ID = `AWNavigationBarChainSwitch`;
+export const NAV_BAR_CHAIN_FORM_CONTROL_ID = `AWNavigationBarChainFormControl`;
 export const NAV_BAR_SETTINGS_MENU_ITEM_ID = (title: string) => {
   return `AWNavigationBarSettingsMenuItem_${title}`;
 };
