@@ -56,6 +56,7 @@ import { CONNECTED_WALLET_TYPE } from '@/common/constants';
 import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
 import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
 import {
+  NAV_BAR_CHAIN_FORM_CONTROL_ID,
   NAV_BAR_CHAIN_SWITCH_ID,
   NAV_BAR_CONNECT_BTN_ID,
   NAV_BAR_HOME_BTN_ID,
@@ -185,7 +186,15 @@ const NavBar = () => {
     }
   };
 
-  useEffect(() => {
+  const handleSwitchChain = (chain: ChainType) => {
+    dispatch(switchChain(chain));
+  };
+
+  React.useMemo(() => {
+    const changeChain = (chain: ChainType) => {
+      dispatch(switchChain(chain));
+    };
+
     if (typeof window !== `undefined`) {
       const persistedChainType =
         chain !== undefined
@@ -194,9 +203,11 @@ const NavBar = () => {
             : ChainType.TestNet
           : (localStorage.getItem(`ChainType`) as ChainType) ??
             ChainType.TestNet;
-      dispatch(switchChain(persistedChainType));
+      changeChain(persistedChainType);
     }
+  }, [chain, dispatch]);
 
+  useEffect(() => {
     const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
     if (!connectedWalletType || connectedWalletType === ``) {
       return;
@@ -457,6 +468,7 @@ const NavBar = () => {
                       {nativeCurrency.unitName || `units`}
                     </Typography>
                     <FormControlLabel
+                      id={NAV_BAR_CHAIN_FORM_CONTROL_ID}
                       control={
                         <Switch
                           id={NAV_BAR_CHAIN_SWITCH_ID}
@@ -467,7 +479,7 @@ const NavBar = () => {
                                 ? ChainType.TestNet
                                 : ChainType.MainNet;
 
-                            dispatch(switchChain(newValue));
+                            handleSwitchChain(newValue);
                           }}
                         />
                       }
@@ -500,6 +512,7 @@ const NavBar = () => {
                 >
                   <FormControlLabel
                     labelPlacement="start"
+                    id={NAV_BAR_CHAIN_FORM_CONTROL_ID}
                     control={
                       <Switch
                         id={NAV_BAR_CHAIN_SWITCH_ID}
@@ -511,7 +524,7 @@ const NavBar = () => {
                               ? ChainType.TestNet
                               : ChainType.MainNet;
 
-                          dispatch(switchChain(newValue));
+                          handleSwitchChain(newValue);
                         }}
                       />
                     }

@@ -92,7 +92,9 @@ const ShareSwapDialog = ({
                 `${window.location.origin}/swap/${swapConfiguration.proxy}/${
                   swapConfiguration.escrow
                 }${
-                  selectedChain === ChainType.TestNet ? `?chain=testnet` : ``
+                  selectedChain === ChainType.TestNet
+                    ? `?chain=testnet`
+                    : `?chain=mainnet`
                 }`,
               );
               enqueueSnackbar(`Copied to clipboard...`, {
