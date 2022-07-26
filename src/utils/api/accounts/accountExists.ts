@@ -22,7 +22,6 @@ import { indexerForChain } from '../algorand';
 export default async function accountExists(chain: ChainType, account: string) {
   try {
     await indexerForChain(chain).lookupAccountByID(account).do();
-    await new Promise((r) => setTimeout(r, 2000));
     return true;
   } catch (e) {
     return false;

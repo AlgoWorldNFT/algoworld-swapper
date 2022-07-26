@@ -94,14 +94,10 @@ export default function PublicSwaps() {
               publicSwaps.push(...swapConfigurationsForProxy);
             } catch (error) {}
             resolve();
-          }, 1000 * i);
+          }, 50 * i);
         });
       }),
     );
-
-    if (`next-token` in data) {
-      setNextToken(data[`next-token`]);
-    }
 
     return publicSwaps;
   });
