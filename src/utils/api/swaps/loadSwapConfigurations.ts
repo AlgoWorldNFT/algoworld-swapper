@@ -34,6 +34,7 @@ export default async function loadSwapConfigurations(
   }
 
   const paymentTxns = await client.lookupAccountTransactions(proxyAddress).do();
+  await new Promise((r) => setTimeout(r, 2000));
 
   if (paymentTxns.transactions.length === 0) {
     return [] as SwapConfiguration[];

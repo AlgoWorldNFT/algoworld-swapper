@@ -19,7 +19,7 @@
 import {
   CHAIN_TYPE,
   EMPTY_ASSET_IMAGE_URL,
-  SWAP_PROXY_VERSION,
+  LATEST_SWAP_PROXY_VERSION,
 } from '@/common/constants';
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
@@ -46,12 +46,12 @@ interface WalletConnectState {
   address: string;
   assets: Asset[];
   fetching: boolean;
-  optingIn: boolean;
   fetchingSwaps: boolean;
   proxy: LogicSigAccount;
   swaps: SwapConfiguration[];
   selectedOfferingAssets: Asset[];
   selectedRequestingAssets: Asset[];
+  hasAwvt: boolean;
 }
 
 const initialState = {
@@ -78,7 +78,7 @@ const initialState = {
   swaps: [],
   fetching: false,
   fetchingSwaps: false,
-  optingIn: false,
+  hasAwvt: false,
 } as WalletConnectState;
 
 export const getAccountAssets = createAsyncThunk(
@@ -93,7 +93,7 @@ export const getProxy = createAsyncThunk(
   async ({
     address,
     chain,
-    version = SWAP_PROXY_VERSION,
+    version = LATEST_SWAP_PROXY_VERSION,
   }: {
     address: string;
     chain: ChainType;
@@ -106,7 +106,13 @@ export const getProxy = createAsyncThunk(
     });
 
     const data = await response.data;
-    return getLogicSign(data[`result`]);
+    const logicSig = getLogicSign(data[`result`]);
+
+    const proxyAssets = await getAssetsForAccount(chain, address);
+    const hasAwvt =
+      proxyAssets.filter((asset) => asset[`index`] === 100256867).length > 0;
+
+    return { proxy: logicSig, hasAwvt: hasAwvt };
   },
 );
 
@@ -116,6 +122,13 @@ export const getAccountSwaps = createAsyncThunk(
     return await getSwapConfigurationsForAccount(chain, address);
   },
 );
+
+// export const getPublicSwaps = createAsyncThunk(
+//   `walletConnect/getPublicSwaps`,
+//   async ({ chain, address }: { chain: ChainType; address: string }) => {
+//     return await getSwapConfigurationsForAccount(chain, address);
+//   },
+// );
 
 export const optInAssets = createAsyncThunk(
   `walletConnect/optInAssets`,
@@ -178,7 +191,8 @@ export const walletConnectSlice = createSlice({
 
     builder.addCase(getProxy.fulfilled, (state, action) => {
       state.fetching = false;
-      state.proxy = action.payload;
+      state.proxy = action.payload.proxy;
+      state.hasAwvt = action.payload.hasAwvt;
     });
     builder.addCase(getProxy.pending, (state) => {
       state.fetching = true;
@@ -190,13 +204,6 @@ export const walletConnectSlice = createSlice({
     });
     builder.addCase(getAccountSwaps.pending, (state) => {
       state.fetchingSwaps = true;
-    });
-
-    builder.addCase(optInAssets.fulfilled, (state) => {
-      state.optingIn = false;
-    });
-    builder.addCase(optInAssets.pending, (state) => {
-      state.optingIn = true;
     });
   },
 });

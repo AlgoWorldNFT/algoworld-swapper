@@ -29,10 +29,17 @@ import {
 import { getAccountSwaps } from '@/redux/slices/walletConnectSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { Box, Button, Container, LinearProgress } from '@mui/material';
-import { MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
+import {
+  ALGOEXPLORER_INDEXER_URL,
+  MY_SWAPS_PAGE_HEADER_ID,
+} from '@/common/constants';
+import axios from 'axios';
+import { useMemo, useState } from 'react';
+import useSWR from 'swr';
+import { SwapConfiguration } from '@/models/Swap';
+import getSwapConfigurationsForAccount from '@/utils/api/accounts/getSwapConfigurationsForAccount';
 
 export default function PublicSwaps() {
-  const swaps = useAppSelector((state) => state.walletConnect.swaps);
   const fetchingSwaps = useAppSelector(
     (state) => state.walletConnect.fetchingSwaps,
   );
@@ -48,6 +55,56 @@ export default function PublicSwaps() {
   const isShareSwapPopupOpen = useAppSelector(
     (state) => state.application.isShareSwapPopupOpen,
   );
+
+  // ---------------------------------------------------------------------------
+
+  const [nextToken, setNextToken] = useState<string | undefined>(undefined);
+
+  const publicSwapsSearchParam = useMemo(() => {
+    let searchParams = `asset-id=100256867&limit=10&exclude=all`;
+
+    if (nextToken) {
+      searchParams += `&next=${nextToken}`;
+    }
+
+    return `${ALGOEXPLORER_INDEXER_URL(chain)}/v2/accounts?${searchParams}`;
+  }, [chain, nextToken]);
+
+  const { data } = useSWR(publicSwapsSearchParam, async (url: string) => {
+    const res = await axios.get(url);
+    const data = res.data;
+
+    const addresses: string[] = data.accounts
+      .filter(
+        (account: { address: string }) =>
+          account.address !==
+          `SUF5OEJIPBSBYELHBPOXWR3GH5T2J5Y7XHW5K6L3BJ2FEQ4A6XQZVNN4UM`,
+      )
+      .map((account: { address: string }) => account.address);
+
+    const publicSwaps: SwapConfiguration[] = [];
+
+    await Promise.all(
+      addresses.map((address, i) => {
+        return new Promise<void>((resolve) => {
+          setTimeout(async () => {
+            try {
+              const swapConfigurationsForProxy =
+                await getSwapConfigurationsForAccount(chain, address);
+              publicSwaps.push(...swapConfigurationsForProxy);
+            } catch (error) {}
+            resolve();
+          }, 1000 * i);
+        });
+      }),
+    );
+
+    if (`next-token` in data) {
+      setNextToken(data[`next-token`]);
+    }
+
+    return publicSwaps;
+  });
 
   return (
     <>
@@ -86,7 +143,7 @@ export default function PublicSwaps() {
       />
 
       <Container
-        maxWidth="md"
+        maxWidth="lg"
         sx={{ textAlign: `center`, pb: 5 }}
         component="main"
       >
@@ -106,7 +163,7 @@ export default function PublicSwaps() {
             <LinearProgress />
           </Box>
         ) : (
-          <PublicSwapsTable></PublicSwapsTable>
+          <PublicSwapsTable swapConfigurations={data ?? []} />
         )}
       </Container>
     </>

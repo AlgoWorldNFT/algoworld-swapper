@@ -18,22 +18,16 @@
 
 import { LATEST_SWAP_PROXY_VERSION } from '@/common/constants';
 import { ChainType } from '@/models/Chain';
-import getLogicSign from '../accounts/getLogicSignature';
 import getCompiledProxy from '../swaps/getCompiledProxy';
-import loadSwapConfigurations from '../swaps/loadSwapConfigurations';
+import getLogicSign from './getLogicSignature';
 
-export default async function getSwapConfigurationsForAccount(
-  chain: ChainType,
-  address: string,
-) {
+export default async function getPublicSwaps(escrow: string, chain: ChainType) {
   const compiledSwapProxy = await getCompiledProxy({
-    swap_creator: address,
+    swap_creator: escrow,
     version: LATEST_SWAP_PROXY_VERSION,
     chain_type: chain,
   });
   const data = await compiledSwapProxy.data;
 
-  const proxyLsig = getLogicSign(data[`result`]);
-
-  return loadSwapConfigurations(chain, proxyLsig.address());
+  return getLogicSign(data[`result`]);
 }

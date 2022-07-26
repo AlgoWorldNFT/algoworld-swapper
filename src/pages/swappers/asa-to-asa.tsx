@@ -27,7 +27,8 @@ import { ConnectContext } from '@/redux/store/connector';
 
 import {
   ASA_TO_ASA_FUNDING_FEE,
-  SWAP_PROXY_VERSION,
+  AWVT_ASSET_INDEX,
+  LATEST_SWAP_PROXY_VERSION,
   TXN_SIGNING_CANCELLED_MESSAGE,
   TXN_SUBMISSION_FAILED_MESSAGE,
 } from '@/common/constants';
@@ -74,6 +75,7 @@ export default function AsaToAsa() {
 
   const connector = useContext(ConnectContext);
   const proxy = useAppSelector((state) => state.walletConnect.proxy);
+  const hasAwvt = useAppSelector((state) => state.walletConnect.hasAwvt);
   const offeringAssets = useAppSelector(
     (state) => state.walletConnect.selectedOfferingAssets,
   );
@@ -88,6 +90,7 @@ export default function AsaToAsa() {
   const dispatch = useAppDispatch();
 
   const { setLoading, resetLoading } = useLoadingIndicator();
+  const [isPublicSwap, setIsPublicSwap] = useState(false);
 
   const escrowState = useAsync(async () => {
     if (offeringAssets.length === 0 || requestingAssets.length === 0) {
@@ -127,7 +130,7 @@ export default function AsaToAsa() {
     const requestingAsset = requestingAssets[0];
 
     return {
-      version: SWAP_PROXY_VERSION,
+      version: LATEST_SWAP_PROXY_VERSION,
       type: SwapType.ASA_TO_ASA,
       offering: [offeringAsset],
       requesting: [requestingAsset],
@@ -135,15 +138,17 @@ export default function AsaToAsa() {
       escrow: escrow.address(),
       contract: escrowState.value.compiledProgram,
       proxy: proxy.address(),
+      isPublic: isPublicSwap,
     } as SwapConfiguration;
   }, [
-    address,
-    proxy,
-    escrowState.error,
-    escrowState.loading,
-    escrowState.value,
     offeringAssets,
     requestingAssets,
+    escrowState.loading,
+    escrowState.error,
+    escrowState.value,
+    address,
+    proxy,
+    isPublicSwap,
   ]);
 
   const assetsToOptIn = useMemo(() => {
@@ -292,6 +297,15 @@ export default function AsaToAsa() {
   const handleStoreConfiguration = async () => {
     if (!swapConfiguration) {
       return;
+    }
+
+    if (!hasAwvt) {
+      await dispatch(
+        optInAssets({
+          assetIndexes: [AWVT_ASSET_INDEX],
+          connector,
+        }),
+      );
     }
 
     setLoading(
@@ -463,6 +477,10 @@ export default function AsaToAsa() {
         setOpen={setConfirmSwapDialogOpen}
         onConfirm={handleSwap}
         transactionsFee={0.32}
+        isPublicSwap={isPublicSwap}
+        onSwapVisibilityChange={(newState) => {
+          setIsPublicSwap(newState);
+        }}
       >
         A swapper escrow contract will be created, a small fixed fee in algos
         will be charged to fund the wallet and your offering asa will be then

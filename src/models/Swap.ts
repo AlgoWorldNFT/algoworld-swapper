@@ -32,4 +32,5 @@ export type SwapConfiguration = {
   proxy: string;
   escrow: string;
   contract: string;
+  isPublic?: boolean;
 };

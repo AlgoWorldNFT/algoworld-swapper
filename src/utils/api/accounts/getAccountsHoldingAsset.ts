@@ -19,17 +19,17 @@
 import { ChainType } from '@/models/Chain';
 import { indexerForChain } from '../algorand';
 
-export default async function getAssetsForVisibilityToken(
+export default async function getAccountsHoldingAsset(
   assetId: number,
   chain: ChainType,
   nextToken?: string,
 ) {
-  const latestSwaps = indexerForChain(chain)
+  const accounts = indexerForChain(chain)
     .searchAccounts()
     .assetID(assetId)
     .limit(10);
 
   return nextToken !== undefined
-    ? await latestSwaps.nextToken(nextToken).do()
-    : await latestSwaps.do();
+    ? await accounts.nextToken(nextToken).do()
+    : await accounts.do();
 }

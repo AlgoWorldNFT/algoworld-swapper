@@ -21,7 +21,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { SwapConfiguration } from '@/models/Swap';
 import { SwapType } from '@/models/Swap';
 import { Asset } from '@/models/Asset';
-import { Box, Button, Stack, Tooltip } from '@mui/material';
+import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
 import store from '@/redux/store';
 import {
   setIsManageSwapPopupOpen,
@@ -140,6 +140,24 @@ const columns: GridColDef[] = [
     align: `center`,
     valueFormatter: ({ value }) => {
       return value === SwapType.ASA_TO_ASA ? `Asa to Asa` : `Asas to Algo`;
+    },
+  },
+  {
+    field: `visibility`,
+    flex: 1,
+    width: 150,
+    minWidth: 100,
+    maxWidth: 200,
+    headerName: `Visibility`,
+    headerAlign: `center`,
+    headerClassName: `super-app-theme--header`,
+    align: `center`,
+    renderCell: (params) => {
+      return (
+        <Typography>
+          {(params.row.isPublic ?? false) === true ? `Public` : `Private`}
+        </Typography>
+      );
     },
   },
   {

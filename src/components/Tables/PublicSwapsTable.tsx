@@ -17,13 +17,12 @@
  */
 
 import * as React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { Box, Button, Stack, Tooltip } from '@mui/material';
+import { useState } from 'react';
+import { SwapConfiguration, SwapType } from '@/models/Swap';
+import { MY_SWAPS_TABLE_MANAGE_BTN_ID } from './constants';
 import { Asset } from '@/models/Asset';
-import { Box, Stack } from '@mui/material';
-import { useAppSelector } from '@/redux/store/hooks';
-import { useEffect, useState } from 'react';
-import getAssetsForVisibilityToken from '@/utils/api/assets/getAssetsForVisibilityToken';
-import { useEffectOnce } from 'react-use';
 
 const assetsToRowString = (assets: Asset[], offering = true) => {
   let response = ``;
@@ -38,15 +37,11 @@ const assetsToRowString = (assets: Asset[], offering = true) => {
 
   return response;
 };
-
 const columns: GridColDef[] = [
   {
-    field: `address`,
+    field: `escrow`,
     flex: 1,
     headerName: `Escrow`,
-    width: 200,
-    minWidth: 150,
-    maxWidth: 250,
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
@@ -54,147 +49,104 @@ const columns: GridColDef[] = [
       return value;
     },
   },
-  // {
-  //   field: `offering`,
-  //   flex: 1,
-  //   headerName: `Offering`,
-  //   valueFormatter: ({ value }) => {
-  //     return assetsToRowString(value);
-  //   },
-  //   width: 100,
-  //   minWidth: 80,
-  //   maxWidth: 150,
-  //   headerAlign: `center`,
-  //   headerClassName: `super-app-theme--header`,
-  //   align: `center`,
-  //   renderCell: (params: GridRenderCellParams<Asset[]>) => {
-  //     const values = params.value ?? [];
-  //     return values.length > 0 ? (
-  //       <Tooltip
-  //         enterTouchDelay={0}
-  //         title={
-  //           <span style={{ whiteSpace: `pre-line` }}>
-  //             {assetsToRowString(values)}
-  //           </span>
-  //         }
-  //       >
-  //         <div>{values[0].index}...</div>
-  //       </Tooltip>
-  //     ) : (
-  //       `No assets available...`
-  //     );
-  //   },
-  // },
-  // {
-  //   field: `requesting`,
-  //   flex: 1,
-  //   headerName: `Requesting`,
-  //   width: 100,
-  //   minWidth: 80,
-  //   maxWidth: 150,
-  //   headerAlign: `center`,
-  //   headerClassName: `super-app-theme--header`,
-  //   align: `center`,
-  //   renderCell: (params: GridRenderCellParams<Asset[]>) => {
-  //     const values = params.value ?? [];
-  //     return values.length > 0 ? (
-  //       <Tooltip
-  //         enterTouchDelay={0}
-  //         title={
-  //           <span style={{ whiteSpace: `pre-line` }}>
-  //             {assetsToRowString(values, false)}
-  //           </span>
-  //         }
-  //       >
-  //         <div>{values[0].index}...</div>
-  //       </Tooltip>
-  //     ) : (
-  //       `No assets available...`
-  //     );
-  //   },
-  // },
-  // {
-  //   field: `version`,
-  //   flex: 1,
-  //   width: 100,
-  //   minWidth: 80,
-  //   maxWidth: 150,
-  //   headerName: `Version`,
-  //   headerAlign: `center`,
-  //   headerClassName: `super-app-theme--header`,
-  //   align: `center`,
-  // },
-  // {
-  //   field: `type`,
-  //   flex: 1,
-  //   width: 150,
-  //   minWidth: 100,
-  //   maxWidth: 200,
-  //   headerName: `Type`,
-  //   headerAlign: `center`,
-  //   headerClassName: `super-app-theme--header`,
-  //   align: `center`,
-  //   valueFormatter: ({ value }) => {
-  //     return value === SwapType.ASA_TO_ASA ? `Asa to Asa` : `Asas to Algo`;
-  //   },
-  // },
-  // {
-  //   field: `action`,
-  //   flex: 1,
-  //   width: 100,
-  //   minWidth: 80,
-  //   maxWidth: 150,
-  //   headerName: `Action`,
-  //   sortable: false,
-  //   headerAlign: `center`,
-  //   headerClassName: `super-app-theme--header`,
-  //   align: `center`,
-  //   renderCell: (params) => {
-  //     return (
-  //       <Button
-  //         id={MY_SWAPS_TABLE_MANAGE_BTN_ID(params.row.escrow)}
-  //         onClick={() => {
-  //           store.dispatch(setSelectedManageSwap(params.row));
-  //           store.dispatch(setIsManageSwapPopupOpen(true));
-  //         }}
-  //       >
-  //         Manage
-  //       </Button>
-  //     );
-  //   },
-  // },
+  {
+    field: `offering`,
+    flex: 1,
+    headerName: `Offering`,
+    valueFormatter: ({ value }) => {
+      return assetsToRowString(value);
+    },
+    headerAlign: `center`,
+    headerClassName: `super-app-theme--header`,
+    align: `center`,
+    renderCell: (params: GridRenderCellParams<Asset[]>) => {
+      const values = params.value ?? [];
+      return values.length > 0 ? (
+        <Tooltip
+          enterTouchDelay={0}
+          title={
+            <span style={{ whiteSpace: `pre-line` }}>
+              {assetsToRowString(values)}
+            </span>
+          }
+        >
+          <div>{values[0].index}...</div>
+        </Tooltip>
+      ) : (
+        `No assets available...`
+      );
+    },
+  },
+  {
+    field: `requesting`,
+    flex: 1,
+    headerName: `Requesting`,
+    headerAlign: `center`,
+    headerClassName: `super-app-theme--header`,
+    align: `center`,
+    renderCell: (params: GridRenderCellParams<Asset[]>) => {
+      const values = params.value ?? [];
+      return values.length > 0 ? (
+        <Tooltip
+          enterTouchDelay={0}
+          title={
+            <span style={{ whiteSpace: `pre-line` }}>
+              {assetsToRowString(values, false)}
+            </span>
+          }
+        >
+          <div>{values[0].index}...</div>
+        </Tooltip>
+      ) : (
+        `No assets available...`
+      );
+    },
+  },
+  {
+    field: `version`,
+    flex: 1,
+    headerName: `Version`,
+    headerAlign: `center`,
+    headerClassName: `super-app-theme--header`,
+    align: `center`,
+  },
+  {
+    field: `type`,
+    flex: 1,
+    headerName: `Type`,
+    headerAlign: `center`,
+    headerClassName: `super-app-theme--header`,
+    align: `center`,
+    valueFormatter: ({ value }) => {
+      return value === SwapType.ASA_TO_ASA ? `Asa to Asa` : `Asas to Algo`;
+    },
+  },
+  {
+    field: `action`,
+    flex: 1,
+    headerName: `Action`,
+    sortable: false,
+    headerAlign: `center`,
+    headerClassName: `super-app-theme--header`,
+    align: `center`,
+    renderCell: (params) => {
+      return (
+        <Button id={MY_SWAPS_TABLE_MANAGE_BTN_ID(params.row.escrow)} href="#">
+          Open
+        </Button>
+      );
+    },
+  },
 ];
 
 const AWVT_CREATOR_ADDRESS = `SUF5OEJIPBSBYELHBPOXWR3GH5T2J5Y7XHW5K6L3BJ2FEQ4A6XQZVNN4UM`;
 
-const PublicSwapsTable = () => {
-  const [publicSwaps, setPublicSwaps] = useState<Record<string, any>[]>([]);
-  const [nextToken, setNextToken] = useState<string | undefined>(undefined);
+type Props = {
+  swapConfigurations: SwapConfiguration[];
+};
+
+const PublicSwapsTable = ({ swapConfigurations }: Props) => {
   const [currentPage, setCurrentPage] = useState(0);
-
-  const chain = useAppSelector((state) => state.walletConnect.chain);
-
-  const updateSwaps = async (page = 0) => {
-    const latestSwaps = await getAssetsForVisibilityToken(
-      100256867,
-      chain,
-      nextToken,
-    );
-
-    if (`next-token` in latestSwaps && latestSwaps[`next-token`]) {
-      setNextToken(latestSwaps[`next-token`]);
-    }
-
-    setPublicSwaps(latestSwaps.accounts);
-  };
-
-  useEffectOnce(() => {
-    const loadSwaps = async () => {
-      await updateSwaps();
-    };
-
-    loadSwaps();
-  });
 
   return (
     <Box
@@ -210,9 +162,9 @@ const PublicSwapsTable = () => {
       }}
     >
       <DataGrid
-        rows={publicSwaps}
+        rows={swapConfigurations}
         columns={columns}
-        hideFooter={publicSwaps.length === 0}
+        hideFooter={swapConfigurations.length === 0}
         components={{
           NoRowsOverlay: () => (
             <Stack height="100%" alignItems="center" justifyContent="center">
@@ -221,7 +173,7 @@ const PublicSwapsTable = () => {
           ),
         }}
         autoHeight
-        getRowId={(row) => row[`address`]}
+        getRowId={(row) => row.escrow}
         pageSize={10}
         rowsPerPageOptions={[10]}
         getCellClassName={() => {

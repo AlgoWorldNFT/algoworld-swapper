@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from dataclasses import dataclass
+
 from algosdk.v2client.algod import AlgodClient
 
 INCENTIVE_WALLET = "RJVRGSPGSPOG7W3V7IMZZ2BAYCABW3YC5MWGKEOPAEEI5ZK5J2GSF6Y26A"
@@ -28,3 +30,10 @@ testnet_algod = AlgodClient("", TESTNET_ALGOD_URL, headers={"User-Agent": "algos
 
 def get_algod(chain_type: str):
     return testnet_algod if chain_type.lower() == "testnet" else algod
+
+
+@dataclass
+class SwapProxyConfig:
+    swap_creator: str
+    version: str
+    chain_type: str
