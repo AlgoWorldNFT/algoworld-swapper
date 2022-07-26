@@ -31,6 +31,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { Box, Button, Container, LinearProgress } from '@mui/material';
 import {
   ALGOEXPLORER_INDEXER_URL,
+  LATEST_SWAP_PROXY_VERSION,
   MY_SWAPS_PAGE_HEADER_ID,
 } from '@/common/constants';
 import axios from 'axios';
@@ -38,6 +39,7 @@ import { useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { SwapConfiguration } from '@/models/Swap';
 import getSwapConfigurationsForAccount from '@/utils/api/accounts/getSwapConfigurationsForAccount';
+import getSwapConfigurations from '@/utils/api/swaps/getSwapConfigurations';
 
 export default function PublicSwaps() {
   const fetchingSwaps = useAppSelector(
@@ -89,8 +91,13 @@ export default function PublicSwaps() {
         return new Promise<void>((resolve) => {
           setTimeout(async () => {
             try {
+              const response = await getSwapConfigurations({
+                swap_creator: address,
+                version: LATEST_SWAP_PROXY_VERSION,
+                chain_type: chain,
+              });
               const swapConfigurationsForProxy =
-                await getSwapConfigurationsForAccount(chain, address);
+                (await response.data) as SwapConfiguration[];
               publicSwaps.push(...swapConfigurationsForProxy);
             } catch (error) {}
             resolve();
