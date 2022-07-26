@@ -38,7 +38,6 @@ import axios from 'axios';
 import { useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { SwapConfiguration } from '@/models/Swap';
-import getSwapConfigurationsForAccount from '@/utils/api/accounts/getSwapConfigurationsForAccount';
 import getSwapConfigurations from '@/utils/api/swaps/getSwapConfigurations';
 
 export default function PublicSwaps() {
