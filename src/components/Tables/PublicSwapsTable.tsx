@@ -18,11 +18,20 @@
 
 import * as React from 'react';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { Box, Button, Stack, Tooltip } from '@mui/material';
+import {
+  Box,
+  Button,
+  Pagination,
+  Stack,
+  TablePagination,
+  Tooltip,
+} from '@mui/material';
 import { useState } from 'react';
 import { SwapConfiguration, SwapType } from '@/models/Swap';
 import { MY_SWAPS_TABLE_MANAGE_BTN_ID } from './constants';
 import { Asset } from '@/models/Asset';
+import next from 'next';
+import { ellipseAddress } from '@/redux/helpers/utilities';
 
 const assetsToRowString = (assets: Asset[], offering = true) => {
   let response = ``;
@@ -39,6 +48,17 @@ const assetsToRowString = (assets: Asset[], offering = true) => {
 };
 const columns: GridColDef[] = [
   {
+    field: `creator`,
+    flex: 1,
+    headerName: `Creator`,
+    headerAlign: `center`,
+    headerClassName: `super-app-theme--header`,
+    align: `center`,
+    valueFormatter: ({ value }) => {
+      return ellipseAddress(value, 4);
+    },
+  },
+  {
     field: `escrow`,
     flex: 1,
     headerName: `Escrow`,
@@ -46,7 +66,18 @@ const columns: GridColDef[] = [
     headerClassName: `super-app-theme--header`,
     align: `center`,
     valueFormatter: ({ value }) => {
-      return value;
+      return ellipseAddress(value, 4);
+    },
+    renderCell: (params: GridRenderCellParams<string>) => {
+      const value = params.value;
+      return (
+        <Tooltip
+          enterTouchDelay={0}
+          title={<span style={{ whiteSpace: `pre-line` }}>{value}</span>}
+        >
+          <>{ellipseAddress(value, 4)}</>
+        </Tooltip>
+      );
     },
   },
   {
@@ -142,12 +173,18 @@ const columns: GridColDef[] = [
 const AWVT_CREATOR_ADDRESS = `SUF5OEJIPBSBYELHBPOXWR3GH5T2J5Y7XHW5K6L3BJ2FEQ4A6XQZVNN4UM`;
 
 type Props = {
+  nextToken: string;
   swapConfigurations: SwapConfiguration[];
+  page: number;
+  handleChangePage: (page: number, nextToken: string) => void;
 };
 
-const PublicSwapsTable = ({ swapConfigurations }: Props) => {
-  const [currentPage, setCurrentPage] = useState(0);
-
+const PublicSwapsTable = ({
+  nextToken,
+  swapConfigurations,
+  page,
+  handleChangePage,
+}: Props) => {
   return (
     <Box
       sx={{
@@ -171,17 +208,29 @@ const PublicSwapsTable = ({ swapConfigurations }: Props) => {
               😔 No public swaps available yet
             </Stack>
           ),
+          Pagination: () => (
+            <TablePagination
+              component="div"
+              count={-1}
+              page={page}
+              onPageChange={(_, value) => {
+                if (nextToken) {
+                  handleChangePage(value, nextToken);
+                }
+              }}
+              rowsPerPage={1}
+              rowsPerPageOptions={[]}
+            />
+          ),
         }}
+        pagination
+        pageSize={
+          swapConfigurations.length <= 100 ? swapConfigurations.length : 100
+        }
         autoHeight
         getRowId={(row) => row.escrow}
-        pageSize={10}
-        rowsPerPageOptions={[10]}
         getCellClassName={() => {
           return `cellStyle`;
-        }}
-        page={currentPage}
-        onPageChange={(page) => {
-          setCurrentPage(page);
         }}
       />
     </Box>

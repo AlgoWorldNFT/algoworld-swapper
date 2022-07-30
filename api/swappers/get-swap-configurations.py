@@ -21,21 +21,14 @@ from urllib import parse
 import requests
 from algoworld_contracts import contracts
 
-from .common import (
-  SwapProxyConfig,
-  account_exists,
-  get_account_txns,
-  get_algod,
-  get_decoded_note_from_txn,
-  get_logic_signature,
-)
+import api.swappers.common as common
 
 
-def compileSwapProxy(cfg: SwapProxyConfig):
+def compileSwapProxy(cfg: common.SwapProxyConfig):
     swapper = contracts.get_swapper_proxy_teal(
         swap_creator=cfg.swap_creator, version=cfg.version
     )
-    response = get_algod(cfg.chain_type).compile(swapper)
+    response = common.get_algod(cfg.chain_type).compile(swapper)
     return response
 
 
@@ -43,7 +36,7 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         s = self.path
         raw_params = dict(parse.parse_qsl(parse.urlsplit(s).query))
-        dic = SwapProxyConfig(
+        dic = common.SwapProxyConfig(
             **{
                 "swap_creator": raw_params["swap_creator"],
                 "version": raw_params["version"],
@@ -54,26 +47,26 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/plain")
         self.end_headers()
 
-        logic_sig = get_logic_signature(compileSwapProxy(dic))
+        logic_sig = common.get_logic_signature(compileSwapProxy(dic))
 
-        if not account_exists(raw_params["chain_type"], logic_sig.address()):
+        if not common.account_exists(raw_params["chain_type"], logic_sig.address()):
             self.wfile.write("[]".encode())
             return
 
-        payment_txns = get_account_txns(raw_params["chain_type"], logic_sig.address())
+        payment_txns = common.get_account_txns(
+            raw_params["chain_type"], logic_sig.address()
+        )
         if len(payment_txns) == 0:
             self.wfile.write("[]".encode())
             return
 
         swap_config_txn = payment_txns[0]
-        config_file_url = get_decoded_note_from_txn(swap_config_txn)
+        config_file_url = common.get_decoded_note_from_txn(swap_config_txn)
 
         if "ipfs" in config_file_url:
             config_file_url = f'https://{config_file_url.split("ipfs://")[1]}.ipfs.cf-ipfs.com/aw_swaps.json'
-            print(config_file_url)
             try:
                 configFileResponse = requests.get(config_file_url).json()
-                print(configFileResponse)
 
                 configFile = json.dumps(
                     [

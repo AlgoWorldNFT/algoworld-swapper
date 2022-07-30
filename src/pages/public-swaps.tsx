@@ -61,8 +61,11 @@ export default function PublicSwaps() {
 
   const [nextToken, setNextToken] = useState<string | undefined>(undefined);
 
+  const [curPage, setCurPage] = useState(0);
+  const [prevPage, setPrevPage] = useState(-1);
+
   const publicSwapsSearchParam = useMemo(() => {
-    let searchParams = `asset-id=100256867&limit=10&exclude=all`;
+    let searchParams = `asset-id=100256867&limit=1&exclude=all`;
 
     if (nextToken) {
       searchParams += `&next=${nextToken}`;
@@ -105,7 +108,7 @@ export default function PublicSwaps() {
       }),
     );
 
-    return publicSwaps;
+    return { publicSwaps, addresses, nextToken: data[`next-token`] };
   });
 
   return (
@@ -145,7 +148,7 @@ export default function PublicSwaps() {
       />
 
       <Container
-        maxWidth="lg"
+        maxWidth="xl"
         sx={{ textAlign: `center`, pb: 5 }}
         component="main"
       >
@@ -165,7 +168,16 @@ export default function PublicSwaps() {
             <LinearProgress />
           </Box>
         ) : (
-          <PublicSwapsTable swapConfigurations={data ?? []} />
+          <PublicSwapsTable
+            nextToken={data?.nextToken}
+            swapConfigurations={data?.publicSwaps ?? []}
+            page={curPage}
+            handleChangePage={(page: number, nextToken: string) => {
+              setPrevPage(curPage);
+              setCurPage(page);
+              setNextToken(nextToken);
+            }}
+          />
         )}
       </Container>
     </>
