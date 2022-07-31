@@ -16,9 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// import { SwapConfiguration } from '@/models/Swap';
-import axios from 'axios';
+import { ChainType } from '@/models/Chain';
+import { SwapConfiguration } from '@/models/Swap';
 
-export default function getCompiledMultiSwap(configuration: any) {
-  return axios.post(`/api/swaps/compile-asas-to-algo`, configuration);
+export default function getSwapUrl(
+  swapConfiguration: SwapConfiguration,
+  chain: ChainType,
+) {
+  return `${window.location.origin}/swap/${swapConfiguration.proxy}/${
+    swapConfiguration.escrow
+  }${chain === ChainType.TestNet ? `?chain=testnet` : `?chain=mainnet`}`;
 }

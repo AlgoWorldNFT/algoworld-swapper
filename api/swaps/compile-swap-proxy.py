@@ -19,7 +19,6 @@ from http.server import BaseHTTPRequestHandler
 from urllib import parse
 
 from algoworld_contracts import contracts
-
 from api.swappers.common import SwapProxyConfig, get_algod
 
 

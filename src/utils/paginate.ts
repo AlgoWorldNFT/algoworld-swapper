@@ -16,9 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// import { SwapConfiguration } from '@/models/Swap';
-import axios from 'axios';
-
-export default function getCompiledMultiSwap(configuration: any) {
-  return axios.post(`/api/swaps/compile-asas-to-algo`, configuration);
-}
+export const paginate = (
+  array: any[],
+  page_size: number,
+  page_number: number,
+) => {
+  return array.slice((page_number - 1) * page_size, page_number * page_size);
+};

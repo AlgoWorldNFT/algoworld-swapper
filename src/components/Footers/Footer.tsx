@@ -77,7 +77,7 @@ const navBarItems = [
   },
   {
     id: `mySwaps`,
-    url: `/swappers/my-swaps`,
+    url: `/swaps/my-swaps`,
     label: `My Swaps`,
     icon: SwapHorizontalCircleIcon,
   },

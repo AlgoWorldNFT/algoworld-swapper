@@ -309,6 +309,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
                 ...selectedManageSwap.offering,
                 ...selectedManageSwap.requesting,
               ]}
+              width={400}
             />
           </DialogContent>
         </>

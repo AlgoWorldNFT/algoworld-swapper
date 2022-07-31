@@ -16,131 +16,99 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ManageSwapDialog from '@/components/Dialogs/ManageSwapDialog';
-import ShareSwapDialog from '@/components/Dialogs/ShareSwapDialog';
 import PageHeader from '@/components/Headers/PageHeader';
-import PublicSwapsTable from '@/components/Tables/PublicSwapsTable';
-import { ellipseAddress } from '@/redux/helpers/utilities';
-import {
-  setIsShareSwapPopupOpen,
-  setIsManageSwapPopupOpen,
-  setIsWalletPopupOpen,
-} from '@/redux/slices/applicationSlice';
-import { getAccountSwaps } from '@/redux/slices/walletConnectSlice';
+import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
-import { Box, Button, Container, LinearProgress } from '@mui/material';
 import {
-  ALGOEXPLORER_INDEXER_URL,
-  LATEST_SWAP_PROXY_VERSION,
-  MY_SWAPS_PAGE_HEADER_ID,
-} from '@/common/constants';
-import axios from 'axios';
-import { useMemo, useState } from 'react';
-import useSWR from 'swr';
-import { SwapConfiguration } from '@/models/Swap';
-import getSwapConfigurations from '@/utils/api/swaps/getSwapConfigurations';
+  Box,
+  Button,
+  Container,
+  IconButton,
+  InputBase,
+  LinearProgress,
+  Pagination,
+  Paper,
+  Stack,
+} from '@mui/material';
+import { MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
+import { useEffect, useState } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
+import PublicSwapsGrid from '@/components/Grids/PublicSwapsGrid';
+import getPublicSwapCreators from '@/utils/api/accounts/getPublicSwapCreators';
+import { paginate } from '@/utils/paginate';
+import accountExists from '@/utils/api/accounts/accountExists';
 
 export default function PublicSwaps() {
-  const fetchingSwaps = useAppSelector(
-    (state) => state.walletConnect.fetchingSwaps,
-  );
   const dispatch = useAppDispatch();
-  const selectedManageSwap = useAppSelector(
-    (state) => state.application.selectedManageSwap,
-  );
   const chain = useAppSelector((state) => state.walletConnect.chain);
   const address = useAppSelector((state) => state.walletConnect.address);
-  const isManageSwapPopupOpen = useAppSelector(
-    (state) => state.application.isManageSwapPopupOpen,
-  );
-  const isShareSwapPopupOpen = useAppSelector(
-    (state) => state.application.isShareSwapPopupOpen,
-  );
-
-  // ---------------------------------------------------------------------------
-
   const [nextToken, setNextToken] = useState<string | undefined>(undefined);
+  const [page, setPage] = useState(0);
+  const [searchInput, setSearchInput] = useState(``);
+  const [publicSwapAccounts, setPublicSwapAccounts] = useState<string[]>([]);
+  const [isLoading, setLoading] = useState(false);
+  const rowsPerPage = 10;
 
-  const [curPage, setCurPage] = useState(0);
-  const [prevPage, setPrevPage] = useState(-1);
+  useEffect(() => {
+    setLoading(true);
 
-  const publicSwapsSearchParam = useMemo(() => {
-    let searchParams = `asset-id=100256867&limit=1&exclude=all`;
+    getPublicSwapCreators(100256867, chain, rowsPerPage, undefined).then(
+      (response) => {
+        setPublicSwapAccounts(response.accounts);
+        setNextToken(response.nextToken);
+        setLoading(false);
+      },
+    );
+  }, [address, chain]);
 
-    if (nextToken) {
-      searchParams += `&next=${nextToken}`;
+  const loadMoreSwaps = async (nextToken: string | undefined) => {
+    setLoading(true);
+    const newSwapCreatorsResponse = await getPublicSwapCreators(
+      100256867,
+      chain,
+      rowsPerPage,
+      nextToken,
+    );
+    if (
+      newSwapCreatorsResponse.accounts.length === 0 ||
+      !newSwapCreatorsResponse.nextToken
+    ) {
+      setNextToken(undefined);
+      setLoading(false);
+      return;
+    } else {
+      setPublicSwapAccounts([
+        ...publicSwapAccounts,
+        ...newSwapCreatorsResponse.accounts,
+      ]);
+      setNextToken(newSwapCreatorsResponse.nextToken);
+      setLoading(false);
+    }
+  };
+
+  const loadSwapsForSearchInput = async (searchInput: string) => {
+    setLoading(true);
+
+    const response = await accountExists(chain, searchInput);
+
+    if (response) {
+      setPublicSwapAccounts([searchInput]);
+    } else {
+      setPublicSwapAccounts([]);
     }
 
-    return `${ALGOEXPLORER_INDEXER_URL(chain)}/v2/accounts?${searchParams}`;
-  }, [chain, nextToken]);
+    setNextToken(undefined);
+    setLoading(false);
+  };
 
-  const { data } = useSWR(publicSwapsSearchParam, async (url: string) => {
-    const res = await axios.get(url);
-    const data = res.data;
-
-    const addresses: string[] = data.accounts
-      .filter(
-        (account: { address: string }) =>
-          account.address !==
-          `SUF5OEJIPBSBYELHBPOXWR3GH5T2J5Y7XHW5K6L3BJ2FEQ4A6XQZVNN4UM`,
-      )
-      .map((account: { address: string }) => account.address);
-
-    const publicSwaps: SwapConfiguration[] = [];
-
-    await Promise.all(
-      addresses.map((address, i) => {
-        return new Promise<void>((resolve) => {
-          setTimeout(async () => {
-            try {
-              const response = await getSwapConfigurations({
-                swap_creator: address,
-                version: LATEST_SWAP_PROXY_VERSION,
-                chain_type: chain,
-              });
-              const swapConfigurationsForProxy =
-                (await response.data) as SwapConfiguration[];
-              publicSwaps.push(...swapConfigurationsForProxy);
-            } catch (error) {}
-            resolve();
-          }, 50 * i);
-        });
-      }),
-    );
-
-    return { publicSwaps, addresses, nextToken: data[`next-token`] };
-  });
+  const resetSearchInput = async () => {
+    await loadMoreSwaps(undefined);
+    setSearchInput(``);
+  };
 
   return (
     <>
-      <ManageSwapDialog
-        open={isManageSwapPopupOpen}
-        onClose={() => {
-          dispatch(setIsManageSwapPopupOpen(false));
-          dispatch(getAccountSwaps({ chain, address }));
-        }}
-        onShare={() => {
-          dispatch(setIsManageSwapPopupOpen(false));
-          dispatch(setIsShareSwapPopupOpen(true));
-        }}
-      ></ManageSwapDialog>
-
-      <ShareSwapDialog
-        open={isShareSwapPopupOpen}
-        swapConfiguration={selectedManageSwap}
-        onClose={() => {
-          dispatch(setIsShareSwapPopupOpen(false));
-        }}
-        onConfirm={() => {
-          dispatch(setIsShareSwapPopupOpen(false));
-        }}
-        showManageSwapBtn={false}
-      >
-        {`Success! Your swap ${ellipseAddress(
-          selectedManageSwap?.escrow,
-        )} is initialized!`}
-      </ShareSwapDialog>
-
       <PageHeader
         id={MY_SWAPS_PAGE_HEADER_ID}
         title="📣 Public Swaps"
@@ -163,21 +131,94 @@ export default function PublicSwaps() {
           >
             Connect Wallet
           </Button>
-        ) : fetchingSwaps ? (
+        ) : isLoading ? (
           <Box sx={{ width: `100%` }}>
             <LinearProgress />
           </Box>
         ) : (
-          <PublicSwapsTable
-            nextToken={data?.nextToken}
-            swapConfigurations={data?.publicSwaps ?? []}
-            page={curPage}
-            handleChangePage={(page: number, nextToken: string) => {
-              setPrevPage(curPage);
-              setCurPage(page);
-              setNextToken(nextToken);
-            }}
-          />
+          <>
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <Stack alignItems="center" justifyContent="center" spacing={2}>
+                <Paper
+                  component="form"
+                  sx={{
+                    width: `680px`,
+                    display: `flex`,
+                    alignItems: `center`,
+                  }}
+                >
+                  <InputBase
+                    sx={{ ml: 2, flex: 1 }}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    placeholder="Search by creator address"
+                    inputProps={{ 'aria-label': `search google maps` }}
+                  />
+                  <IconButton
+                    type="submit"
+                    sx={{ p: `10px` }}
+                    aria-label="search"
+                    onClick={() => loadSwapsForSearchInput(searchInput)}
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                  {searchInput.length > 0 && (
+                    <IconButton
+                      type="submit"
+                      sx={{ p: `10px` }}
+                      aria-label="search"
+                      onClick={() => resetSearchInput()}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  )}
+                </Paper>
+                <Stack
+                  alignItems="center"
+                  justifyContent="center"
+                  spacing={2}
+                  direction="row"
+                >
+                  {publicSwapAccounts.length > 0 && (
+                    <Pagination
+                      shape="rounded"
+                      variant="outlined"
+                      color="primary"
+                      count={Math.ceil(publicSwapAccounts.length / rowsPerPage)}
+                      page={page + 1}
+                      onChange={(_, value) => {
+                        setPage(value - 1);
+                      }}
+                    />
+                  )}
+                  {Math.ceil(publicSwapAccounts.length / rowsPerPage) ===
+                    page + 1 &&
+                    nextToken && (
+                      <Button
+                        variant="outlined"
+                        onClick={async () => {
+                          await loadMoreSwaps(nextToken);
+                        }}
+                      >
+                        Load more
+                      </Button>
+                    )}
+                </Stack>
+              </Stack>
+            </Box>
+            {publicSwapAccounts.length > 0 ? (
+              <PublicSwapsGrid
+                publicSwapAccounts={paginate(
+                  publicSwapAccounts,
+                  rowsPerPage,
+                  page + 1,
+                )}
+                chain={chain}
+              />
+            ) : (
+              <div>Creator address not found...</div>
+            )}
+          </>
         )}
       </Container>
     </>

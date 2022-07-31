@@ -21,7 +21,7 @@ import axios from 'axios';
 export default function getSwapConfigurations(params: {
   [key: string]: string | number;
 }) {
-  return axios.get(`/api/swappers/get-swap-configurations`, {
+  return axios.get(`/api/swaps/get-swap-configurations`, {
     params: params,
   });
 }

@@ -28,20 +28,7 @@ import {
   setSelectedManageSwap,
 } from '@/redux/slices/applicationSlice';
 import { MY_SWAPS_TABLE_MANAGE_BTN_ID } from './constants';
-
-const assetsToRowString = (assets: Asset[], offering = true) => {
-  let response = ``;
-
-  let index = 1;
-  for (const asset of assets) {
-    response += `${index}. ${asset.index}: ${asset.name} x${
-      offering ? asset.offeringAmount : asset.requestingAmount
-    }\n`;
-    index += 1;
-  }
-
-  return response;
-};
+import assetsToRowString from '@/utils/api/assets/assetsToRawString';
 
 const columns: GridColDef[] = [
   {

@@ -27,9 +27,8 @@ const columns: GridColDef[] = [
     field: `index`,
     flex: 1,
     headerName: `Index`,
-    width: 100,
     minWidth: 50,
-    maxWidth: 150,
+    maxWidth: 500,
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
@@ -38,9 +37,8 @@ const columns: GridColDef[] = [
     field: `name`,
     flex: 1,
     headerName: `Name`,
-    width: 100,
     minWidth: 50,
-    maxWidth: 150,
+    maxWidth: 500,
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
@@ -49,9 +47,8 @@ const columns: GridColDef[] = [
     field: `amount`,
     flex: 1,
     headerName: `Amount`,
-    width: 100,
     minWidth: 50,
-    maxWidth: 150,
+    maxWidth: 500,
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
@@ -74,7 +71,7 @@ const columns: GridColDef[] = [
     headerName: `Type`,
     width: 100,
     minWidth: 50,
-    maxWidth: 150,
+    maxWidth: 500,
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
@@ -86,13 +83,14 @@ const columns: GridColDef[] = [
 
 type Props = {
   assets: Asset[];
+  width?: number | string;
 };
 
-const AssetsTable = ({ assets }: Props) => {
+const AssetsTable = ({ assets, width = 400 }: Props) => {
   return (
-    <Box
+    <DataGrid
       sx={{
-        width: 400,
+        width: { width },
         '& .super-app-theme--header': {
           backgroundColor: `background.paper`,
           color: `secondary.main`,
@@ -101,22 +99,19 @@ const AssetsTable = ({ assets }: Props) => {
           backgroundColor: `background.paper`,
         },
       }}
-    >
-      <DataGrid
-        rows={assets}
-        hideFooter
-        autoHeight
-        pageSize={10}
-        columns={columns}
-        getRowId={(row) => {
-          return `${row.index}${row.offeringAmount}${row.requestingAmount}`;
-        }}
-        autoPageSize
-        getCellClassName={() => {
-          return `cellStyle`;
-        }}
-      />
-    </Box>
+      rows={assets}
+      hideFooter
+      autoHeight
+      pageSize={10}
+      columns={columns}
+      getRowId={(row) => {
+        return `${row.index}${row.offeringAmount}${row.requestingAmount}`;
+      }}
+      autoPageSize
+      getCellClassName={() => {
+        return `cellStyle`;
+      }}
+    />
   );
 };
 
