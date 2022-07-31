@@ -38,6 +38,7 @@ import PublicSwapsGrid from '@/components/Grids/PublicSwapsGrid';
 import getPublicSwapCreators from '@/utils/api/accounts/getPublicSwapCreators';
 import { paginate } from '@/utils/paginate';
 import accountExists from '@/utils/api/accounts/accountExists';
+import { useRouter } from 'next/router';
 
 export default function PublicSwaps() {
   const dispatch = useAppDispatch();
@@ -50,17 +51,31 @@ export default function PublicSwaps() {
   const [isLoading, setLoading] = useState(false);
   const rowsPerPage = 10;
 
+  const router = useRouter();
+  const { creatorAddress } = router.query as {
+    creatorAddress?: string;
+  };
+
   useEffect(() => {
     setLoading(true);
 
-    getPublicSwapCreators(100256867, chain, rowsPerPage, undefined).then(
-      (response) => {
-        setPublicSwapAccounts(response.accounts);
-        setNextToken(response.nextToken);
-        setLoading(false);
-      },
-    );
-  }, [address, chain]);
+    if (!router.isReady) return;
+
+    if (creatorAddress) {
+      setSearchInput(creatorAddress);
+      setPublicSwapAccounts([creatorAddress]);
+      setNextToken(undefined);
+      setLoading(false);
+    } else {
+      getPublicSwapCreators(100256867, chain, rowsPerPage, undefined).then(
+        (response) => {
+          setPublicSwapAccounts(response.accounts);
+          setNextToken(response.nextToken);
+          setLoading(false);
+        },
+      );
+    }
+  }, [address, chain, creatorAddress, router.isReady]);
 
   const loadMoreSwaps = async (nextToken: string | undefined) => {
     setLoading(true);

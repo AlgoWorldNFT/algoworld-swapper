@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import getSwapConfigurations from '@/utils/api/swaps/getSwapConfigurations';
 import { LATEST_SWAP_PROXY_VERSION } from '@/common/constants';
 import { ChainType } from '@/models/Chain';
-import { Button, Grid, Pagination } from '@mui/material';
+import { Button, Grid, Pagination, Stack } from '@mui/material';
 import { Asset } from '@/models/Asset';
 import AssetsTable from './AssetsTable';
 import getSwapUrl from '@/utils/api/swaps/getSwapUrl';
@@ -47,38 +47,44 @@ const PublicSwapAssetsTable = ({ address, chain }: Props) => {
     }
   }, [address, chain]);
 
-  if (isLoading) return <p>Loading...</p>;
-  else {
-    return (
-      <>
-        <AssetsTable assets={swapConfigAssets[page] ?? []} width={`auto`} />
-        <Grid
-          sx={{ pt: 2 }}
-          container
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          {swapConfigs.length > 0 && (
-            <Button
-              href={getSwapUrl(swapConfigs[page], chain)}
-              target={`_blank`}
-              variant="outlined"
-            >
-              Open Swap
-            </Button>
-          )}
-          <Pagination
-            shape="rounded"
+  return (
+    <>
+      <AssetsTable
+        loading={isLoading}
+        assets={swapConfigAssets[page] ?? []}
+        width={`auto`}
+        customNoRowsOverlay={() => (
+          <Stack height="100%" alignItems="center" justifyContent="center">
+            😔 User opted in the visibility token but has no public swaps yet
+          </Stack>
+        )}
+      />
+      <Grid
+        sx={{ pt: 2 }}
+        container
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        {swapConfigs.length > 0 && (
+          <Button
+            href={getSwapUrl(swapConfigs[page], chain)}
+            target={`_blank`}
             variant="outlined"
-            color="primary"
-            count={swapConfigAssets.length}
-            page={page + 1}
-            onChange={(_, value) => setPage(value - 1)}
-          />
-        </Grid>
-      </>
-    );
-  }
+          >
+            Open Swap
+          </Button>
+        )}
+        <Pagination
+          shape="rounded"
+          variant="outlined"
+          color="primary"
+          count={swapConfigAssets.length}
+          page={page + 1}
+          onChange={(_, value) => setPage(value - 1)}
+        />
+      </Grid>
+    </>
+  );
 };
 
 export default PublicSwapAssetsTable;

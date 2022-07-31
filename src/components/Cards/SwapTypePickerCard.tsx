@@ -78,7 +78,7 @@ const SwapTypePickerCard = ({
             >
               {title}
             </Typography>
-            <Typography color="info.main" variant="body2">
+            <Typography textAlign={`center`} color="info.main" variant="body2">
               {description}
             </Typography>
           </CardContent>

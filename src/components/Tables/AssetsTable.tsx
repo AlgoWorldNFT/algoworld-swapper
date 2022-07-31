@@ -19,7 +19,7 @@
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Asset } from '@/models/Asset';
-import { Box } from '@mui/material';
+import { Box, LinearProgress, Stack } from '@mui/material';
 import formatAmount from '@/utils/formatAmount';
 
 const columns: GridColDef[] = [
@@ -84,9 +84,16 @@ const columns: GridColDef[] = [
 type Props = {
   assets: Asset[];
   width?: number | string;
+  customNoRowsOverlay?: React.JSXElementConstructor<any>;
+  loading?: boolean;
 };
 
-const AssetsTable = ({ assets, width = 400 }: Props) => {
+const AssetsTable = ({
+  assets,
+  width = 400,
+  customNoRowsOverlay,
+  loading,
+}: Props) => {
   return (
     <DataGrid
       sx={{
@@ -98,6 +105,17 @@ const AssetsTable = ({ assets, width = 400 }: Props) => {
         '& .cellStyle': {
           backgroundColor: `background.paper`,
         },
+      }}
+      loading={loading}
+      components={{
+        NoRowsOverlay: customNoRowsOverlay
+          ? customNoRowsOverlay
+          : () => (
+              <Stack height="100%" alignItems="center" justifyContent="center">
+                😔 No swaps available for your account
+              </Stack>
+            ),
+        LoadingOverlay: LinearProgress,
       }}
       rows={assets}
       hideFooter
