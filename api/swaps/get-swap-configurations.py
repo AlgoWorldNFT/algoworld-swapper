@@ -18,9 +18,10 @@ import json
 from http.server import BaseHTTPRequestHandler
 from urllib import parse
 
-import api.swappers.common as common
 import requests
 from algoworld_contracts import contracts
+
+import api.swaps.common as common
 
 
 def compileSwapProxy(cfg: common.SwapProxyConfig):

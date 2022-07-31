@@ -19,7 +19,8 @@ from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler
 
 from algoworld_contracts import contracts
-from api.swappers.common import INCENTIVE_FEE, INCENTIVE_WALLET, get_algod
+
+from api.swaps.common import INCENTIVE_FEE, INCENTIVE_WALLET, get_algod
 
 
 @dataclass

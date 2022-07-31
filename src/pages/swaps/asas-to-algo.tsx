@@ -126,6 +126,7 @@ export default function MultiAsaToAlgo() {
       requestingAssets.length !== 1 ||
       escrowState.loading ||
       escrowState.error ||
+      !proxy ||
       !escrowState.value
     ) {
       return undefined;
