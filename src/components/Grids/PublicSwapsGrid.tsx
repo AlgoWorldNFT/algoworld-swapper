@@ -32,13 +32,14 @@ type Props = {
 
 const PublicSwapsGrid = ({ publicSwapAccounts, chain }: Props) => {
   return (
-    <Container sx={{ py: 8, pr: 0, pl: 0 }} maxWidth="xl">
+    <Container sx={{ py: 4, pr: 0, pl: 0 }} maxWidth="xl">
       {/* End hero unit */}
       <Grid
         justifyContent={
           publicSwapAccounts.length === 1 ? `center` : `flex-start`
         }
         alignContent="center"
+        alignItems="stretch"
         container
         spacing={4}
       >

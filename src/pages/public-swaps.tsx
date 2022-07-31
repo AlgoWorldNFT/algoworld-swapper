@@ -17,8 +17,7 @@
  */
 
 import PageHeader from '@/components/Headers/PageHeader';
-import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
-import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
+import { useAppSelector } from '@/redux/store/hooks';
 import {
   Box,
   Button,
@@ -29,6 +28,8 @@ import {
   Pagination,
   Paper,
   Stack,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
 import { useEffect, useState } from 'react';
@@ -41,15 +42,15 @@ import accountExists from '@/utils/api/accounts/accountExists';
 import { useRouter } from 'next/router';
 
 export default function PublicSwaps() {
-  const dispatch = useAppDispatch();
+  const theme = useTheme();
+  const largeScreen = useMediaQuery(theme.breakpoints.up(`sm`));
   const chain = useAppSelector((state) => state.walletConnect.chain);
-  const address = useAppSelector((state) => state.walletConnect.address);
   const [nextToken, setNextToken] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(0);
   const [searchInput, setSearchInput] = useState(``);
   const [publicSwapAccounts, setPublicSwapAccounts] = useState<string[]>([]);
   const [isLoading, setLoading] = useState(false);
-  const rowsPerPage = 10;
+  const rowsPerPage = 6;
 
   const router = useRouter();
   const { creatorAddress } = router.query as {
@@ -75,7 +76,7 @@ export default function PublicSwaps() {
         },
       );
     }
-  }, [address, chain, creatorAddress, router.isReady]);
+  }, [chain, creatorAddress, router.isReady]);
 
   const loadMoreSwaps = async (nextToken: string | undefined) => {
     setLoading(true);
@@ -135,29 +136,23 @@ export default function PublicSwaps() {
         sx={{ textAlign: `center`, pb: 5 }}
         component="main"
       >
-        {!address ? (
-          <Button
-            onClick={() => {
-              dispatch(setIsWalletPopupOpen(true));
-            }}
-            fullWidth
-            variant="contained"
-            color="primary"
-          >
-            Connect Wallet
-          </Button>
-        ) : isLoading ? (
-          <Box sx={{ width: `100%` }}>
+        {isLoading ? (
+          <Box>
             <LinearProgress />
           </Box>
         ) : (
           <>
             <Box display="flex" justifyContent="center" alignItems="center">
-              <Stack alignItems="center" justifyContent="center" spacing={2}>
+              <Stack
+                sx={{ minWidth: largeScreen ? `50%` : `90%`, maxWidth: `100%` }}
+                alignItems="center"
+                justifyContent="center"
+                spacing={2}
+              >
                 <Paper
                   component="form"
                   sx={{
-                    width: `680px`,
+                    width: `100%`,
                     display: `flex`,
                     alignItems: `center`,
                   }}

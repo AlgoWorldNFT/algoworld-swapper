@@ -296,10 +296,18 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
 
             <Typography
               textAlign={`center`}
-              sx={{ mb: 1.5, fontWeight: `bold` }}
+              sx={{ fontWeight: `bold` }}
               color="text.secondary"
             >
               Status: {swapZeroBalanceAssets.length > 0 ? `Disabled` : `Active`}
+            </Typography>
+
+            <Typography
+              textAlign={`center`}
+              sx={{ mb: 1.5, fontWeight: `bold` }}
+              color="text.secondary"
+            >
+              Type: {selectedManageSwap.isPublic ? `Public` : `Private`}
             </Typography>
           </DialogTitle>
 

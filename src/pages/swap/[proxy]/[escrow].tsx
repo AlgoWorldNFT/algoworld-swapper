@@ -26,10 +26,7 @@ import { SwapConfiguration } from '@/models/Swap';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
-import {
-  getAccountAssets,
-  optInAssets,
-} from '@/redux/slices/walletConnectSlice';
+import { getAccountAssets, optAssets } from '@/redux/slices/walletConnectSlice';
 import { connector } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import accountExists from '@/utils/api/accounts/accountExists';
@@ -189,7 +186,7 @@ const PerformSwap = () => {
             color="primary"
             onClick={() => {
               dispatch(
-                optInAssets({
+                optAssets({
                   assetIndexes: assetsToOptIn,
                   connector,
                 }),

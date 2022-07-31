@@ -118,7 +118,7 @@ export const ToAssetPickerDialog = ({
       <Dialog id={TO_ASSET_PICKER_DIALOG_ID} open={open}>
         <DialogTitle>Pick Asset</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText sx={{ pb: 2 }}>
             Enter the asset ID or name to pick your selection
           </DialogContentText>
 

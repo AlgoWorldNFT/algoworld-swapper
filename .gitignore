@@ -54,3 +54,5 @@ workbox-*.js.map
 workbox-*.js
 *sw.js.map
 *sw.js
+
+.python-version

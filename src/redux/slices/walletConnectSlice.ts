@@ -37,7 +37,7 @@ import {
 } from '@reduxjs/toolkit';
 import { LogicSigAccount } from 'algosdk';
 import { RootState } from '@/redux/store';
-import optInAssetsForAccount from '@/utils/api/accounts/optInAssetsForAccount';
+import optAssetsForAccount from '@/utils/api/accounts/optAssetsForAccount';
 import WalletManager from '@/utils/wallets/walletManager';
 
 interface WalletConnectState {
@@ -130,24 +130,26 @@ export const getAccountSwaps = createAsyncThunk(
 //   },
 // );
 
-export const optInAssets = createAsyncThunk(
-  `walletConnect/optInAssets`,
+export const optAssets = createAsyncThunk(
+  `walletConnect/optAssets`,
   async (
     {
       assetIndexes,
       connector,
-    }: { assetIndexes: number[]; connector: WalletManager },
+      deOptIn = false,
+    }: { assetIndexes: number[]; connector: WalletManager; deOptIn?: boolean },
     { getState, dispatch },
   ) => {
     let state = getState() as any;
     state = state.walletConnect as WalletConnectState;
 
-    return await optInAssetsForAccount(
+    return await optAssetsForAccount(
       state.chain,
       assetIndexes,
       connector,
       state.address,
       dispatch,
+      deOptIn,
     );
   },
 );

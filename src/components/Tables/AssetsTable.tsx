@@ -17,9 +17,15 @@
  */
 
 import * as React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Asset } from '@/models/Asset';
-import { Box, LinearProgress, Stack } from '@mui/material';
+import {
+  LinearProgress,
+  Stack,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import formatAmount from '@/utils/formatAmount';
 
 const columns: GridColDef[] = [
@@ -32,6 +38,14 @@ const columns: GridColDef[] = [
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
+    renderCell: (params: GridRenderCellParams<string>) => {
+      const value = params.value ?? `N/A`;
+      return (
+        <Tooltip enterTouchDelay={0} title={<span>{value}</span>}>
+          <div>{value}</div>
+        </Tooltip>
+      );
+    },
   },
   {
     field: `name`,
@@ -42,6 +56,14 @@ const columns: GridColDef[] = [
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
+    renderCell: (params: GridRenderCellParams<string>) => {
+      const value = params.value ?? `N/A`;
+      return (
+        <Tooltip enterTouchDelay={0} title={<span>{value}</span>}>
+          <div>{value}</div>
+        </Tooltip>
+      );
+    },
   },
   {
     field: `amount`,
@@ -94,6 +116,9 @@ const AssetsTable = ({
   customNoRowsOverlay,
   loading,
 }: Props) => {
+  const theme = useTheme();
+  const largeScreen = useMediaQuery(theme.breakpoints.up(`sm`));
+
   return (
     <DataGrid
       sx={{
@@ -105,6 +130,7 @@ const AssetsTable = ({
         '& .cellStyle': {
           backgroundColor: `background.paper`,
         },
+        height: customNoRowsOverlay && largeScreen ? `400px` : `auto`,
       }}
       loading={loading}
       components={{
@@ -119,7 +145,7 @@ const AssetsTable = ({
       }}
       rows={assets}
       hideFooter
-      autoHeight
+      autoHeight={customNoRowsOverlay && largeScreen ? false : true}
       pageSize={10}
       columns={columns}
       getRowId={(row) => {

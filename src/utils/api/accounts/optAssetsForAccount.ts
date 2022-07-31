@@ -25,23 +25,25 @@ import submitTransactions from '@/utils/api/transactions/submitTransactions';
 
 import { setLoadingIndicator } from '@/redux/slices/applicationSlice';
 import { Dispatch } from '@reduxjs/toolkit';
-import { getAccountAssets } from '@/redux/slices/walletConnectSlice';
+import { getAccountAssets, getProxy } from '@/redux/slices/walletConnectSlice';
 import WalletManager from '@/utils/wallets/walletManager';
 
-export default async function optInAssets(
+export default async function optAssetsForAccount(
   chain: ChainType,
   assetIndexes: number[],
   creatorWallet: WalletManager,
   creatorAddress: string,
   dispatch: Dispatch,
+  deOptIn = false,
 ) {
   const optInTxns = [];
   const suggestedParams = await getTransactionParams(chain);
+  const optPrefix = deOptIn ? `out` : `in`;
 
   dispatch(
     setLoadingIndicator({
       isLoading: true,
-      message: `Creating opt-in transactions...`,
+      message: `Creating opt-${optPrefix} transactions...`,
     }),
   );
 
@@ -55,9 +57,10 @@ export default async function optInAssets(
           assetIndex: index,
           note: new Uint8Array(
             Buffer.from(
-              ` I am an asset opt-in transaction for algoworld swapper escrow, thank you for using AlgoWorld Swapper (☞ ͡° ͜ʖ ͡°)☞`,
+              ` I am an asset opt-${optPrefix} transaction for algoworld swapper escrow, thank you for using AlgoWorld Swapper (☞ ͡° ͜ʖ ͡°)☞`,
             ),
           ),
+          closeRemainderTo: deOptIn ? creatorAddress : undefined,
           suggestedParams,
         }),
         undefined,
@@ -88,7 +91,7 @@ export default async function optInAssets(
   dispatch(
     setLoadingIndicator({
       isLoading: true,
-      message: `Submitting opt-in transactions, please wait...`,
+      message: `Submitting opt-${optPrefix} transactions, please wait...`,
     }),
   );
 
@@ -101,6 +104,7 @@ export default async function optInAssets(
 
   // Makes sure to reload assets after opt-in
   dispatch(getAccountAssets({ chain, address: creatorAddress }) as any);
+  dispatch(getProxy({ chain, address: creatorAddress }) as any);
 
   return saveSwapConfigResponse.txId;
 }

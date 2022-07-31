@@ -25,12 +25,14 @@ type Props = {
   title: string;
   description: string;
   id?: string;
+  children?: React.ReactNode;
 };
 
 const PageHeader = ({
   title,
   description,
   id = DEFAULT_PAGE_HEADER_ID,
+  children,
 }: Props) => {
   return (
     <Container
@@ -59,6 +61,7 @@ const PageHeader = ({
       >
         {description}
       </Typography>
+      {children}
     </Container>
   );
 };

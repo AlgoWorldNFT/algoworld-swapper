@@ -35,6 +35,12 @@ export const ALGOEXPLORER_INDEXER_URL = (chain: ChainType) => {
     : `https://algoindexer.testnet.algoexplorerapi.io`;
 };
 
+export const ALGONODE_INDEXER_URL = (chain: ChainType) => {
+  return chain.toLowerCase() === `mainnet`
+    ? `	https://mainnet-idx.algonode.cloud`
+    : `https://testnet-idx.algonode.cloud`;
+};
+
 export const ALGOEXPLORER_URL = (chain: ChainType) => {
   return chain.toLowerCase() === `mainnet`
     ? `https://algoexplorer.io`

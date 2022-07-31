@@ -22,7 +22,14 @@ import FromSwapCard from '@/components/Cards/FromSwapCard';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 
-import { useContext, useMemo, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { ConnectContext } from '@/redux/store/connector';
 
 import {
@@ -51,7 +58,7 @@ import { useSnackbar } from 'notistack';
 import {
   getAccountAssets,
   getAccountSwaps,
-  optInAssets,
+  optAssets,
   setOfferingAssets,
   setRequestingAssets,
 } from '@/redux/slices/walletConnectSlice';
@@ -302,7 +309,7 @@ export default function AsaToAsa() {
 
     if (!hasAwvt) {
       await dispatch(
-        optInAssets({
+        optAssets({
           assetIndexes: [AWVT_ASSET_INDEX],
           connector,
         }),
@@ -443,7 +450,7 @@ export default function AsaToAsa() {
                         color="primary"
                         onClick={() => {
                           dispatch(
-                            optInAssets({
+                            optAssets({
                               assetIndexes: assetsToOptIn,
                               connector,
                             }),

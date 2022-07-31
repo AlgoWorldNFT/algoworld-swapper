@@ -16,8 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ALGOEXPLORER_INDEXER_URL } from '@/common/constants';
+import {
+  ALGOEXPLORER_INDEXER_URL,
+  ALGONODE_INDEXER_URL,
+  AWVT_ASSET_INDEX,
+} from '@/common/constants';
 import { ChainType } from '@/models/Chain';
+import filterAsync from '@/utils/filterAsync';
 import axios from 'axios';
 
 export default async function getPublicSwapCreators(
@@ -38,16 +43,45 @@ export default async function getPublicSwapCreators(
     const res = await axios.get(url);
     const data = res.data;
 
-    const addresses: string[] = data.accounts
-      .filter(
-        (account: { address: string }) =>
-          account.address !==
-          `SUF5OEJIPBSBYELHBPOXWR3GH5T2J5Y7XHW5K6L3BJ2FEQ4A6XQZVNN4UM`,
-      )
-      .map((account: { address: string }) => account.address);
+    const addressesWithAwvt = await filterAsync(
+      data.accounts,
+      async (account: { address: string }) => {
+        try {
+          const accountInfoUrl = `${ALGONODE_INDEXER_URL(chain)}/v2/accounts/${
+            account.address
+          }?&exclude=created-apps,created-assets,apps-local-state`;
+          const response = await axios.get(accountInfoUrl);
+          const accountData = response.data;
+
+          const hasAwvtOptedIn =
+            accountData &&
+            `account` in accountData &&
+            `assets` in accountData[`account`]
+              ? accountData[`account`][`assets`].some(
+                  (value: { [x: string]: number }) =>
+                    value[`asset-id`] === AWVT_ASSET_INDEX,
+                )
+              : false;
+
+          console.log(accountData, hasAwvtOptedIn);
+
+          return (
+            hasAwvtOptedIn &&
+            account.address !==
+              `SUF5OEJIPBSBYELHBPOXWR3GH5T2J5Y7XHW5K6L3BJ2FEQ4A6XQZVNN4UM`
+          );
+        } catch (e) {
+          return false;
+        }
+      },
+    );
+
+    const rawAddresses = addressesWithAwvt.map(
+      (account: { address: string }) => account.address,
+    );
 
     return {
-      accounts: addresses,
+      accounts: rawAddresses,
       nextToken: `next-token` in data ? data[`next-token`] : undefined,
     };
   } catch (e) {
