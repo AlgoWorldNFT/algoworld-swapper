@@ -6,6 +6,7 @@
 *.spec.tsx
 
 !api
+!public
 !api_utils
 !vercel.json
 !package.json
