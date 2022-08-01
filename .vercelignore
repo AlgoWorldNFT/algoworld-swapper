@@ -8,7 +8,11 @@
 !api
 !api_utils
 !vercel.json
-!*.html
 !package.json
 !yarn.lock
 !src
+!tsconfig.json
+!postcss.config.js
+!.prettierrc
+!next.config.js
+!.swcrc

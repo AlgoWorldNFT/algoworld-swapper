@@ -31,10 +31,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import {
-  MY_SWAPS_PAGE_HEADER_ID,
-  PUBLIC_SWAPS_PAGE_HEADER_ID,
-} from '@/common/constants';
+import { PUBLIC_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
 import { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';

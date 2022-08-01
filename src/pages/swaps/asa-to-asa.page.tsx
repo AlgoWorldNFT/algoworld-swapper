@@ -22,14 +22,7 @@ import FromSwapCard from '@/components/Cards/FromSwapCard';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 
-import {
-  useContext,
-  useEffect,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { ConnectContext } from '@/redux/store/connector';
 
 import {
