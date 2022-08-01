@@ -21,7 +21,7 @@ from urllib import parse
 
 from algoworld_contracts import contracts
 
-from api.swaps._common import INCENTIVE_FEE, INCENTIVE_WALLET, get_algod
+from api._common.utils import INCENTIVE_FEE, INCENTIVE_WALLET, get_algod
 
 
 @dataclass
