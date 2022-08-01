@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ChainType } from '@/models/Chain';
 import { SwapConfiguration } from '@/models/Swap';
 import { useAppSelector } from '@/redux/store/hooks';
 import getSwapUrl from '@/utils/api/swaps/getSwapUrl';
