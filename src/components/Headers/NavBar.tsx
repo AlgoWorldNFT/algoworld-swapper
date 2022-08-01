@@ -467,32 +467,28 @@ const NavBar = () => {
                       {` `}
                       {nativeCurrency.unitName || `units`}
                     </Typography>
-                    {!process.env.NEXT_PUBLIC_CI && (
-                      <>
-                        <FormControlLabel
-                          id={NAV_BAR_CHAIN_FORM_CONTROL_ID}
-                          control={
-                            <Switch
-                              id={NAV_BAR_CHAIN_SWITCH_ID}
-                              checked={selectedChain === ChainType.MainNet}
-                              onChange={() => {
-                                const newValue =
-                                  selectedChain === ChainType.MainNet
-                                    ? ChainType.TestNet
-                                    : ChainType.MainNet;
+                    <FormControlLabel
+                      id={NAV_BAR_CHAIN_FORM_CONTROL_ID}
+                      control={
+                        <Switch
+                          id={NAV_BAR_CHAIN_SWITCH_ID}
+                          checked={selectedChain === ChainType.MainNet}
+                          onChange={() => {
+                            const newValue =
+                              selectedChain === ChainType.MainNet
+                                ? ChainType.TestNet
+                                : ChainType.MainNet;
 
-                                handleSwitchChain(newValue);
-                              }}
-                            />
-                          }
-                          label={
-                            selectedChain === `mainnet` ? `MainNet` : `TestNet`
-                          }
-                          sx={{ ml: 1, mr: 2 }}
+                            handleSwitchChain(newValue);
+                          }}
                         />
-                        <Divider />
-                      </>
-                    )}
+                      }
+                      label={
+                        selectedChain === `mainnet` ? `MainNet` : `TestNet`
+                      }
+                      sx={{ ml: 1, mr: 2 }}
+                    />
+                    <Divider />
                     {settings.map((setting) => (
                       <MenuItem
                         id={NAV_BAR_SETTINGS_MENU_ITEM_ID(setting)}
@@ -514,33 +510,28 @@ const NavBar = () => {
                     pt: 1,
                   }}
                 >
-                  {!process.env.NEXT_PUBLIC_CI ? (
-                    <FormControlLabel
-                      labelPlacement="start"
-                      id={NAV_BAR_CHAIN_FORM_CONTROL_ID}
-                      control={
-                        <Switch
-                          id={NAV_BAR_CHAIN_SWITCH_ID}
-                          size="small"
-                          checked={selectedChain === ChainType.MainNet}
-                          onChange={() => {
-                            const newValue =
-                              selectedChain === ChainType.MainNet
-                                ? ChainType.TestNet
-                                : ChainType.MainNet;
+                  <FormControlLabel
+                    labelPlacement="start"
+                    id={NAV_BAR_CHAIN_FORM_CONTROL_ID}
+                    control={
+                      <Switch
+                        id={NAV_BAR_CHAIN_SWITCH_ID}
+                        size="small"
+                        checked={selectedChain === ChainType.MainNet}
+                        onChange={() => {
+                          const newValue =
+                            selectedChain === ChainType.MainNet
+                              ? ChainType.TestNet
+                              : ChainType.MainNet;
 
-                            handleSwitchChain(newValue);
-                          }}
-                        />
-                      }
-                      sx={{ color: `primary.main` }}
-                      label={
-                        selectedChain === `mainnet` ? `MainNet` : `TestNet`
-                      }
-                    />
-                  ) : (
-                    <div>Test Instance</div>
-                  )}
+                          handleSwitchChain(newValue);
+                        }}
+                      />
+                    }
+                    sx={{ color: `primary.main` }}
+                    label={selectedChain === `mainnet` ? `MainNet` : `TestNet`}
+                  />
+
                   <Button
                     id={NAV_BAR_CONNECT_BTN_ID}
                     onClick={() => {

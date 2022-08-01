@@ -20,7 +20,7 @@ from urllib import parse
 
 from algoworld_contracts import contracts
 
-from api.swaps.common import SwapProxyConfig, get_algod
+from api.swaps._common import SwapProxyConfig, get_algod
 
 
 def compileSwapProxy(cfg: SwapProxyConfig):

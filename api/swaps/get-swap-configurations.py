@@ -21,7 +21,7 @@ from urllib import parse
 import requests
 from algoworld_contracts import contracts
 
-import api.swaps.common as common
+import api.swaps._common as common
 
 
 def compileSwapProxy(cfg: common.SwapProxyConfig):
