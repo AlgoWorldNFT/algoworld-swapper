@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { PERFORM_SWAP_PAGE_HEADER_ID } from '@/common/constants';
 import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
 import ConfirmDialog from '@/components/Dialogs/ConfirmDialog';
 import InfoDialog from '@/components/Dialogs/InfoDialog';
@@ -345,6 +346,7 @@ const PerformSwap = () => {
   return (
     <>
       <PageHeader
+        id={PERFORM_SWAP_PAGE_HEADER_ID}
         title="⚡️ Perform Swap"
         description="Perform a swap created created by other AlgoWorld Swapper users.
           Completing the swap will transfer your requested asset directly to
