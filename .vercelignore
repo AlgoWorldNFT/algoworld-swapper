@@ -16,3 +16,4 @@
 !.prettierrc
 !next.config.js
 !.swcrc
+!vercel.json
