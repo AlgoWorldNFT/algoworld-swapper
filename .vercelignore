@@ -1,4 +1,14 @@
 # Ignore everything (folders and files) on root only
 /*
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
 !api
 !api_utils
+!vercel.json
+!*.html
+!package.json
+!yarn.lock
+!src

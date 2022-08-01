@@ -1,7 +1,5 @@
-import { render, queryByAttribute } from '@testing-library/react';
-import React, { PropsWithChildren } from 'react';
-import { Provider } from 'react-redux';
-import { setupStore } from '@/redux/store';
+import { queryByAttribute } from '@testing-library/react';
+import React from 'react';
 import {
   NAV_BAR_CHAIN_FORM_CONTROL_ID,
   NAV_BAR_CHAIN_SWITCH_ID,
@@ -21,24 +19,7 @@ jest.mock(`next/router`, () => {
 
 import { useRouter } from 'next/router';
 import NavBar from './NavBar';
-
-export function renderWithProviders(
-  ui: React.ReactElement,
-  {
-    preloadedState = {},
-    // Automatically create a store instance if no store was passed in
-    store = setupStore(preloadedState),
-    ...renderOptions
-  } = {},
-) {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
-    return <Provider store={store}>{children}</Provider>;
-  }
-
-  // Return an object with the store and all of RTL's query functions
-  return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
-}
+import renderWithProviders from '@/__utils__/renderWithProviders';
 
 describe(`NavBar`, () => {
   it.each([`testnet`, `mainnet`])(

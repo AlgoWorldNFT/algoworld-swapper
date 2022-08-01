@@ -31,7 +31,10 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
+import {
+  MY_SWAPS_PAGE_HEADER_ID,
+  PUBLIC_SWAPS_PAGE_HEADER_ID,
+} from '@/common/constants';
 import { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -126,7 +129,7 @@ export default function PublicSwaps() {
   return (
     <>
       <PageHeader
-        id={MY_SWAPS_PAGE_HEADER_ID}
+        id={PUBLIC_SWAPS_PAGE_HEADER_ID}
         title="📣 Public Swaps"
         description="Browse available public swap listings"
       />

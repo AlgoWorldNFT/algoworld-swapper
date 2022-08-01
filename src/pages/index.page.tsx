@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dashboard from './dashboard';
+import Dashboard from './dashboard.page';
 
 export default function Home() {
   return <Dashboard></Dashboard>;
