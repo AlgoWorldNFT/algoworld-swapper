@@ -1,0 +1,14 @@
+{
+  "name": "algoworld-swapper-vercel-storage",
+  "description": "vercel function for storing ipfs files ⚡️",
+  "version": "0.1.0",
+  "private": true,
+  "author": "AlgoWorld <info@algoworld.io>",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "web3.storage": "4.3.0"
+  },
+  "devDependencies": {
+    "@vercel/node": "2.5.2"
+  }
+}
