@@ -12,12 +12,15 @@ import WalletConnectClient, { WalletConnectSingleton } from './walletConnect';
 export default class WalletManager {
   private client: AlgoWorldWallet | undefined;
 
-  public setWalletClient = (walletType: WalletType) => {
+  public setWalletClient = (walletType: WalletType, phrase?: string) => {
     if (walletType === WalletType.PeraWallet) {
       this.client = new WalletConnectClient(WalletConnectSingleton.Instance);
     } else if (walletType === WalletType.MyAlgoWallet) {
       this.client = new MyAlgoWalletClient(MyAlgoSingleton.Instance);
     } else {
+      if (phrase) {
+        process.env[`NEXT_PUBLIC_MNEMONIC`] = phrase;
+      }
       const mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? ``;
       this.client = new MnemonicClient(mnemonic);
     }

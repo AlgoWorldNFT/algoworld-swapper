@@ -31,7 +31,11 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { PUBLIC_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
+import {
+  PUBLIC_SWAPS_PAGE_HEADER_ID,
+  PUBLIC_SWAPS_SEARCH_BUTTON_ID,
+  PUBLIC_SWAPS_SEARCH_FIELD_ID,
+} from '@/common/constants';
 import { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -158,6 +162,7 @@ export default function PublicSwaps() {
                   }}
                 >
                   <InputBase
+                    id={PUBLIC_SWAPS_SEARCH_FIELD_ID}
                     sx={{ ml: 2, flex: 1 }}
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
@@ -165,6 +170,7 @@ export default function PublicSwaps() {
                     inputProps={{ 'aria-label': `search google maps` }}
                   />
                   <IconButton
+                    id={PUBLIC_SWAPS_SEARCH_BUTTON_ID}
                     type="submit"
                     sx={{ p: `10px` }}
                     aria-label="search"

@@ -8,6 +8,7 @@ import { Button, Grid, Pagination, Stack } from '@mui/material';
 import { Asset } from '@/models/Asset';
 import AssetsTable from './AssetsTable';
 import getSwapUrl from '@/utils/api/swaps/getSwapUrl';
+import { PUBLIC_SWAP_OPEN_SWAP_BUTTON_ID } from './constants';
 
 type Props = {
   address: string;
@@ -67,6 +68,7 @@ const PublicSwapAssetsTable = ({ address, chain }: Props) => {
       >
         {swapConfigs.length > 0 && (
           <Button
+            id={PUBLIC_SWAP_OPEN_SWAP_BUTTON_ID}
             href={getSwapUrl(swapConfigs[page], chain)}
             target={`_blank`}
             variant="outlined"

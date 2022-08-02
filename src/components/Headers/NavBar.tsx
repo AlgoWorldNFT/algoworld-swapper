@@ -60,6 +60,7 @@ import {
   NAV_BAR_CHAIN_SWITCH_ID,
   NAV_BAR_CONNECT_BTN_ID,
   NAV_BAR_HOME_BTN_ID,
+  NAV_BAR_ICON_HOME_BTN_ID,
   NAV_BAR_ID,
   NAV_BAR_MENU_APPBAR_ID,
   NAV_BAR_MENU_APPBAR_ITEM_ID,
@@ -116,7 +117,11 @@ const NavBar = () => {
   const connector = useContext(ConnectContext);
 
   const connect = useCallback(
-    async (clientType: WalletType, fromClickEvent: boolean) => {
+    async (
+      clientType: WalletType,
+      fromClickEvent: boolean,
+      phrase?: string,
+    ) => {
       // MyAlgo Connect doesn't work if invoked oustide of click event
       // Hence this work around
       if (!fromClickEvent && clientType === WalletType.MyAlgoWallet) {
@@ -129,7 +134,7 @@ const NavBar = () => {
           ? dispatch(onSessionUpdate(accounts))
           : await connector.connect();
       } else {
-        connector.setWalletClient(clientType);
+        connector.setWalletClient(clientType, phrase);
         await connector.connect();
       }
     },
@@ -226,9 +231,12 @@ const NavBar = () => {
     (asset: Asset) => asset.index === 0,
   ) as Asset;
 
-  const handleOnClientSelected = async (client: WalletClient) => {
+  const handleOnClientSelected = async (
+    client: WalletClient,
+    phrase?: string,
+  ) => {
     dispatch(setIsWalletPopupOpen(false));
-    await connect(client.type, true);
+    await connect(client.type, true, phrase);
   };
 
   const openBugReport = () => {
@@ -246,7 +254,7 @@ const NavBar = () => {
           <Toolbar disableGutters>
             <Link href="/">
               <IconButton
-                id={NAV_BAR_HOME_BTN_ID}
+                id={NAV_BAR_ICON_HOME_BTN_ID}
                 size="medium"
                 sx={{ display: { xs: `none`, md: `flex` }, mr: 1 }}
                 aria-label="home icon"

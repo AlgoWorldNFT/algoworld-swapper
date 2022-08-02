@@ -56,3 +56,5 @@ workbox-*.js
 *sw.js
 
 .python-version
+
+.env.test

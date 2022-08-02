@@ -70,4 +70,10 @@ export const CREATE_SWAP_BTN_ID = `AWCreateSwapButton`;
 export const ASAS_TO_ALGO_PAGE_HEADER_ID = `AWAsasToAlgoPageHeader`;
 export const MY_SWAPS_PAGE_HEADER_ID = `AWMySwapsPageHeader`;
 export const PUBLIC_SWAPS_PAGE_HEADER_ID = `AWPublicSwapsPageHeader`;
+
 export const PERFORM_SWAP_PAGE_HEADER_ID = `AWPerformSwapPageHeader`;
+export const PERFORM_SWAP_OPTIN_BUTTON_ID = `AWPerformSwapOptinButton`;
+export const PERFORM_SWAP_PERFORM_BUTTON_ID = `AWPerformSwapPerformButton`;
+
+export const PUBLIC_SWAPS_SEARCH_FIELD_ID = `AWPublicSwapsSearchField`;
+export const PUBLIC_SWAPS_SEARCH_BUTTON_ID = `AWPublicSwapsSearchButton`;

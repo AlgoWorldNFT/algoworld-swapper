@@ -1,5 +1,9 @@
 import { PlaywrightTestConfig, devices } from '@playwright/test';
 
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const BASE_URL = process.env.E2E_TESTS_BASE_URL ?? `http://localhost:3000/`;
 const config: PlaywrightTestConfig = {
   projects: [

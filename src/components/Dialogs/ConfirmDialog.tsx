@@ -30,6 +30,7 @@ import {
 } from '@mui/material';
 import {
   CONFIRM_DIALOG_ID,
+  CONFIRM_DIALOG_PUBLIC_SWAP_SWITCH_ID,
   DIALOG_CANCEL_BTN_ID,
   DIALOG_SELECT_BTN_ID,
 } from './constants';
@@ -86,6 +87,7 @@ const ConfirmDialog = ({
               </Tooltip>
 
               <Switch
+                id={CONFIRM_DIALOG_PUBLIC_SWAP_SWITCH_ID}
                 checked={isPublicSwap}
                 onChange={() => {
                   onSwapVisibilityChange(!isPublicSwap);

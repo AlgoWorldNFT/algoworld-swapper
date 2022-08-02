@@ -16,7 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PERFORM_SWAP_PAGE_HEADER_ID } from '@/common/constants';
+import {
+  PERFORM_SWAP_OPTIN_BUTTON_ID,
+  PERFORM_SWAP_PAGE_HEADER_ID,
+  PERFORM_SWAP_PERFORM_BUTTON_ID,
+} from '@/common/constants';
 import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
 import ConfirmDialog from '@/components/Dialogs/ConfirmDialog';
 import InfoDialog from '@/components/Dialogs/InfoDialog';
@@ -185,6 +189,7 @@ const PerformSwap = () => {
             fullWidth
             variant="contained"
             color="primary"
+            id={PERFORM_SWAP_OPTIN_BUTTON_ID}
             onClick={() => {
               dispatch(
                 optAssets({
@@ -210,6 +215,7 @@ const PerformSwap = () => {
               swapConfiguration.offering.length === 0 ||
               swapConfiguration.requesting.length === 0
             }
+            id={PERFORM_SWAP_PERFORM_BUTTON_ID}
             fullWidth
             variant="contained"
             color="primary"

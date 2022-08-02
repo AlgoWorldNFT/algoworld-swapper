@@ -79,6 +79,7 @@
     "cd": "0.3.3",
     "commitizen": "4.2.5",
     "cz-conventional-changelog": "3.3.0",
+    "dotenv": "16.0.1",
     "eslint": "8.20.0",
     "eslint-config-next": "12.2.2",
     "eslint-config-prettier": "8.5.0",

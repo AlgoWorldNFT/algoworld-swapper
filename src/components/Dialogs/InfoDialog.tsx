@@ -23,6 +23,7 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
+import { INFO_DIALOG_CLOSE_BTN_ID, INFO_DIALOG_ID } from './constants';
 
 type Props = {
   title: string;
@@ -35,6 +36,7 @@ type Props = {
 const InfoDialog = ({ title, children, open, setOpen, onClose }: Props) => {
   return (
     <Dialog
+      id={INFO_DIALOG_ID}
       open={open}
       onClose={() => setOpen(false)}
       aria-labelledby="confirm-dialog"
@@ -43,6 +45,7 @@ const InfoDialog = ({ title, children, open, setOpen, onClose }: Props) => {
       <DialogContent>{children}</DialogContent>
       <DialogActions>
         <Button
+          id={INFO_DIALOG_CLOSE_BTN_ID}
           onClick={() => {
             setOpen(false);
             onClose();
