@@ -51,7 +51,7 @@ export const EMPTY_ASSET_IMAGE_URL = `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXq
 export const LATEST_SWAP_PROXY_VERSION = `0.0.2`;
 export const ALL_SWAP_PROXY_VERSIONS = [LATEST_SWAP_PROXY_VERSION, `0.0.1`];
 export const AWVT_ASSET_INDEX =
-  CHAIN_TYPE === ChainType.MainNet ? 0 : 100256867;
+  CHAIN_TYPE === ChainType.MainNet ? 827624831 : 100256867;
 
 export const ASA_TO_ASA_FUNDING_FEE = Math.round((0.1 + 0.1 + 0.01) * 1e6);
 export const ASA_TO_ALGO_MAX_FEE = 1_000;
