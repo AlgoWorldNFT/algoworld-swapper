@@ -1,67 +1,20 @@
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# JetBrains IDE files
-.idea/
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-tsconfig.tsbuildinfo
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# vercel
-.vercel
-
-/api/storage/node_modules
-
-coverage
-*.lcov
-.nyc_output
-lib-cov
-
+# Ignore everything (folders and files) on root only
+/*
 *.test.ts
 *.test.tsx
-
 *.spec.ts
 *.spec.tsx
 
-jest.config.js
-jest.setup.js
-/e2e
-/.github
-/.vscode
-
-playwright-report
-
-#python
-.venv
-
-# Sentry
-.sentryclirc
-/test-results/
-/playwright-report/
-/playwright/.cache/
+!api
+!public
+!api_utils
+!vercel.json
+!package.json
+!yarn.lock
+!src
+!tsconfig.json
+!postcss.config.js
+!.prettierrc
+!next.config.js
+!.swcrc
+!vercel.json

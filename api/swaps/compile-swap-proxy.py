@@ -15,20 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
-from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler
 from urllib import parse
 
 from algoworld_contracts import contracts
 
-from .common import get_algod
-
-
-@dataclass
-class SwapProxyConfig:
-    swap_creator: str
-    version: str
-    chain_type: str
+from api_utils.utils import SwapProxyConfig, get_algod
 
 
 def compileSwapProxy(cfg: SwapProxyConfig):

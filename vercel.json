@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/swaps/*.py": {
+      "excludeFiles": "{+(.next|node_modules|public|src)/**,yarn.lock,README.md}"
+    },
+    "api/storage/*.ts": {
+      "excludeFiles": "{+(.next|node_modules|public|src)/**,yarn.lock,README.md}"
+    }
+  }
+}

@@ -17,41 +17,64 @@
  */
 
 import * as React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Asset } from '@/models/Asset';
-import { Box } from '@mui/material';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { Asset, AssetWithBalance } from '@/models/Asset';
+import {
+  LinearProgress,
+  Stack,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import formatAmount from '@/utils/formatAmount';
+import getAssetBalance from '@/utils/api/assets/getAssetBalance';
+import { ChainType } from '@/models/Chain';
+import { useAppSelector } from '@/redux/store/hooks';
+import { ConnectingAirportsOutlined } from '@mui/icons-material';
 
 const columns: GridColDef[] = [
   {
     field: `index`,
     flex: 1,
     headerName: `Index`,
-    width: 100,
     minWidth: 50,
-    maxWidth: 150,
+    maxWidth: 500,
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
+    renderCell: (params: GridRenderCellParams<string>) => {
+      const value = params.value ?? `N/A`;
+      return (
+        <Tooltip enterTouchDelay={0} title={<span>{value}</span>}>
+          <div>{value}</div>
+        </Tooltip>
+      );
+    },
   },
   {
     field: `name`,
     flex: 1,
     headerName: `Name`,
-    width: 100,
     minWidth: 50,
-    maxWidth: 150,
+    maxWidth: 500,
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
+    renderCell: (params: GridRenderCellParams<string>) => {
+      const value = params.value ?? `N/A`;
+      return (
+        <Tooltip enterTouchDelay={0} title={<span>{value}</span>}>
+          <div>{value}</div>
+        </Tooltip>
+      );
+    },
   },
   {
     field: `amount`,
     flex: 1,
     headerName: `Amount`,
-    width: 100,
     minWidth: 50,
-    maxWidth: 150,
+    maxWidth: 500,
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
@@ -74,7 +97,7 @@ const columns: GridColDef[] = [
     headerName: `Type`,
     width: 100,
     minWidth: 50,
-    maxWidth: 150,
+    maxWidth: 500,
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
@@ -84,15 +107,81 @@ const columns: GridColDef[] = [
   },
 ];
 
+const columnsWithBalance: GridColDef[] = [
+  ...columns,
+  {
+    field: `balance`,
+    flex: 1,
+    headerName: `Balance`,
+    minWidth: 50,
+    maxWidth: 500,
+    headerAlign: `center`,
+    headerClassName: `super-app-theme--header`,
+    align: `center`,
+    renderCell: (params) => {
+      return (
+        <>
+          {params.row.balance > 0
+            ? Number(params.row.balance) / Math.pow(10, params.row.decimals)
+            : `N/A`}
+        </>
+      );
+    },
+  },
+];
+
 type Props = {
   assets: Asset[];
+  width?: number | string;
+  customNoRowsOverlay?: React.JSXElementConstructor<any>;
+  loading?: boolean;
+  escrowAddress?: string;
 };
 
-const AssetsTable = ({ assets }: Props) => {
+const AssetsTable = ({
+  assets,
+  width = 400,
+  customNoRowsOverlay,
+  loading,
+  escrowAddress,
+}: Props) => {
+  const theme = useTheme();
+  const largeScreen = useMediaQuery(theme.breakpoints.up(`sm`));
+
+  const chain = useAppSelector((state) => state.walletConnect.chain);
+  const [assetsWithBalances, setAssetsWithBalances] = React.useState<
+    AssetWithBalance[]
+  >([]);
+
+  React.useEffect(() => {
+    if (escrowAddress) {
+      const loadBalances = async () => {
+        const assetsWithBalances: AssetWithBalance[] = await Promise.all(
+          assets.map(async (asset) => {
+            try {
+              const balance = await getAssetBalance(
+                asset.index,
+                escrowAddress,
+                chain,
+              );
+              return { ...asset, escrowAddress, balance: balance };
+            } catch {
+              // -1 represents no balance available at load tim
+              return { ...asset, escrowAddress, balance: -1 };
+            }
+          }),
+        );
+        setAssetsWithBalances(assetsWithBalances);
+      };
+
+      loadBalances();
+    }
+  }, [assets, chain, escrowAddress]);
+
   return (
-    <Box
+    <DataGrid
       sx={{
-        width: 400,
+        width: { width },
         '& .super-app-theme--header': {
           backgroundColor: `background.paper`,
           color: `secondary.main`,
@@ -100,23 +189,32 @@ const AssetsTable = ({ assets }: Props) => {
         '& .cellStyle': {
           backgroundColor: `background.paper`,
         },
+        height: customNoRowsOverlay && largeScreen ? `400px` : `auto`,
       }}
-    >
-      <DataGrid
-        rows={assets}
-        hideFooter
-        autoHeight
-        pageSize={10}
-        columns={columns}
-        getRowId={(row) => {
-          return `${row.index}${row.offeringAmount}${row.requestingAmount}`;
-        }}
-        autoPageSize
-        getCellClassName={() => {
-          return `cellStyle`;
-        }}
-      />
-    </Box>
+      loading={loading}
+      components={{
+        NoRowsOverlay: customNoRowsOverlay
+          ? customNoRowsOverlay
+          : () => (
+              <Stack height="100%" alignItems="center" justifyContent="center">
+                😔 No swaps available for your account
+              </Stack>
+            ),
+        LoadingOverlay: LinearProgress,
+      }}
+      rows={escrowAddress ? assetsWithBalances : assets}
+      hideFooter
+      autoHeight={customNoRowsOverlay && largeScreen ? false : true}
+      pageSize={10}
+      columns={escrowAddress ? columnsWithBalance : columns}
+      getRowId={(row) => {
+        return `${row.index}${row.offeringAmount}${row.requestingAmount}`;
+      }}
+      autoPageSize
+      getCellClassName={() => {
+        return `cellStyle`;
+      }}
+    />
   );
 };
 

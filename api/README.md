@@ -4,10 +4,10 @@
 
 The following folder is hosting a set of serverless functions used by the swapper. Vercel allows using multiple runtime environments hence:
 
-1. `swappers` - contains `python` functions that execute `pyteal` code and compile stateless contracts against required `algod` instance.
+1. `swaps` - contains `python` functions that execute `pyteal` code and compile stateless contracts against required `algod` instance.
 2. `storage` - a simple function that works with `POST` calls and stores `SwapperConfiguration` objects on ipfs.
 
 ### Further notes
 
 Dependencies for `storage` functions are not listed in subfolder because they are inherited from root `package.json` file.
-Dependencies for `swappers` are listed in `requirements.txt` and simply fetch latest `algoworld-contracts` version via release tag.
+Dependencies for `swaps` are listed in `requirements.txt` and simply fetch latest `algoworld-contracts` version via release tag.

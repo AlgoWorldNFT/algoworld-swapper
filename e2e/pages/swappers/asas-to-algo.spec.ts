@@ -1,7 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
-import { AW_SWAPPER_BASE_URL } from '@/e2e/consts';
 import {
   NAV_BAR_CONNECT_BTN_ID,
+  NAV_BAR_ICON_HOME_BTN_ID,
   NAV_BAR_SETTINGS_BTN_ID,
   NAV_BAR_SETTINGS_MENU_ITEM_ID,
 } from '@/components/Headers/constants';
@@ -16,6 +16,11 @@ import {
   SHARE_SWAP_COPY_BTN_ID,
   DIALOG_CANCEL_BTN_ID,
   SWAP_DEACTIVATION_PERFORMED_MESSAGE,
+  MNEMONIC_DIALOG_TEXT_INPUT_ID,
+  MNEMONIC_DIALOG_ID,
+  MNEMONIC_DIALOG_SELECT_BUTTON_ID,
+  INFO_DIALOG_CLOSE_BTN_ID,
+  INFO_DIALOG_ID,
 } from '@/components/Dialogs/constants';
 import {
   SWAP_TYPE_PICKER_CARD_ID,
@@ -26,9 +31,12 @@ import {
   ASAS_TO_ALGO_PAGE_HEADER_ID,
   CREATE_SWAP_BTN_ID,
   MY_SWAPS_PAGE_HEADER_ID,
+  PERFORM_SWAP_OPTIN_BUTTON_ID,
+  PERFORM_SWAP_PERFORM_BUTTON_ID,
 } from '@/common/constants';
 import { MY_SWAPS_TABLE_MANAGE_BTN_ID } from '@/components/Tables/constants';
 import { CRYPTO_TEXT_FIELD_ID } from '@/components/TextFields/constants';
+import { AW_SWAPPER_BASE_URL } from '@/e2e/common';
 
 const DUMMY_ASA_TO_OFFER = `96044943: AWS_TEST`;
 
@@ -46,19 +54,22 @@ test.afterAll(async () => {
 });
 
 test.describe(`Asas to Algo Swap`, () => {
-  test(`should be able to load and connect wallet`, async () => {
+  test(`Bob should be able to load and connect wallet`, async () => {
     await page.locator(`id=${NAV_BAR_CONNECT_BTN_ID}`).click();
     await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeVisible();
     await page.locator(`div[role="button"]:has-text("Mnemonic")`).click();
+    await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeVisible();
+    await page
+      .locator(`id=${MNEMONIC_DIALOG_TEXT_INPUT_ID}`)
+      .fill(process.env.E2E_TESTS_BOB_MNEMONIC ?? ``);
+
+    await page.locator(`id=${MNEMONIC_DIALOG_SELECT_BUTTON_ID}`).click();
+
+    await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeHidden();
     await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
   });
 
-  test(`should be restore login session on page reload`, async () => {
-    await page.reload();
-    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
-  });
-
-  test(`should be able to navigate to Asas to Algo page`, async () => {
+  test(`Bob should be able to navigate to Asas to Algo page`, async () => {
     await expect(
       page.locator(`id=${ASAS_TO_ALGO_PAGE_HEADER_ID}`),
     ).toBeHidden();
@@ -71,7 +82,7 @@ test.describe(`Asas to Algo Swap`, () => {
     ).toBeVisible();
   });
 
-  test(`should be able to select offering asset`, async () => {
+  test(`Bob should be able to select offering asset`, async () => {
     await expect(
       page.locator(`id=${FROM_ASSET_PICKER_DIALOG_ID}`),
     ).toBeHidden();
@@ -91,18 +102,18 @@ test.describe(`Asas to Algo Swap`, () => {
     ).toBeHidden();
   });
 
-  test(`should be able to input requesting algo`, async () => {
+  test(`Bob should be able to input requesting algo`, async () => {
     await expect(page.locator(`id=${TO_ALGO_PICKER_DIALOG_ID}`)).toBeHidden();
     await page.locator(`id=${TO_SWAP_REQUESTING_BTN_ID}`).click();
     await expect(page.locator(`id=${TO_ALGO_PICKER_DIALOG_ID}`)).toBeVisible();
 
     await page.locator(`id=${CRYPTO_TEXT_FIELD_ID}`).click();
-    await page.locator(`id=${CRYPTO_TEXT_FIELD_ID}`).fill(`1`);
+    await page.locator(`id=${CRYPTO_TEXT_FIELD_ID}`).fill(`0.01`);
     await page.locator(`id=${DIALOG_SELECT_BTN_ID}`).click();
     await expect(page.locator(`id=${TO_ALGO_PICKER_DIALOG_ID}`)).toBeHidden();
   });
 
-  test(`should be able to initiate create swap`, async () => {
+  test(`Bob should be able to initiate create swap`, async () => {
     await expect(page.locator(`id=${CONFIRM_DIALOG_ID}`)).toBeHidden();
     await page.locator(`id=${CREATE_SWAP_BTN_ID}`).click({ timeout: 120000 });
     await expect(page.locator(`id=${CONFIRM_DIALOG_ID}`)).toBeVisible();
@@ -110,7 +121,7 @@ test.describe(`Asas to Algo Swap`, () => {
     await expect(page.locator(`id=${CONFIRM_DIALOG_ID}`)).toBeHidden();
   });
 
-  test(`should successfully create swap and display share dialog`, async () => {
+  test(`Bob should successfully create swap and display share dialog`, async () => {
     await expect(page.locator(`id=${SHARE_SWAP_DIALOG_ID}`)).toBeVisible({
       timeout: 100000,
     });
@@ -123,9 +134,74 @@ test.describe(`Asas to Algo Swap`, () => {
     ).toContain(`/swap/`);
     await page.locator(`id=${DIALOG_CANCEL_BTN_ID}`).click();
     await expect(page.locator(`id=${SHARE_SWAP_DIALOG_ID}`)).toBeHidden();
+
+    await page.locator(`id=${NAV_BAR_ICON_HOME_BTN_ID}`).click();
+    await page.locator(`id=${NAV_BAR_SETTINGS_BTN_ID}`).click();
+    await page.locator(`id=${NAV_BAR_SETTINGS_MENU_ITEM_ID(`Logout`)}`).click();
+
+    const clipboardContent = await page.evaluate(() => {
+      const content = navigator.clipboard.readText();
+      return content;
+    });
+
+    await page.goto(clipboardContent);
   });
 
-  test(`should successfully remove created swap`, async () => {
+  test(`Alice should be able to load and connect wallet`, async () => {
+    await page.locator(`id=${NAV_BAR_CONNECT_BTN_ID}`).click();
+    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeVisible();
+    await page.locator(`div[role="button"]:has-text("Mnemonic")`).click();
+    await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeVisible();
+    await page
+      .locator(`id=${MNEMONIC_DIALOG_TEXT_INPUT_ID}`)
+      .fill(process.env.E2E_TESTS_ALICE_MNEMONIC ?? ``);
+
+    await page.locator(`id=${MNEMONIC_DIALOG_SELECT_BUTTON_ID}`).click();
+    await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeHidden();
+    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
+  });
+
+  test(`Alice should successfully perform swap created by Bob`, async () => {
+    const optInButtonVisible = await page
+      .locator(`id=${PERFORM_SWAP_OPTIN_BUTTON_ID}`)
+      .isVisible();
+
+    if (optInButtonVisible) {
+      await page.locator(`id=${PERFORM_SWAP_OPTIN_BUTTON_ID}`).click();
+      await expect(
+        page.locator(`id=${PERFORM_SWAP_OPTIN_BUTTON_ID}`),
+      ).toBeHidden({ timeout: 30000 });
+    }
+
+    await page.locator(`id=${PERFORM_SWAP_PERFORM_BUTTON_ID}`).click();
+    await expect(page.locator(`id=${CONFIRM_DIALOG_ID}`)).toBeVisible();
+    await page.locator(`id=${DIALOG_SELECT_BTN_ID}`).click();
+    await expect(page.locator(`id=${CONFIRM_DIALOG_ID}`)).toBeHidden();
+
+    await expect(page.locator(`id=${INFO_DIALOG_ID}`)).toBeVisible({
+      timeout: 100000,
+    });
+
+    await page.locator(`id=${INFO_DIALOG_CLOSE_BTN_ID}`).click();
+    await expect(page.locator(`id=${INFO_DIALOG_ID}`)).toBeHidden();
+
+    await page.locator(`id=${NAV_BAR_ICON_HOME_BTN_ID}`).click();
+    await page.locator(`id=${NAV_BAR_SETTINGS_BTN_ID}`).click();
+    await page.locator(`id=${NAV_BAR_SETTINGS_MENU_ITEM_ID(`Logout`)}`).click();
+  });
+
+  test(`Bob should successfully remove created swap`, async () => {
+    await page.locator(`id=${NAV_BAR_CONNECT_BTN_ID}`).click();
+    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeVisible();
+    await page.locator(`div[role="button"]:has-text("Mnemonic")`).click();
+    await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeVisible();
+    await page
+      .locator(`id=${MNEMONIC_DIALOG_TEXT_INPUT_ID}`)
+      .fill(process.env.E2E_TESTS_BOB_MNEMONIC ?? ``);
+    await page.locator(`id=${MNEMONIC_DIALOG_SELECT_BUTTON_ID}`).click();
+    await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeHidden();
+    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
+
     await page.locator(`id=${NAV_BAR_SETTINGS_BTN_ID}`).click();
     await Promise.all([
       page.waitForNavigation(),

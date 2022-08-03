@@ -17,9 +17,10 @@
  */
 
 import {
+  AWVT_ASSET_INDEX,
   CHAIN_TYPE,
   EMPTY_ASSET_IMAGE_URL,
-  SWAP_PROXY_VERSION,
+  LATEST_SWAP_PROXY_VERSION,
 } from '@/common/constants';
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
@@ -37,7 +38,7 @@ import {
 } from '@reduxjs/toolkit';
 import { LogicSigAccount } from 'algosdk';
 import { RootState } from '@/redux/store';
-import optInAssetsForAccount from '@/utils/api/accounts/optInAssetsForAccount';
+import optAssetsForAccount from '@/utils/api/accounts/optAssetsForAccount';
 import WalletManager from '@/utils/wallets/walletManager';
 
 interface WalletConnectState {
@@ -46,12 +47,12 @@ interface WalletConnectState {
   address: string;
   assets: Asset[];
   fetching: boolean;
-  optingIn: boolean;
   fetchingSwaps: boolean;
   proxy: LogicSigAccount;
   swaps: SwapConfiguration[];
   selectedOfferingAssets: Asset[];
   selectedRequestingAssets: Asset[];
+  hasAwvt: boolean;
 }
 
 const initialState = {
@@ -78,7 +79,7 @@ const initialState = {
   swaps: [],
   fetching: false,
   fetchingSwaps: false,
-  optingIn: false,
+  hasAwvt: false,
 } as WalletConnectState;
 
 export const getAccountAssets = createAsyncThunk(
@@ -93,7 +94,7 @@ export const getProxy = createAsyncThunk(
   async ({
     address,
     chain,
-    version = SWAP_PROXY_VERSION,
+    version = LATEST_SWAP_PROXY_VERSION,
   }: {
     address: string;
     chain: ChainType;
@@ -106,7 +107,14 @@ export const getProxy = createAsyncThunk(
     });
 
     const data = await response.data;
-    return getLogicSign(data[`result`]);
+    const logicSig = getLogicSign(data[`result`]);
+
+    const proxyAssets = await getAssetsForAccount(chain, address);
+    const hasAwvt =
+      proxyAssets.filter((asset) => asset[`index`] === AWVT_ASSET_INDEX(chain))
+        .length > 0;
+
+    return { proxy: logicSig, hasAwvt: hasAwvt };
   },
 );
 
@@ -117,24 +125,26 @@ export const getAccountSwaps = createAsyncThunk(
   },
 );
 
-export const optInAssets = createAsyncThunk(
-  `walletConnect/optInAssets`,
+export const optAssets = createAsyncThunk(
+  `walletConnect/optAssets`,
   async (
     {
       assetIndexes,
       connector,
-    }: { assetIndexes: number[]; connector: WalletManager },
+      deOptIn = false,
+    }: { assetIndexes: number[]; connector: WalletManager; deOptIn?: boolean },
     { getState, dispatch },
   ) => {
     let state = getState() as any;
     state = state.walletConnect as WalletConnectState;
 
-    return await optInAssetsForAccount(
+    return await optAssetsForAccount(
       state.chain,
       assetIndexes,
       connector,
       state.address,
       dispatch,
+      deOptIn,
     );
   },
 );
@@ -178,7 +188,8 @@ export const walletConnectSlice = createSlice({
 
     builder.addCase(getProxy.fulfilled, (state, action) => {
       state.fetching = false;
-      state.proxy = action.payload;
+      state.proxy = action.payload.proxy;
+      state.hasAwvt = action.payload.hasAwvt;
     });
     builder.addCase(getProxy.pending, (state) => {
       state.fetching = true;
@@ -190,13 +201,6 @@ export const walletConnectSlice = createSlice({
     });
     builder.addCase(getAccountSwaps.pending, (state) => {
       state.fetchingSwaps = true;
-    });
-
-    builder.addCase(optInAssets.fulfilled, (state) => {
-      state.optingIn = false;
-    });
-    builder.addCase(optInAssets.pending, (state) => {
-      state.optingIn = true;
     });
   },
 });

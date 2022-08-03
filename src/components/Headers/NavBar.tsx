@@ -60,6 +60,7 @@ import {
   NAV_BAR_CHAIN_SWITCH_ID,
   NAV_BAR_CONNECT_BTN_ID,
   NAV_BAR_HOME_BTN_ID,
+  NAV_BAR_ICON_HOME_BTN_ID,
   NAV_BAR_ID,
   NAV_BAR_MENU_APPBAR_ID,
   NAV_BAR_MENU_APPBAR_ITEM_ID,
@@ -76,6 +77,7 @@ type PageConfiguration = {
 
 const pages = [
   { title: `Home`, url: `/` },
+  { title: `Public Swaps`, url: `/public-swaps` },
   { title: `Docs`, url: `https://docs.algoworld.io`, target: `_blank` },
 ] as PageConfiguration[];
 
@@ -115,7 +117,11 @@ const NavBar = () => {
   const connector = useContext(ConnectContext);
 
   const connect = useCallback(
-    async (clientType: WalletType, fromClickEvent: boolean) => {
+    async (
+      clientType: WalletType,
+      fromClickEvent: boolean,
+      phrase?: string,
+    ) => {
       // MyAlgo Connect doesn't work if invoked oustide of click event
       // Hence this work around
       if (!fromClickEvent && clientType === WalletType.MyAlgoWallet) {
@@ -128,7 +134,7 @@ const NavBar = () => {
           ? dispatch(onSessionUpdate(accounts))
           : await connector.connect();
       } else {
-        connector.setWalletClient(clientType);
+        connector.setWalletClient(clientType, phrase);
         await connector.connect();
       }
     },
@@ -142,7 +148,6 @@ const NavBar = () => {
   };
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    console.log(`called handle open nav menu`);
     setAnchorElNav(event.currentTarget);
   };
 
@@ -177,7 +182,7 @@ const NavBar = () => {
     }
 
     if (event.target.textContent === `My Swaps`) {
-      router.push(`/swappers/my-swaps`);
+      router.push(`/swaps/my-swaps`);
     }
 
     if (event.target.textContent === `Logout`) {
@@ -189,7 +194,7 @@ const NavBar = () => {
     dispatch(switchChain(chain));
   };
 
-  React.useMemo(() => {
+  useEffect(() => {
     const changeChain = (chain: ChainType) => {
       dispatch(switchChain(chain));
     };
@@ -204,9 +209,7 @@ const NavBar = () => {
             ChainType.TestNet;
       changeChain(persistedChainType);
     }
-  }, [chain, dispatch]);
 
-  useEffect(() => {
     const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
     if (!connectedWalletType || connectedWalletType === ``) {
       return;
@@ -225,9 +228,12 @@ const NavBar = () => {
     (asset: Asset) => asset.index === 0,
   ) as Asset;
 
-  const handleOnClientSelected = async (client: WalletClient) => {
+  const handleOnClientSelected = async (
+    client: WalletClient,
+    phrase?: string,
+  ) => {
     dispatch(setIsWalletPopupOpen(false));
-    await connect(client.type, true);
+    await connect(client.type, true, phrase);
   };
 
   const openBugReport = () => {
@@ -245,7 +251,7 @@ const NavBar = () => {
           <Toolbar disableGutters>
             <Link href="/">
               <IconButton
-                id={NAV_BAR_HOME_BTN_ID}
+                id={NAV_BAR_ICON_HOME_BTN_ID}
                 size="medium"
                 sx={{ display: { xs: `none`, md: `flex` }, mr: 1 }}
                 aria-label="home icon"
@@ -530,6 +536,7 @@ const NavBar = () => {
                     sx={{ color: `primary.main` }}
                     label={selectedChain === `mainnet` ? `MainNet` : `TestNet`}
                   />
+
                   <Button
                     id={NAV_BAR_CONNECT_BTN_ID}
                     onClick={() => {

@@ -8,6 +8,7 @@ const runtimeCaching = require('next-pwa/cache');
 
 const moduleExports = {
   reactStrictMode: true,
+  pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   images: {
     domains: [
       'cf-ipfs.com',

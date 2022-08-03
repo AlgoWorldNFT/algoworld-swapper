@@ -16,6 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {
+  PERFORM_SWAP_OPTIN_BUTTON_ID,
+  PERFORM_SWAP_PAGE_HEADER_ID,
+  PERFORM_SWAP_PERFORM_BUTTON_ID,
+} from '@/common/constants';
 import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
 import ConfirmDialog from '@/components/Dialogs/ConfirmDialog';
 import InfoDialog from '@/components/Dialogs/InfoDialog';
@@ -26,10 +31,7 @@ import { SwapConfiguration } from '@/models/Swap';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
-import {
-  getAccountAssets,
-  optInAssets,
-} from '@/redux/slices/walletConnectSlice';
+import { getAccountAssets, optAssets } from '@/redux/slices/walletConnectSlice';
 import { connector } from '@/redux/store/connector';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import accountExists from '@/utils/api/accounts/accountExists';
@@ -187,9 +189,10 @@ const PerformSwap = () => {
             fullWidth
             variant="contained"
             color="primary"
+            id={PERFORM_SWAP_OPTIN_BUTTON_ID}
             onClick={() => {
               dispatch(
-                optInAssets({
+                optAssets({
                   assetIndexes: assetsToOptIn,
                   connector,
                 }),
@@ -212,6 +215,7 @@ const PerformSwap = () => {
               swapConfiguration.offering.length === 0 ||
               swapConfiguration.requesting.length === 0
             }
+            id={PERFORM_SWAP_PERFORM_BUTTON_ID}
             fullWidth
             variant="contained"
             color="primary"
@@ -348,6 +352,7 @@ const PerformSwap = () => {
   return (
     <>
       <PageHeader
+        id={PERFORM_SWAP_PAGE_HEADER_ID}
         title="⚡️ Perform Swap"
         description="Perform a swap created created by other AlgoWorld Swapper users.
           Completing the swap will transfer your requested asset directly to

@@ -28,3 +28,8 @@ export type Asset = {
   offeringAmount: number;
   requestingAmount: number;
 };
+
+export type AssetWithBalance = Asset & {
+  escrowAddress: string;
+  balance: number;
+};

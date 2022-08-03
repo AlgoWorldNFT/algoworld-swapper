@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ChainType } from '@/models/Chain';
 import { SwapConfiguration } from '@/models/Swap';
 import { useAppSelector } from '@/redux/store/hooks';
+import getSwapUrl from '@/utils/api/swaps/getSwapUrl';
 import {
   Dialog,
   DialogTitle,
@@ -88,15 +88,7 @@ const ShareSwapDialog = ({
           id={SHARE_SWAP_COPY_BTN_ID}
           onClick={() => {
             if (swapConfiguration) {
-              copyToClipboard(
-                `${window.location.origin}/swap/${swapConfiguration.proxy}/${
-                  swapConfiguration.escrow
-                }${
-                  selectedChain === ChainType.TestNet
-                    ? `?chain=testnet`
-                    : `?chain=mainnet`
-                }`,
-              );
+              copyToClipboard(getSwapUrl(swapConfiguration, selectedChain));
               enqueueSnackbar(`Copied to clipboard...`, {
                 variant: `success`,
               });

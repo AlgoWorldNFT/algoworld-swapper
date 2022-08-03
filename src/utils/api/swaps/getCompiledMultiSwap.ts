@@ -20,5 +20,5 @@
 import axios from 'axios';
 
 export default function getCompiledMultiSwap(configuration: any) {
-  return axios.post(`/api/swappers/compile-asas-to-algo`, configuration);
+  return axios.post(`/api/swaps/compile-asas-to-algo`, configuration);
 }

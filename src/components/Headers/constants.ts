@@ -1,5 +1,6 @@
 export const DEFAULT_PAGE_HEADER_ID = `AWPageHeader`;
 export const NAV_BAR_ID = `AWNavigationBar`;
+export const NAV_BAR_ICON_HOME_BTN_ID = `AWNavigationBarIconHomeButton`;
 export const NAV_BAR_HOME_BTN_ID = `AWNavigationBarHomeButton`;
 export const NAV_BAR_MENU_APPBAR_ID = `AWNavigationBarMenuAppBar`;
 export const NAV_BAR_MENU_APPBAR_ITEM_ID = (title: string) => {

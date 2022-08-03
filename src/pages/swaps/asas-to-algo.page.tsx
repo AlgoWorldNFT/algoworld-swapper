@@ -29,7 +29,8 @@ import {
   ASA_TO_ALGO_FUNDING_BASE_FEE,
   ASA_TO_ALGO_MAX_FEE,
   ASA_TO_ASA_FUNDING_FEE,
-  SWAP_PROXY_VERSION,
+  AWVT_ASSET_INDEX,
+  LATEST_SWAP_PROXY_VERSION,
   TXN_SIGNING_CANCELLED_MESSAGE,
   TXN_SUBMISSION_FAILED_MESSAGE,
 } from '@/common/constants';
@@ -51,7 +52,7 @@ import { useSnackbar } from 'notistack';
 import {
   getAccountAssets,
   getAccountSwaps,
-  optInAssets,
+  optAssets,
   selectOfferingAssetAmounts,
   selectOfferingAssets,
   selectRequestingAssets,
@@ -87,10 +88,12 @@ export default function MultiAsaToAlgo() {
   const existingSwaps = useAppSelector((state) => state.walletConnect.swaps);
   const address = useAppSelector((state) => state.walletConnect.address);
   const chain = useAppSelector((state) => state.walletConnect.chain);
+  const hasAwvt = useAppSelector((state) => state.walletConnect.hasAwvt);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
 
   const { setLoading, resetLoading } = useLoadingIndicator();
+  const [isPublicSwap, setIsPublicSwap] = useState(false);
 
   const escrowState = useAsync(async () => {
     if (
@@ -123,6 +126,7 @@ export default function MultiAsaToAlgo() {
       requestingAssets.length !== 1 ||
       escrowState.loading ||
       escrowState.error ||
+      !proxy ||
       !escrowState.value
     ) {
       return undefined;
@@ -131,7 +135,7 @@ export default function MultiAsaToAlgo() {
     const escrow = escrowState.value.logicSig as LogicSigAccount;
 
     return {
-      version: SWAP_PROXY_VERSION,
+      version: LATEST_SWAP_PROXY_VERSION,
       type: SwapType.MULTI_ASA_TO_ALGO,
       offering: offeringAssets,
       requesting: requestingAssets,
@@ -139,15 +143,17 @@ export default function MultiAsaToAlgo() {
       escrow: escrow.address(),
       contract: escrowState.value.compiledProgram,
       proxy: proxy.address(),
+      isPublic: isPublicSwap,
     } as SwapConfiguration;
   }, [
-    address,
-    proxy,
-    escrowState.error,
-    escrowState.loading,
-    escrowState.value,
     offeringAssets,
     requestingAssets,
+    escrowState.loading,
+    escrowState.error,
+    escrowState.value,
+    address,
+    proxy,
+    isPublicSwap,
   ]);
 
   const assetsToOptIn = useMemo(() => {
@@ -294,6 +300,15 @@ export default function MultiAsaToAlgo() {
       return;
     }
 
+    if (!hasAwvt) {
+      await dispatch(
+        optAssets({
+          assetIndexes: [AWVT_ASSET_INDEX(chain)],
+          connector,
+        }),
+      );
+    }
+
     setLoading(
       `Setting up swap, please sign transactions to store your new swap configuration...`,
     );
@@ -429,7 +444,7 @@ export default function MultiAsaToAlgo() {
                         color="primary"
                         onClick={() => {
                           dispatch(
-                            optInAssets({
+                            optAssets({
                               assetIndexes: assetsToOptIn,
                               connector,
                             }),
@@ -467,6 +482,10 @@ export default function MultiAsaToAlgo() {
           0.11 +
           (ASA_TO_ALGO_FUNDING_BASE_FEE * offeringAssets.length) / 1e6
         ).toFixed(2)}
+        isPublicSwap={isPublicSwap}
+        onSwapVisibilityChange={(newState) => {
+          setIsPublicSwap(newState);
+        }}
       >
         A swapper escrow contract will be created, a small fixed fee in algos
         will be charged to fund the wallet and your offering asa will be then

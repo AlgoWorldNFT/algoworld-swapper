@@ -20,7 +20,7 @@ from http.server import BaseHTTPRequestHandler
 
 from algoworld_contracts import contracts
 
-from .common import INCENTIVE_FEE, INCENTIVE_WALLET, get_algod
+from api_utils.utils import INCENTIVE_FEE, INCENTIVE_WALLET, get_algod
 
 
 @dataclass

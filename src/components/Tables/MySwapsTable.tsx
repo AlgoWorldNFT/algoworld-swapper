@@ -21,27 +21,14 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { SwapConfiguration } from '@/models/Swap';
 import { SwapType } from '@/models/Swap';
 import { Asset } from '@/models/Asset';
-import { Box, Button, Stack, Tooltip } from '@mui/material';
+import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
 import store from '@/redux/store';
 import {
   setIsManageSwapPopupOpen,
   setSelectedManageSwap,
 } from '@/redux/slices/applicationSlice';
 import { MY_SWAPS_TABLE_MANAGE_BTN_ID } from './constants';
-
-const assetsToRowString = (assets: Asset[], offering = true) => {
-  let response = ``;
-
-  let index = 1;
-  for (const asset of assets) {
-    response += `${index}. ${asset.index}: ${asset.name} x${
-      offering ? asset.offeringAmount : asset.requestingAmount
-    }\n`;
-    index += 1;
-  }
-
-  return response;
-};
+import assetsToRowString from '@/utils/api/assets/assetsToRawString';
 
 const columns: GridColDef[] = [
   {
@@ -140,6 +127,24 @@ const columns: GridColDef[] = [
     align: `center`,
     valueFormatter: ({ value }) => {
       return value === SwapType.ASA_TO_ASA ? `Asa to Asa` : `Asas to Algo`;
+    },
+  },
+  {
+    field: `visibility`,
+    flex: 1,
+    width: 150,
+    minWidth: 100,
+    maxWidth: 200,
+    headerName: `Visibility`,
+    headerAlign: `center`,
+    headerClassName: `super-app-theme--header`,
+    align: `center`,
+    renderCell: (params) => {
+      return (
+        <Typography>
+          {(params.row.isPublic ?? false) === true ? `Public` : `Private`}
+        </Typography>
+      );
     },
   },
   {

@@ -6,6 +6,7 @@
     "desc.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "**/*page.tsx",
     "src/pages/_error.js",
     "**/*.spec.ts"
   ]

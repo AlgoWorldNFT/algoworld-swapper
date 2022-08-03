@@ -26,16 +26,19 @@ import {
   setIsManageSwapPopupOpen,
   setIsWalletPopupOpen,
 } from '@/redux/slices/applicationSlice';
-import { getAccountSwaps } from '@/redux/slices/walletConnectSlice';
+import { getAccountSwaps, optAssets } from '@/redux/slices/walletConnectSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
-import { Box, Button, Container, LinearProgress } from '@mui/material';
-import { MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
+import { Box, Button, Container, Grid, LinearProgress } from '@mui/material';
+import { AWVT_ASSET_INDEX, MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
+import { connector } from '@/redux/store/connector';
+import { useMemo } from 'react';
 
 export default function MySwaps() {
   const swaps = useAppSelector((state) => state.walletConnect.swaps);
   const fetchingSwaps = useAppSelector(
     (state) => state.walletConnect.fetchingSwaps,
   );
+  const hasAwvt = useAppSelector((state) => state.walletConnect.hasAwvt);
   const dispatch = useAppDispatch();
   const selectedManageSwap = useAppSelector(
     (state) => state.application.selectedManageSwap,
@@ -48,6 +51,8 @@ export default function MySwaps() {
   const isShareSwapPopupOpen = useAppSelector(
     (state) => state.application.isShareSwapPopupOpen,
   );
+
+  const awvtIndex = useMemo(() => [AWVT_ASSET_INDEX(chain)], [chain]);
 
   return (
     <>
@@ -82,8 +87,46 @@ export default function MySwaps() {
       <PageHeader
         id={MY_SWAPS_PAGE_HEADER_ID}
         title="📜 My Swaps"
-        description="Activate, update or deactivate your existing swaps."
-      />
+        description="Activate, update or deactivate your existing swaps"
+      >
+        <Grid
+          sx={{ pt: 2 }}
+          container
+          justifyContent="space-evenly"
+          alignItems="center"
+        >
+          {hasAwvt ? (
+            <Button
+              variant="outlined"
+              onClick={async () => {
+                await dispatch(
+                  optAssets({
+                    assetIndexes: awvtIndex,
+                    connector,
+                    deOptIn: true,
+                  }),
+                );
+              }}
+            >
+              Opt out visibility token
+            </Button>
+          ) : (
+            <Button
+              variant="outlined"
+              onClick={async () => {
+                await dispatch(
+                  optAssets({
+                    assetIndexes: awvtIndex,
+                    connector,
+                  }),
+                );
+              }}
+            >
+              Opt in visibility token
+            </Button>
+          )}
+        </Grid>
+      </PageHeader>
 
       <Container
         maxWidth="md"
