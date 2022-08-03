@@ -31,6 +31,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { Box, Button, Container, Grid, LinearProgress } from '@mui/material';
 import { AWVT_ASSET_INDEX, MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
 import { connector } from '@/redux/store/connector';
+import { useMemo } from 'react';
 
 export default function MySwaps() {
   const swaps = useAppSelector((state) => state.walletConnect.swaps);
@@ -50,6 +51,8 @@ export default function MySwaps() {
   const isShareSwapPopupOpen = useAppSelector(
     (state) => state.application.isShareSwapPopupOpen,
   );
+
+  const awvtIndex = useMemo(() => [AWVT_ASSET_INDEX(chain)], [chain]);
 
   return (
     <>
@@ -98,7 +101,7 @@ export default function MySwaps() {
               onClick={async () => {
                 await dispatch(
                   optAssets({
-                    assetIndexes: [AWVT_ASSET_INDEX(chain)],
+                    assetIndexes: awvtIndex,
                     connector,
                     deOptIn: true,
                   }),
@@ -113,7 +116,7 @@ export default function MySwaps() {
               onClick={async () => {
                 await dispatch(
                   optAssets({
-                    assetIndexes: [AWVT_ASSET_INDEX(chain)],
+                    assetIndexes: awvtIndex,
                     connector,
                   }),
                 );

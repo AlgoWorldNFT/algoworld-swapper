@@ -17,6 +17,7 @@
  */
 
 import {
+  AWVT_ASSET_INDEX,
   CHAIN_TYPE,
   EMPTY_ASSET_IMAGE_URL,
   LATEST_SWAP_PROXY_VERSION,
@@ -110,7 +111,8 @@ export const getProxy = createAsyncThunk(
 
     const proxyAssets = await getAssetsForAccount(chain, address);
     const hasAwvt =
-      proxyAssets.filter((asset) => asset[`index`] === 100256867).length > 0;
+      proxyAssets.filter((asset) => asset[`index`] === AWVT_ASSET_INDEX(chain))
+        .length > 0;
 
     return { proxy: logicSig, hasAwvt: hasAwvt };
   },
@@ -122,13 +124,6 @@ export const getAccountSwaps = createAsyncThunk(
     return await getSwapConfigurationsForAccount(chain, address);
   },
 );
-
-// export const getPublicSwaps = createAsyncThunk(
-//   `walletConnect/getPublicSwaps`,
-//   async ({ chain, address }: { chain: ChainType; address: string }) => {
-//     return await getSwapConfigurationsForAccount(chain, address);
-//   },
-// );
 
 export const optAssets = createAsyncThunk(
   `walletConnect/optAssets`,

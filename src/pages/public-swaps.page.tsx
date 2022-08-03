@@ -17,7 +17,6 @@
  */
 
 import PageHeader from '@/components/Headers/PageHeader';
-import { useAppSelector } from '@/redux/store/hooks';
 import {
   Box,
   Button,
@@ -32,6 +31,7 @@ import {
   useTheme,
 } from '@mui/material';
 import {
+  AWVT_ASSET_INDEX,
   PUBLIC_SWAPS_PAGE_HEADER_ID,
   PUBLIC_SWAPS_SEARCH_BUTTON_ID,
   PUBLIC_SWAPS_SEARCH_FIELD_ID,
@@ -44,16 +44,17 @@ import getPublicSwapCreators from '@/utils/api/accounts/getPublicSwapCreators';
 import { paginate } from '@/utils/paginate';
 import accountExists from '@/utils/api/accounts/accountExists';
 import { useRouter } from 'next/router';
+import { useAppSelector } from '@/redux/store/hooks';
 
 export default function PublicSwaps() {
   const theme = useTheme();
   const largeScreen = useMediaQuery(theme.breakpoints.up(`sm`));
-  const chain = useAppSelector((state) => state.walletConnect.chain);
   const [nextToken, setNextToken] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(0);
   const [searchInput, setSearchInput] = useState(``);
   const [publicSwapAccounts, setPublicSwapAccounts] = useState<string[]>([]);
   const [isLoading, setLoading] = useState(false);
+  const chain = useAppSelector((state) => state.walletConnect.chain);
   const rowsPerPage = 6;
 
   const router = useRouter();
@@ -72,13 +73,16 @@ export default function PublicSwaps() {
       setNextToken(undefined);
       setLoading(false);
     } else {
-      getPublicSwapCreators(100256867, chain, rowsPerPage, undefined).then(
-        (response) => {
-          setPublicSwapAccounts(response.accounts);
-          setNextToken(response.nextToken);
-          setLoading(false);
-        },
-      );
+      getPublicSwapCreators(
+        AWVT_ASSET_INDEX(chain),
+        chain,
+        rowsPerPage,
+        undefined,
+      ).then((response) => {
+        setPublicSwapAccounts(response.accounts);
+        setNextToken(response.nextToken);
+        setLoading(false);
+      });
     }
   }, [chain, creatorAddress, router.isReady]);
 
