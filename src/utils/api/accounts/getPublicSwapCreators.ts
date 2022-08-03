@@ -20,6 +20,7 @@ import {
   ALGOEXPLORER_INDEXER_URL,
   ALGONODE_INDEXER_URL,
   AWVT_ASSET_INDEX,
+  AWVT_CREATOR_ADDRESS,
 } from '@/common/constants';
 import { ChainType } from '@/models/Chain';
 import filterAsync from '@/utils/filterAsync';
@@ -59,14 +60,12 @@ export default async function getPublicSwapCreators(
             `assets` in accountData[`account`]
               ? accountData[`account`][`assets`].some(
                   (value: { [x: string]: number }) =>
-                    value[`asset-id`] === AWVT_ASSET_INDEX,
+                    value[`asset-id`] === AWVT_ASSET_INDEX(chain),
                 )
               : false;
 
           return (
-            hasAwvtOptedIn &&
-            account.address !==
-              `SUF5OEJIPBSBYELHBPOXWR3GH5T2J5Y7XHW5K6L3BJ2FEQ4A6XQZVNN4UM`
+            hasAwvtOptedIn && account.address !== AWVT_CREATOR_ADDRESS(chain)
           );
         } catch (e) {
           return false;

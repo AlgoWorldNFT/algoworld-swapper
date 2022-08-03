@@ -98,7 +98,7 @@ export default function MySwaps() {
               onClick={async () => {
                 await dispatch(
                   optAssets({
-                    assetIndexes: [AWVT_ASSET_INDEX],
+                    assetIndexes: [AWVT_ASSET_INDEX(chain)],
                     connector,
                     deOptIn: true,
                   }),
@@ -113,7 +113,7 @@ export default function MySwaps() {
               onClick={async () => {
                 await dispatch(
                   optAssets({
-                    assetIndexes: [AWVT_ASSET_INDEX],
+                    assetIndexes: [AWVT_ASSET_INDEX(chain)],
                     connector,
                   }),
                 );

@@ -303,7 +303,7 @@ export default function AsaToAsa() {
     if (!hasAwvt) {
       await dispatch(
         optAssets({
-          assetIndexes: [AWVT_ASSET_INDEX],
+          assetIndexes: [AWVT_ASSET_INDEX(chain)],
           connector,
         }),
       );

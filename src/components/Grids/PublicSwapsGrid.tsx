@@ -23,8 +23,6 @@ import { ellipseAddress } from '@/redux/helpers/utilities';
 import { ChainType } from '@/models/Chain';
 import PublicSwapAssetsTable from '../Tables/PublicSwapAssetsTable';
 
-// const AWVT_CREATOR_ADDRESS = `SUF5OEJIPBSBYELHBPOXWR3GH5T2J5Y7XHW5K6L3BJ2FEQ4A6XQZVNN4UM`;
-
 type Props = {
   publicSwapAccounts: string[];
   chain: ChainType;
