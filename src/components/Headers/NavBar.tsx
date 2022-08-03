@@ -148,7 +148,6 @@ const NavBar = () => {
   };
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    console.log(`called handle open nav menu`);
     setAnchorElNav(event.currentTarget);
   };
 

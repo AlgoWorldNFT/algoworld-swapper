@@ -63,8 +63,6 @@ export default async function getPublicSwapCreators(
                 )
               : false;
 
-          console.log(accountData, hasAwvtOptedIn);
-
           return (
             hasAwvtOptedIn &&
             account.address !==

@@ -18,10 +18,7 @@ export default class WalletManager {
     } else if (walletType === WalletType.MyAlgoWallet) {
       this.client = new MyAlgoWalletClient(MyAlgoSingleton.Instance);
     } else {
-      if (phrase) {
-        process.env[`NEXT_PUBLIC_MNEMONIC`] = phrase;
-      }
-      const mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? ``;
+      const mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? phrase ?? ``;
       this.client = new MnemonicClient(mnemonic);
     }
   };
@@ -50,8 +47,6 @@ export default class WalletManager {
       const signedUserTransactionsResult = await this.client.signTransactions(
         txnGroup,
       );
-
-      console.log(`sgns`, signedUserTransactionsResult);
 
       const signedUserTransactions: (Uint8Array | null)[] =
         signedUserTransactionsResult.map((element: string) => {

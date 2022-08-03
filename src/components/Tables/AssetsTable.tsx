@@ -18,7 +18,7 @@
 
 import * as React from 'react';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { Asset } from '@/models/Asset';
+import { Asset, AssetWithBalance } from '@/models/Asset';
 import {
   LinearProgress,
   Stack,
@@ -27,6 +27,10 @@ import {
   useTheme,
 } from '@mui/material';
 import formatAmount from '@/utils/formatAmount';
+import getAssetBalance from '@/utils/api/assets/getAssetBalance';
+import { ChainType } from '@/models/Chain';
+import { useAppSelector } from '@/redux/store/hooks';
+import { ConnectingAirportsOutlined } from '@mui/icons-material';
 
 const columns: GridColDef[] = [
   {
@@ -103,11 +107,35 @@ const columns: GridColDef[] = [
   },
 ];
 
+const columnsWithBalance: GridColDef[] = [
+  ...columns,
+  {
+    field: `balance`,
+    flex: 1,
+    headerName: `Balance`,
+    minWidth: 50,
+    maxWidth: 500,
+    headerAlign: `center`,
+    headerClassName: `super-app-theme--header`,
+    align: `center`,
+    renderCell: (params) => {
+      return (
+        <>
+          {params.row.balance > 0
+            ? Number(params.row.balance) / Math.pow(10, params.row.decimals)
+            : `N/A`}
+        </>
+      );
+    },
+  },
+];
+
 type Props = {
   assets: Asset[];
   width?: number | string;
   customNoRowsOverlay?: React.JSXElementConstructor<any>;
   loading?: boolean;
+  escrowAddress?: string;
 };
 
 const AssetsTable = ({
@@ -115,9 +143,40 @@ const AssetsTable = ({
   width = 400,
   customNoRowsOverlay,
   loading,
+  escrowAddress,
 }: Props) => {
   const theme = useTheme();
   const largeScreen = useMediaQuery(theme.breakpoints.up(`sm`));
+
+  const chain = useAppSelector((state) => state.walletConnect.chain);
+  const [assetsWithBalances, setAssetsWithBalances] = React.useState<
+    AssetWithBalance[]
+  >([]);
+
+  React.useEffect(() => {
+    if (escrowAddress) {
+      const loadBalances = async () => {
+        const assetsWithBalances: AssetWithBalance[] = await Promise.all(
+          assets.map(async (asset) => {
+            try {
+              const balance = await getAssetBalance(
+                asset.index,
+                escrowAddress,
+                chain,
+              );
+              return { ...asset, escrowAddress, balance: balance };
+            } catch {
+              // -1 represents no balance available at load tim
+              return { ...asset, escrowAddress, balance: -1 };
+            }
+          }),
+        );
+        setAssetsWithBalances(assetsWithBalances);
+      };
+
+      loadBalances();
+    }
+  }, [assets, chain, escrowAddress]);
 
   return (
     <DataGrid
@@ -143,11 +202,11 @@ const AssetsTable = ({
             ),
         LoadingOverlay: LinearProgress,
       }}
-      rows={assets}
+      rows={escrowAddress ? assetsWithBalances : assets}
       hideFooter
       autoHeight={customNoRowsOverlay && largeScreen ? false : true}
       pageSize={10}
-      columns={columns}
+      columns={escrowAddress ? columnsWithBalance : columns}
       getRowId={(row) => {
         return `${row.index}${row.offeringAmount}${row.requestingAmount}`;
       }}

@@ -318,6 +318,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
                 ...selectedManageSwap.requesting,
               ]}
               width={400}
+              escrowAddress={selectedManageSwap.escrow}
             />
           </DialogContent>
         </>

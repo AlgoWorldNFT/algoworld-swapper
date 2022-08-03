@@ -154,7 +154,7 @@ test.describe(`Public Swaps`, () => {
     await page.locator(`id=${NAV_BAR_SETTINGS_BTN_ID}`).click();
     await page.locator(`id=${NAV_BAR_SETTINGS_MENU_ITEM_ID(`Logout`)}`).click();
 
-    await page.goto(`${AW_SWAPPER_BASE_URL}public-swaps`);
+    await page.goto(`${AW_SWAPPER_BASE_URL}/public-swaps`);
   });
 
   test(`Anonymous user should find Bob's public swap`, async () => {
