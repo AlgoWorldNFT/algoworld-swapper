@@ -194,7 +194,7 @@ const NavBar = () => {
     dispatch(switchChain(chain));
   };
 
-  React.useMemo(() => {
+  useEffect(() => {
     const changeChain = (chain: ChainType) => {
       dispatch(switchChain(chain));
     };
@@ -209,9 +209,7 @@ const NavBar = () => {
             ChainType.TestNet;
       changeChain(persistedChainType);
     }
-  }, [chain, dispatch]);
 
-  useEffect(() => {
     const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
     if (!connectedWalletType || connectedWalletType === ``) {
       return;
