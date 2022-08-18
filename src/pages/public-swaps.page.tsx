@@ -89,7 +89,7 @@ export default function PublicSwaps() {
   const loadMoreSwaps = async (nextToken: string | undefined) => {
     setLoading(true);
     const newSwapCreatorsResponse = await getPublicSwapCreators(
-      100256867,
+      AWVT_ASSET_INDEX(chain),
       chain,
       rowsPerPage,
       nextToken,
