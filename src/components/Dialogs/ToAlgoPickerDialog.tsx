@@ -65,9 +65,7 @@ export const ToAlgoPickerDialog = ({
           <DialogContentText>Enter the requested Algo amount</DialogContentText>
 
           <CryptoTextField
-            label={`Requesting amount (${
-              algoAsset.amount / Math.pow(10, algoAsset.decimals)
-            } max) `}
+            label={`Requesting amount`}
             sx={{ marginTop: 2 }}
             value={selectedAlgoAmount}
             onChange={(value) => {
@@ -75,7 +73,6 @@ export const ToAlgoPickerDialog = ({
             }}
             coinType={CoinType.ALGO}
             decimals={6}
-            maxValue={algoAsset.amount / Math.pow(10, algoAsset.decimals)}
           />
         </DialogContent>
         <DialogActions>

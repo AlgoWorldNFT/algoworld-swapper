@@ -27,7 +27,7 @@ type Props = {
   value: number | string | undefined;
   onChange: (value: number | undefined) => void;
   decimals: number;
-  maxValue: number;
+  maxValue?: number;
   sx?: any;
   disabled?: boolean;
 };
@@ -37,7 +37,7 @@ const CryptoTextField = ({
   label,
   value,
   onChange,
-  maxValue,
+  maxValue = Number.MAX_SAFE_INTEGER,
   disabled = false,
   decimals,
   sx,
@@ -56,7 +56,9 @@ const CryptoTextField = ({
       decimalScale={decimals}
       customInput={TextField}
       isAllowed={(inputObj) => {
-        return Number(inputObj.value) <= maxValue;
+        return maxValue !== Number.MAX_SAFE_INTEGER
+          ? Number(inputObj.value) <= maxValue
+          : true;
       }}
       onValueChange={(values: NumberFormatValues) => {
         const value = values.floatValue;
