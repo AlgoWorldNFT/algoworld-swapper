@@ -69,7 +69,7 @@ export default async function createSwapDepositTxns(
         assetIndex: asset.index,
         note: new Uint8Array(
           Buffer.from(
-            `Transcation for the depositing asset ${
+            `Transaction for the depositing asset ${
               asset.index
             } to swapper ${escrow.address()}, thank you for using AlgoWorld Swapper :-)`,
           ),
