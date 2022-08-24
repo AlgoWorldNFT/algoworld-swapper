@@ -62,7 +62,7 @@ export default async function createSwapDeactivateTxns(
       closeRemainderTo: creatorAddress,
       note: new Uint8Array(
         Buffer.from(
-          `Transcation for the closing algoworld swapper escrow, thank you for using AlgoWorld Swapper :-)`,
+          `Transaction for the closing algoworld swapper escrow, thank you for using AlgoWorld Swapper :-)`,
         ),
       ),
       suggestedParams,
@@ -79,7 +79,7 @@ export default async function createSwapDeactivateTxns(
       amount: 0,
       note: new Uint8Array(
         Buffer.from(
-          `Transcation for the closing algoworld swapper escrow, thank you for using AlgoWorld Swapper :-)`,
+          `Transaction for the closing algoworld swapper escrow, thank you for using AlgoWorld Swapper :-)`,
         ),
       ),
       suggestedParams,
