@@ -89,43 +89,45 @@ export default function MySwaps() {
         title="📜 My Swaps"
         description="Activate, update or deactivate your existing swaps"
       >
-        <Grid
-          sx={{ pt: 2 }}
-          container
-          justifyContent="space-evenly"
-          alignItems="center"
-        >
-          {hasAwvt ? (
-            <Button
-              variant="outlined"
-              onClick={async () => {
-                await dispatch(
-                  optAssets({
-                    assetIndexes: awvtIndex,
-                    connector,
-                    deOptIn: true,
-                  }),
-                );
-              }}
-            >
-              Opt out visibility token
-            </Button>
-          ) : (
-            <Button
-              variant="outlined"
-              onClick={async () => {
-                await dispatch(
-                  optAssets({
-                    assetIndexes: awvtIndex,
-                    connector,
-                  }),
-                );
-              }}
-            >
-              Opt in visibility token
-            </Button>
-          )}
-        </Grid>
+        {address && (
+          <Grid
+            sx={{ pt: 2 }}
+            container
+            justifyContent="space-evenly"
+            alignItems="center"
+          >
+            {hasAwvt ? (
+              <Button
+                variant="outlined"
+                onClick={async () => {
+                  await dispatch(
+                    optAssets({
+                      assetIndexes: awvtIndex,
+                      connector,
+                      deOptIn: true,
+                    }),
+                  );
+                }}
+              >
+                Opt out visibility token
+              </Button>
+            ) : (
+              <Button
+                variant="outlined"
+                onClick={async () => {
+                  await dispatch(
+                    optAssets({
+                      assetIndexes: awvtIndex,
+                      connector,
+                    }),
+                  );
+                }}
+              >
+                Opt in visibility token
+              </Button>
+            )}
+          </Grid>
+        )}
       </PageHeader>
 
       <Container
