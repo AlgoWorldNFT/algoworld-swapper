@@ -48,7 +48,7 @@
     "algorand-walletconnect-qrcode-modal": "1.7.4",
     "algosdk": "1.19.0",
     "axios": "0.27.2",
-    "next": "12.2.3",
+    "next": "12.2.4",
     "next-pwa": "5.5.5",
     "nextjs-google-analytics": "2.0.0",
     "notistack": "2.0.5",
