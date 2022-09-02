@@ -3,10 +3,17 @@
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-const withPWA = require('next-pwa');
 const runtimeCaching = require('next-pwa/cache');
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  runtimeCaching,
+});
 
-const moduleExports = {
+const plugins = [];
+
+plugins.push(withPWA);
+
+const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   images: {
@@ -23,7 +30,4 @@ const moduleExports = {
   },
 };
 
-module.exports = withPWA({
-  ...moduleExports,
-  pwa: { dest: 'public', runtimeCaching },
-});
+module.exports = () => plugins.reduce((acc, next) => next(acc), nextConfig);

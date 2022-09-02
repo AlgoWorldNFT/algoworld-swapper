@@ -1,10 +1,10 @@
 {
   "functions": {
     "api/swaps/*.py": {
-      "excludeFiles": "{+(.next|node_modules|public|src)/**,yarn.lock,README.md}"
+      "excludeFiles": "{+(.next|node_modules|public|src|e2e)/**,api/storage/node_modules/**,yarn.lock,README.md}"
     },
     "api/storage/*.ts": {
-      "excludeFiles": "{+(.next|node_modules|public|src)/**,yarn.lock,README.md}"
+      "excludeFiles": "{+(.next|node_modules|public|src|e2e)/**,yarn.lock,README.md}"
     }
   }
 }
