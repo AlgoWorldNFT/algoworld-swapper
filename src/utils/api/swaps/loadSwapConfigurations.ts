@@ -21,6 +21,10 @@ import { SwapConfiguration } from '@/models/Swap';
 import axios from 'axios';
 import accountExists from '../accounts/accountExists';
 import { indexerForChain } from '../algorand';
+import axiosRetry from 'axios-retry';
+
+// Exponential back-off retry delay between requests
+axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
 
 export default async function loadSwapConfigurations(
   chain: ChainType,

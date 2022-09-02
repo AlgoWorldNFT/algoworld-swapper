@@ -116,7 +116,6 @@ const PerformSwap = () => {
     const zeroBalanceAssets = swapAssets.filter((asset) => {
       return asset.amount === 0;
     });
-
     return zeroBalanceAssets.length > 0;
   }, [swapAssets]);
 
