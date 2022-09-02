@@ -153,13 +153,16 @@ test.describe(`Public Swaps`, () => {
     await page.locator(`id=${NAV_BAR_ICON_HOME_BTN_ID}`).click();
     await page.locator(`id=${NAV_BAR_SETTINGS_BTN_ID}`).click();
     await page.locator(`id=${NAV_BAR_SETTINGS_MENU_ITEM_ID(`Logout`)}`).click();
+    await page.waitForTimeout(1000 * 5);
 
     await page.goto(`${AW_SWAPPER_BASE_URL}/public-swaps`);
   });
 
   test(`Anonymous user should find Bob's public swap`, async () => {
+    await page.waitForTimeout(1000 * 5);
     await page.locator(`id=${PUBLIC_SWAPS_SEARCH_FIELD_ID}`).fill(BOB_ADDRESS);
     await page.locator(`id=${PUBLIC_SWAPS_SEARCH_BUTTON_ID}`).click();
+    await page.waitForTimeout(1000 * 5);
     await page.locator(`id=${PUBLIC_SWAP_OPEN_SWAP_BUTTON_ID}`).click();
     await page.waitForTimeout(5000);
     const pages = context.pages();
@@ -172,6 +175,7 @@ test.describe(`Public Swaps`, () => {
     await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeVisible();
     await page.locator(`div[role="button"]:has-text("Mnemonic")`).click();
     await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeVisible();
+    await page.waitForTimeout(5000);
     await page
       .locator(`id=${MNEMONIC_DIALOG_TEXT_INPUT_ID}`)
       .fill(process.env.E2E_TESTS_ALICE_MNEMONIC ?? ``);

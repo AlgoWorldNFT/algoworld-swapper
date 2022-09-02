@@ -25,6 +25,7 @@ import {
 import { ChainType } from '@/models/Chain';
 import filterAsync from '@/utils/filterAsync';
 import axios from 'axios';
+import getSwapConfigurationsForAccount from './getSwapConfigurationsForAccount';
 
 export default async function getPublicSwapCreators(
   assetId: number,
@@ -64,9 +65,19 @@ export default async function getPublicSwapCreators(
                 )
               : false;
 
-          return (
-            hasAwvtOptedIn && account.address !== AWVT_CREATOR_ADDRESS(chain)
+          const hasPrereqs =
+            hasAwvtOptedIn && account.address !== AWVT_CREATOR_ADDRESS(chain);
+
+          if (!hasPrereqs) {
+            return false;
+          }
+
+          const swapConfigs = await getSwapConfigurationsForAccount(
+            chain,
+            account.address,
           );
+
+          return swapConfigs.length > 0;
         } catch (e) {
           return false;
         }

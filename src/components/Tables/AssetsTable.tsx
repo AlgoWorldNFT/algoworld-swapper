@@ -28,9 +28,7 @@ import {
 } from '@mui/material';
 import formatAmount from '@/utils/formatAmount';
 import getAssetBalance from '@/utils/api/assets/getAssetBalance';
-import { ChainType } from '@/models/Chain';
 import { useAppSelector } from '@/redux/store/hooks';
-import { ConnectingAirportsOutlined } from '@mui/icons-material';
 
 const columns: GridColDef[] = [
   {

@@ -11,8 +11,8 @@ const moduleExports = {
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   images: {
     domains: [
-      'cf-ipfs.com',
-      '*.cf-ipfs.com',
+      'dweb.link',
+      '*.dweb.link',
       'images.unsplash.com',
       'vitals.vercel-insights.com',
       'google-analytics.com',
