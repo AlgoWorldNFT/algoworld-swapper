@@ -55,7 +55,7 @@ export default function PublicSwaps() {
   const [publicSwapAccounts, setPublicSwapAccounts] = useState<string[]>([]);
   const [isLoading, setLoading] = useState(false);
   const chain = useAppSelector((state) => state.walletConnect.chain);
-  const rowsPerPage = 6;
+  const rowsPerPage = 50;
 
   const router = useRouter();
   const { creatorAddress } = router.query as {
