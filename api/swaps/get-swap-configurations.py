@@ -16,12 +16,25 @@
 
 import json
 from http.server import BaseHTTPRequestHandler
+from time import sleep
 from urllib import parse
 
 import requests
 from algoworld_contracts import contracts
+from requests.adapters import HTTPAdapter, Retry
 
 import api_utils.utils as common
+
+retry_strategy = Retry(
+    total=3,
+    backoff_factor=1,
+    status_forcelist=[429, 500, 502, 503, 504],
+    method_whitelist=["HEAD", "GET", "OPTIONS"],
+)
+adapter = HTTPAdapter(max_retries=retry_strategy)
+http_client = requests.Session()
+http_client.mount("https://", adapter)
+http_client.mount("http://", adapter)
 
 
 def compileSwapProxy(cfg: common.SwapProxyConfig):
@@ -30,6 +43,16 @@ def compileSwapProxy(cfg: common.SwapProxyConfig):
     )
     response = common.get_algod(cfg.chain_type).compile(swapper)
     return response
+
+
+def retry(fun, max_tries=10):
+    for i in range(max_tries):
+        try:
+            sleep(0.3)
+            fun()
+            break
+        except Exception:
+            continue
 
 
 class handler(BaseHTTPRequestHandler):
@@ -64,9 +87,9 @@ class handler(BaseHTTPRequestHandler):
         config_file_url = common.get_decoded_note_from_txn(swap_config_txn)
 
         if "ipfs" in config_file_url:
-            config_file_url = f'https://{config_file_url.split("ipfs://")[1]}.ipfs.cf-ipfs.com/aw_swaps.json'
+            config_file_url = f'https://{config_file_url.split("ipfs://")[1]}.ipfs.dweb.link/aw_swaps.json'
             try:
-                configFileResponse = requests.get(config_file_url).json()
+                configFileResponse = http_client.get(config_file_url).json()
 
                 configFile = json.dumps(
                     [
