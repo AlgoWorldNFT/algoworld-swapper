@@ -33,28 +33,29 @@ export default async function loadSwapConfigurations(
     return [] as SwapConfiguration[];
   }
 
-  const paymentTxns = await client.lookupAccountTransactions(proxyAddress).do();
+  const ipfsPrefixBase64 = Buffer.from(`ipfs://`).toString(`base64`);
+  const paymentTxns = await client
+    .lookupAccountTransactions(proxyAddress)
+    .notePrefix(ipfsPrefixBase64)
+    .do();
 
   if (paymentTxns.transactions.length === 0) {
     return [] as SwapConfiguration[];
   }
 
   const swapConfigTxn = paymentTxns.transactions[0];
+
   const configFileUrl = Buffer.from(swapConfigTxn.note, `base64`).toString(
     `utf-8`,
   );
 
-  if (configFileUrl.includes(`ipfs`)) {
-    const configFile = await axios
-      .get(
-        `https://${
-          configFileUrl.split(`ipfs://`)[1]
-        }.ipfs.cf-ipfs.com/aw_swaps.json`,
-      )
-      .then((res) => res.data);
+  const configFile = await axios
+    .get(
+      `https://${
+        configFileUrl.split(`ipfs://`)[1]
+      }.ipfs.cf-ipfs.com/aw_swaps.json`,
+    )
+    .then((res) => res.data);
 
-    return configFile as SwapConfiguration[];
-  } else {
-    return [] as SwapConfiguration[];
-  }
+  return configFile as SwapConfiguration[];
 }
