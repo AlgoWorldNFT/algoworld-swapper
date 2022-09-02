@@ -32,6 +32,7 @@ const PublicSwapAssetsTable = ({ address, chain }: Props) => {
       }).then(async (response) => {
         const swapConfigurationsForProxy =
           (await response.data) as SwapConfiguration[];
+        console.log(swapConfigurationsForProxy);
         const swapConfigurationAssetsForProxy = swapConfigurationsForProxy.map(
           (config) => {
             return [...config.offering, ...config.requesting];

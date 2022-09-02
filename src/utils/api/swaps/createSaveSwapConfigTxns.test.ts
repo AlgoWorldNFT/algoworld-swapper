@@ -1,4 +1,3 @@
-import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import createSaveSwapConfigTxns from './createSaveSwapConfigTxns';
 

@@ -90,7 +90,6 @@ class handler(BaseHTTPRequestHandler):
             config_file_url = f'https://{config_file_url.split("ipfs://")[1]}.ipfs.dweb.link/aw_swaps.json'
             try:
                 configFileResponse = http_client.get(config_file_url).json()
-
                 configFile = json.dumps(
                     [
                         config
