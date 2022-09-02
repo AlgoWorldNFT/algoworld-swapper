@@ -72,12 +72,11 @@ export default async function getPublicSwapCreators(
             return false;
           }
 
-          const swapConfigs = await getSwapConfigurationsForAccount(
-            chain,
-            account.address,
-          );
+          const swapConfigs = (
+            await getSwapConfigurationsForAccount(chain, account.address)
+          ).filter((config) => config.isPublic);
 
-          return swapConfigs.length > 0;
+          return swapConfigs && swapConfigs.length > 0;
         } catch (e) {
           return false;
         }

@@ -20,7 +20,7 @@ describe(`MyAlgoWalletClient`, () => {
       signTransaction: jest.fn(),
       signLogicSig: jest.fn(),
       tealSign: jest.fn(),
-    };
+    } as unknown as jest.Mocked<MyAlgoConnect>;
 
     const myAlgoClient = new MyAlgoWalletClient(mockAlgoConnect);
 
