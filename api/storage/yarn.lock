@@ -35,29 +35,22 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@edge-runtime/format@^1.1.0-beta.23":
-  version "1.1.0-beta.31"
-  resolved "https://registry.yarnpkg.com/@edge-runtime/format/-/format-1.1.0-beta.31.tgz#58f945ad8e437a660d038da73f5a5802fc81cecd"
-  integrity sha512-tUZy+LMls1TivqVb7dbC0C0IMNjwP55co6vSkTgXCl9xFos3v43bCwAzivMaJ3NR8ZuihvK1gEj8CmvoqvOt0g==
+"@edge-runtime/format@^1.1.0-beta.32":
+  version "1.1.0-beta.32"
+  resolved "https://registry.yarnpkg.com/@edge-runtime/format/-/format-1.1.0-beta.32.tgz#6f0d5a8726cc54ebb2b1dcb86fe25c0ff093731d"
+  integrity sha512-wpQtbgHJuSF1fvDV6Gxg2L7uNpzhQnRl91DREgOdRfa3S8y9AANjPi1/g3GPBGPiGZoX2Fv+MKV6RgY5/jLfJA==
 
-"@edge-runtime/primitives@^1.1.0-beta.23", "@edge-runtime/primitives@^1.1.0-beta.31":
-  version "1.1.0-beta.31"
-  resolved "https://registry.yarnpkg.com/@edge-runtime/primitives/-/primitives-1.1.0-beta.31.tgz#f0e52f0ab77b088e6a45988afcccb07d663b3b33"
-  integrity sha512-OO1x32aJoxgME1k77RVxVNsazs5NY/SNwYEN8ptlZ6DKUXn0eesXftDsmlypX/OU0ZeJc61/xNVUuoeyDGJDVA==
+"@edge-runtime/primitives@^1.1.0-beta.32":
+  version "1.1.0-beta.33"
+  resolved "https://registry.yarnpkg.com/@edge-runtime/primitives/-/primitives-1.1.0-beta.33.tgz#9bd0d866addfdc98ec32ff3ca0f6d24f412a5c03"
+  integrity sha512-mAZw/YRhwkaPVYwSwOTJTMMzZxfuLze6VEepsrVO/4yjnxriOf2GREgLal6OBtTcEEC44q4lqS+OSd0QaSFZEQ==
 
-"@edge-runtime/vm@1.1.0-beta.23":
-  version "1.1.0-beta.23"
-  resolved "https://registry.yarnpkg.com/@edge-runtime/vm/-/vm-1.1.0-beta.23.tgz#b55d9add18cb7bb57acf184f6cd7b6edec782a25"
-  integrity sha512-XBp3rCuX4scJVOo2KconAotL5XGX3zdd8IkfDNr5VVSQ/B6HkiTNuf+EvzSQTpplF+fiyLTpfcP9EbNLibwLTA==
+"@edge-runtime/vm@1.1.0-beta.32", "@edge-runtime/vm@^1.1.0-beta.32":
+  version "1.1.0-beta.32"
+  resolved "https://registry.yarnpkg.com/@edge-runtime/vm/-/vm-1.1.0-beta.32.tgz#1bc9c77a88343478d50009f30813b9fbf8a0f4ad"
+  integrity sha512-G0SH80am2XjlK6oFI3RoKlg1SBS5ZAeqakYasfNhJEXqM7g7tsoh5jURMQcNxpLvo48XBTgHgAVEMzhAGgDPZg==
   dependencies:
-    "@edge-runtime/primitives" "^1.1.0-beta.23"
-
-"@edge-runtime/vm@^1.1.0-beta.23":
-  version "1.1.0-beta.31"
-  resolved "https://registry.yarnpkg.com/@edge-runtime/vm/-/vm-1.1.0-beta.31.tgz#4deb95bf2b50cfc1bb2e7641ad2e165bde33e6c2"
-  integrity sha512-D3JW32u7LSTt0KbphGWx2F41jId7BY8H0Awr25PTRFWroqohfWo1C2huOh7/Yyn4qeyJOVEuxWeTzvbSkTyyTg==
-  dependencies:
-    "@edge-runtime/primitives" "^1.1.0-beta.31"
+    "@edge-runtime/primitives" "^1.1.0-beta.32"
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
@@ -332,27 +325,27 @@
     "@typescript-eslint/types" "4.33.0"
     eslint-visitor-keys "^2.0.0"
 
-"@vercel/build-utils@5.4.1":
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/@vercel/build-utils/-/build-utils-5.4.1.tgz#09a347f189fb13a3184a46c89d04e0f3da9793df"
-  integrity sha512-5+xIl65g8TpgLPQtlq7WYaS31/UZf+GcAO1O1IifUsLGM8+fhSgmmUVz7yoQ53YNWdnSA3WiKZfCgKopQPjlYQ==
+"@vercel/build-utils@5.4.2":
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/@vercel/build-utils/-/build-utils-5.4.2.tgz#7bd0b8b87618b729bfc0fe9b35afc54a9ecd0b0e"
+  integrity sha512-KUM+b5/G5s5f3VWuNREXKnOPP+NdHFdXaNf9yHstJHE0QndFB/7RUNYiOU7F0/8wJHgkUvSuxydFAq5ROOBsiQ==
 
 "@vercel/node-bridge@3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@vercel/node-bridge/-/node-bridge-3.0.0.tgz#443655b74713ec65531726fb5a30c5c528c804bf"
   integrity sha512-TNQK6cufwrhd8ASDk5YHHenH8Xhp9sY8xUjOTKnQQI37KLk+Sw2HlHhT5rzUFN23ahosUlkY8InwtYUmSNb9kw==
 
-"@vercel/node@2.5.13":
-  version "2.5.13"
-  resolved "https://registry.yarnpkg.com/@vercel/node/-/node-2.5.13.tgz#a7ed62290a34e601830986856404910f4a27d670"
-  integrity sha512-hHrrA4PW734pYz50ZLZF9N6nY+DgzakzCj1l38LHEsOW2VczZthIWRz6DUuKloJ9toOTbvxrvuixUgEL5WCKww==
+"@vercel/node@2.5.14":
+  version "2.5.14"
+  resolved "https://registry.yarnpkg.com/@vercel/node/-/node-2.5.14.tgz#d36be89c35f9ca2dc10af8361d0a089e04ea0d5f"
+  integrity sha512-JXhxM9tiAIxAS+rZcoo7VquOBqzWlC83h9ZLdzkHdO39GGmHyrCCnmQJooffaBr1QYuDXfJhMHBp7QWqEVsarw==
   dependencies:
-    "@edge-runtime/vm" "1.1.0-beta.23"
+    "@edge-runtime/vm" "1.1.0-beta.32"
     "@types/node" "*"
-    "@vercel/build-utils" "5.4.1"
+    "@vercel/build-utils" "5.4.2"
     "@vercel/node-bridge" "3.0.0"
     "@vercel/static-config" "2.0.3"
-    edge-runtime "1.1.0-beta.23"
+    edge-runtime "1.1.0-beta.32"
     esbuild "0.14.47"
     exit-hook "2.2.1"
     node-fetch "2.6.7"
@@ -860,13 +853,13 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-edge-runtime@1.1.0-beta.23:
-  version "1.1.0-beta.23"
-  resolved "https://registry.yarnpkg.com/edge-runtime/-/edge-runtime-1.1.0-beta.23.tgz#fd4d93f021c622e9b188399fa83e6bd5e445cb5e"
-  integrity sha512-A7dO/Y+4UJnaxFcdz6pepL+0GcvvViWvf201oFQXepgdSxPDKiqxaayCag0eiirQ6OfF+cSTmPD3xrfEoAIjiQ==
+edge-runtime@1.1.0-beta.32:
+  version "1.1.0-beta.32"
+  resolved "https://registry.yarnpkg.com/edge-runtime/-/edge-runtime-1.1.0-beta.32.tgz#e43fd53c57fdba3c567b3fef50743cba00ff5e49"
+  integrity sha512-fbqqUF3OKynqtWgExhjyxXX2SwbkWuwmjUYhml3Sv8Y/vkrTxyTKrxS0MoxUy5sGPB3BBEtpopn36cQgwlOpAg==
   dependencies:
-    "@edge-runtime/format" "^1.1.0-beta.23"
-    "@edge-runtime/vm" "^1.1.0-beta.23"
+    "@edge-runtime/format" "^1.1.0-beta.32"
+    "@edge-runtime/vm" "^1.1.0-beta.32"
     exit-hook "2.2.1"
     http-status "1.5.2"
     mri "1.2.0"
@@ -3254,10 +3247,10 @@ typescript@4.3.4:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.4.tgz#3f85b986945bcf31071decdd96cf8bfa65f9dcbc"
   integrity sha512-uauPG7XZn9F/mo+7MrsRjyvbxFpzemRjKEZXS4AK83oP2KKOJPvb+9cO/gmnv8arWZvhnjVOXz7B49m1l0e9Ew==
 
-typescript@4.8.2:
-  version "4.8.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.2.tgz#e3b33d5ccfb5914e4eeab6699cf208adee3fd790"
-  integrity sha512-C0I1UsrrDHo2fYI5oaCGbSejwX4ch+9Y5jTQELvovfmFkK3HHSZJB8MSJcWLmCUBzQBchCrZ9rMRV6GuNrvGtw==
+typescript@4.8.3:
+  version "4.8.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.3.tgz#d59344522c4bc464a65a730ac695007fdb66dd88"
+  integrity sha512-goMHfm00nWPa8UvR/CPSvykqf6dVV8x/dp0c5mFTMTIu0u0FlGWRioyy7Nn0PGAdHxpJZnuO/ut+PpQ8UiHAig==
 
 uint8arrays@^3.0.0:
   version "3.1.0"
