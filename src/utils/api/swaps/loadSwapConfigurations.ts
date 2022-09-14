@@ -57,7 +57,7 @@ export default async function loadSwapConfigurations(
     .get(
       `https://${
         configFileUrl.split(`ipfs://`)[1]
-      }.ipfs.dweb.link/aw_swaps.json`,
+      }.ipfs.cf-ipfs.com/aw_swaps.json`,
     )
     .then((res) => res.data);
 

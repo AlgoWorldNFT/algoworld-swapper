@@ -18,6 +18,6 @@
 
 export const ipfsToProxyUrl = (ipfsUrl: string) => {
   return ipfsUrl.includes(`ipfs://`)
-    ? `https://dweb.link/ipfs/${ipfsUrl.split(`ipfs://`)[1]}`
+    ? `https://cf-ipfs.com/ipfs/${ipfsUrl.split(`ipfs://`)[1]}`
     : ipfsUrl;
 };
