@@ -18,8 +18,8 @@ const nextConfig = {
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   images: {
     domains: [
-      'dweb.link',
-      '*.dweb.link',
+      'cf-ipfs.com',
+      '*.cf-ipfs.com',
       'images.unsplash.com',
       'vitals.vercel-insights.com',
       'google-analytics.com',

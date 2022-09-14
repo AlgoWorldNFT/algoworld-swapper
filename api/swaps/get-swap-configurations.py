@@ -87,7 +87,7 @@ class handler(BaseHTTPRequestHandler):
         config_file_url = common.get_decoded_note_from_txn(swap_config_txn)
 
         if "ipfs" in config_file_url:
-            config_file_url = f'https://{config_file_url.split("ipfs://")[1]}.ipfs.dweb.link/aw_swaps.json'
+            config_file_url = f'https://{config_file_url.split("ipfs://")[1]}.ipfs.cf-ipfs.com/aw_swaps.json'
             try:
                 configFileResponse = http_client.get(config_file_url).json()
                 configFile = json.dumps(
