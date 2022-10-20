@@ -66,9 +66,9 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
   const selectedManageSwap = useAppSelector(
     (state) => state.application.selectedManageSwap,
   );
-  const chain = useAppSelector((state) => state.walletConnect.chain);
-  const existingSwaps = useAppSelector((state) => state.walletConnect.swaps);
-  const proxy = useAppSelector((state) => state.walletConnect.proxy);
+  const { chain, swaps, proxy, gateway } = useAppSelector(
+    (state) => state.walletConnect,
+  );
 
   const { enqueueSnackbar } = useSnackbar();
   const [depositLoading, setDepositLoading] = useState<boolean>(false);
@@ -79,7 +79,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return undefined;
     }
 
-    return await getAssetsForAccount(chain, selectedManageSwap.escrow);
+    return await getAssetsForAccount(chain, gateway, selectedManageSwap.escrow);
   }, [selectedManageSwap]);
 
   const swapAssets = useMemo(() => {
@@ -210,7 +210,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
 
-    const newSwapConfigs = existingSwaps.filter((swapConfig) => {
+    const newSwapConfigs = swaps.filter((swapConfig) => {
       return swapConfig.escrow !== selectedManageSwap.escrow;
     });
     const cidResponse = await saveSwapConfigurations(newSwapConfigs);

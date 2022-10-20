@@ -39,6 +39,7 @@ import {
   getProxy,
   switchChain,
   onSessionUpdate,
+  setGateway,
 } from '@/redux/slices/walletConnectSlice';
 import { formatBigNumWithDecimals } from '@/redux/helpers/utilities';
 import { Asset } from '@/models/Asset';
@@ -49,7 +50,15 @@ import {
 } from '@/redux/slices/applicationSlice';
 import { WalletClient, WalletType } from '@/models/Wallet';
 import { useRouter } from 'next/router';
-import { Divider, FormControlLabel, Grid, Stack, Switch } from '@mui/material';
+import {
+  Divider,
+  FormControlLabel,
+  Grid,
+  Stack,
+  Switch,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { ChainType } from '@/models/Chain';
 import Link from 'next/link';
 import { CONNECTED_WALLET_TYPE } from '@/common/constants';
@@ -67,6 +76,8 @@ import {
   NAV_BAR_SETTINGS_BTN_ID,
   NAV_BAR_SETTINGS_MENU_ITEM_ID,
 } from './constants';
+import { IpfsGateway } from '@/models/Gateway';
+import ValueSelect from '../Select/ValueSelect';
 
 type PageConfiguration = {
   title: string;
@@ -85,6 +96,9 @@ const settings = [`AlgoExplorer`, `My Swaps`, `Logout`];
 const BUG_REPORT_URL = `https://github.com/AlgoWorldNFT/algoworld-swapper/issues/new`;
 
 const NavBar = () => {
+  const theme = useTheme();
+  const largeScreen = useMediaQuery(theme.breakpoints.up(`sm`));
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null,
   );
@@ -98,9 +112,11 @@ const NavBar = () => {
 
   const assets = useAppSelector(selectAssets);
 
-  const { fetching: loading, address } = useAppSelector(
-    (state) => state.walletConnect,
-  );
+  const {
+    fetching: loading,
+    address,
+    gateway,
+  } = useAppSelector((state) => state.walletConnect);
 
   const selectedChain = useAppSelector((state) => state.walletConnect.chain);
 
@@ -199,6 +215,10 @@ const NavBar = () => {
       dispatch(switchChain(chain));
     };
 
+    const changeGateway = (gateway: IpfsGateway) => {
+      dispatch(setGateway(gateway));
+    };
+
     if (typeof window !== `undefined`) {
       const persistedChainType =
         chain !== undefined
@@ -208,6 +228,14 @@ const NavBar = () => {
           : (localStorage.getItem(`ChainType`) as ChainType) ??
             ChainType.TestNet;
       changeChain(persistedChainType);
+
+      const persistedGateway = localStorage.getItem(
+        `IpfsGateway`,
+      ) as IpfsGateway;
+
+      if (persistedGateway) {
+        changeGateway(persistedGateway);
+      }
     }
 
     const connectedWalletType = localStorage.getItem(CONNECTED_WALLET_TYPE);
@@ -218,11 +246,11 @@ const NavBar = () => {
     }
 
     if (address) {
-      dispatch(getAccountAssets({ chain: selectedChain, address }));
-      dispatch(getProxy({ address, chain: selectedChain }));
-      dispatch(getAccountSwaps({ chain: selectedChain, address }));
+      dispatch(getAccountAssets({ chain: selectedChain, gateway, address }));
+      dispatch(getProxy({ address, chain: selectedChain, gateway }));
+      dispatch(getAccountSwaps({ chain: selectedChain, gateway, address }));
     }
-  }, [dispatch, connector, address, selectedChain, chain, connect]);
+  }, [dispatch, connector, address, selectedChain, chain, connect, gateway]);
 
   const nativeCurrency = assets.find(
     (asset: Asset) => asset.index === 0,
@@ -461,39 +489,43 @@ const NavBar = () => {
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ textAlign: `center`, color: `primary.main` }}
-                    >
-                      {formatBigNumWithDecimals(
-                        BigInt(nativeCurrency.amount),
-                        nativeCurrency.decimals,
-                      )}
-                      {` `}
-                      {nativeCurrency.unitName || `units`}
-                    </Typography>
-                    <FormControlLabel
-                      id={NAV_BAR_CHAIN_FORM_CONTROL_ID}
-                      control={
-                        <Switch
-                          id={NAV_BAR_CHAIN_SWITCH_ID}
-                          checked={selectedChain === ChainType.MainNet}
-                          onChange={() => {
-                            const newValue =
-                              selectedChain === ChainType.MainNet
-                                ? ChainType.TestNet
-                                : ChainType.MainNet;
+                    {!largeScreen && (
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ textAlign: `center`, color: `primary.main` }}
+                      >
+                        {formatBigNumWithDecimals(
+                          BigInt(nativeCurrency.amount),
+                          nativeCurrency.decimals,
+                        )}
+                        {` `}
+                        {nativeCurrency.unitName || `units`}
+                      </Typography>
+                    )}
 
-                            handleSwitchChain(newValue);
-                          }}
-                        />
-                      }
-                      label={
-                        selectedChain === `mainnet` ? `MainNet` : `TestNet`
-                      }
-                      sx={{ ml: 1, mr: 2 }}
+                    <ValueSelect
+                      id={NAV_BAR_CHAIN_SWITCH_ID}
+                      label={`Network type`}
+                      value={selectedChain}
+                      values={[ChainType.TestNet, ChainType.MainNet]}
+                      onSelect={(value: string) => {
+                        dispatch(switchChain(value as ChainType));
+                      }}
                     />
                     <Divider />
+                    <ValueSelect
+                      label={`IPFS Gateway`}
+                      value={gateway}
+                      values={[
+                        IpfsGateway.ALGONODE_IO,
+                        IpfsGateway.DWEB_LINK,
+                        IpfsGateway.IPFS_IO,
+                        IpfsGateway.CLOUDFLARE_IPFS,
+                      ]}
+                      onSelect={(value: string) => {
+                        dispatch(setGateway(value as IpfsGateway));
+                      }}
+                    />
                     {settings.map((setting) => (
                       <MenuItem
                         id={NAV_BAR_SETTINGS_MENU_ITEM_ID(setting)}

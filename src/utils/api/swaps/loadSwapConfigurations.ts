@@ -22,12 +22,17 @@ import axios from 'axios';
 import accountExists from '../accounts/accountExists';
 import { indexerForChain } from '../algorand';
 import axiosRetry from 'axios-retry';
+import { ipfsToProxyUrl } from '@/utils/ipfsToProxyUrl';
+import { IpfsGateway } from '@/models/Gateway';
+
+const ipfsPrefixBase64 = Buffer.from(`ipfs://`).toString(`base64`);
 
 // Exponential back-off retry delay between requests
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
 
 export default async function loadSwapConfigurations(
   chain: ChainType,
+  gateway: IpfsGateway,
   proxyAddress: string,
 ) {
   const client = indexerForChain(chain);
@@ -37,7 +42,6 @@ export default async function loadSwapConfigurations(
     return [] as SwapConfiguration[];
   }
 
-  const ipfsPrefixBase64 = Buffer.from(`ipfs://`).toString(`base64`);
   const paymentTxns = await client
     .lookupAccountTransactions(proxyAddress)
     .notePrefix(ipfsPrefixBase64)
@@ -54,12 +58,7 @@ export default async function loadSwapConfigurations(
   );
 
   const configFile = await axios
-    .get(
-      `https://${
-        configFileUrl.split(`ipfs://`)[1]
-      }.ipfs.cf-ipfs.com/aw_swaps.json`,
-    )
+    .get(`${ipfsToProxyUrl(configFileUrl, gateway)}/aw_swaps.json`)
     .then((res) => res.data);
-
   return configFile as SwapConfiguration[];
 }

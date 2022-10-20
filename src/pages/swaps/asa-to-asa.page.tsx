@@ -74,7 +74,9 @@ export default function AsaToAsa() {
     useState<boolean>(false);
 
   const connector = useContext(ConnectContext);
-  const proxy = useAppSelector((state) => state.walletConnect.proxy);
+  const { gateway, address, chain, proxy } = useAppSelector(
+    (state) => state.walletConnect,
+  );
   const hasAwvt = useAppSelector((state) => state.walletConnect.hasAwvt);
   const offeringAssets = useAppSelector(
     (state) => state.walletConnect.selectedOfferingAssets,
@@ -84,8 +86,6 @@ export default function AsaToAsa() {
     (state) => state.walletConnect.selectedRequestingAssets,
   );
   const existingSwaps = useAppSelector((state) => state.walletConnect.swaps);
-  const address = useAppSelector((state) => state.walletConnect.address);
-  const chain = useAppSelector((state) => state.walletConnect.chain);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
 
@@ -304,6 +304,7 @@ export default function AsaToAsa() {
       await dispatch(
         optAssets({
           assetIndexes: [AWVT_ASSET_INDEX(chain)],
+          gateway,
           connector,
         }),
       );
@@ -375,8 +376,8 @@ export default function AsaToAsa() {
   };
 
   const resetStates = () => {
-    dispatch(getAccountAssets({ chain, address: address }) as any);
-    dispatch(getAccountSwaps({ chain, address }));
+    dispatch(getAccountAssets({ chain, gateway, address }) as any);
+    dispatch(getAccountSwaps({ chain, gateway, address }));
     setConfirmSwapDialogOpen(false);
     setShareSwapDialogOpen(false);
     resetLoading();
@@ -445,6 +446,7 @@ export default function AsaToAsa() {
                           dispatch(
                             optAssets({
                               assetIndexes: assetsToOptIn,
+                              gateway,
                               connector,
                             }),
                           );

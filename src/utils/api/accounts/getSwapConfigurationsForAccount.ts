@@ -18,12 +18,14 @@
 
 import { LATEST_SWAP_PROXY_VERSION } from '@/common/constants';
 import { ChainType } from '@/models/Chain';
+import { IpfsGateway } from '@/models/Gateway';
 import getLogicSign from '../accounts/getLogicSignature';
 import getCompiledProxy from '../swaps/getCompiledProxy';
 import loadSwapConfigurations from '../swaps/loadSwapConfigurations';
 
 export default async function getSwapConfigurationsForAccount(
   chain: ChainType,
+  gateway: IpfsGateway,
   address: string,
 ) {
   const compiledSwapProxy = await getCompiledProxy({
@@ -35,5 +37,5 @@ export default async function getSwapConfigurationsForAccount(
 
   const proxyLsig = getLogicSign(data[`result`]);
 
-  return loadSwapConfigurations(chain, proxyLsig.address());
+  return loadSwapConfigurations(chain, gateway, proxyLsig.address());
 }

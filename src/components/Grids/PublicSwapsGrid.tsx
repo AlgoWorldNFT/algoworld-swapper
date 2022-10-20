@@ -22,13 +22,15 @@ import { ellipseAddress } from '@/redux/helpers/utilities';
 
 import { ChainType } from '@/models/Chain';
 import PublicSwapAssetsTable from '../Tables/PublicSwapAssetsTable';
+import { IpfsGateway } from '@/models/Gateway';
 
 type Props = {
   publicSwapAccounts: string[];
+  gateway: IpfsGateway;
   chain: ChainType;
 };
 
-const PublicSwapsGrid = ({ publicSwapAccounts, chain }: Props) => {
+const PublicSwapsGrid = ({ publicSwapAccounts, gateway, chain }: Props) => {
   return (
     <Container sx={{ py: 4, pr: 0, pl: 0 }} maxWidth="xl">
       {/* End hero unit */}
@@ -48,7 +50,11 @@ const PublicSwapsGrid = ({ publicSwapAccounts, chain }: Props) => {
                 <Typography gutterBottom variant="h5" component="h2">
                   {`${ellipseAddress(account, 4)}`}
                 </Typography>
-                <PublicSwapAssetsTable address={account} chain={chain} />
+                <PublicSwapAssetsTable
+                  address={account}
+                  gateway={gateway}
+                  chain={chain}
+                />
               </CardContent>
             </Card>
           </Grid>

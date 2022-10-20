@@ -40,6 +40,7 @@ import { LogicSigAccount } from 'algosdk';
 import { RootState } from '@/redux/store';
 import optAssetsForAccount from '@/utils/api/accounts/optAssetsForAccount';
 import WalletManager from '@/utils/wallets/walletManager';
+import { IpfsGateway } from '@/models/Gateway';
 
 interface WalletConnectState {
   chain: ChainType;
@@ -53,6 +54,7 @@ interface WalletConnectState {
   selectedOfferingAssets: Asset[];
   selectedRequestingAssets: Asset[];
   hasAwvt: boolean;
+  gateway: IpfsGateway;
 }
 
 const initialState = {
@@ -68,7 +70,7 @@ const initialState = {
       decimals: 6,
       offeringAmount: 0,
       requestingAmount: 0,
-      imageUrl: EMPTY_ASSET_IMAGE_URL,
+      imageUrl: EMPTY_ASSET_IMAGE_URL(IpfsGateway.ALGONODE_IO),
       name: `Algo`,
       unitName: `Algo`,
     },
@@ -78,14 +80,23 @@ const initialState = {
   chain: CHAIN_TYPE,
   swaps: [],
   fetching: false,
+  gateway: IpfsGateway.ALGONODE_IO,
   fetchingSwaps: false,
   hasAwvt: false,
 } as WalletConnectState;
 
 export const getAccountAssets = createAsyncThunk(
   `walletConnect/getAccountAssets`,
-  async ({ chain, address }: { chain: ChainType; address: string }) => {
-    return await getAssetsForAccount(chain, address);
+  async ({
+    chain,
+    gateway,
+    address,
+  }: {
+    chain: ChainType;
+    gateway: IpfsGateway;
+    address: string;
+  }) => {
+    return await getAssetsForAccount(chain, gateway, address);
   },
 );
 
@@ -94,10 +105,12 @@ export const getProxy = createAsyncThunk(
   async ({
     address,
     chain,
+    gateway,
     version = LATEST_SWAP_PROXY_VERSION,
   }: {
     address: string;
     chain: ChainType;
+    gateway: IpfsGateway;
     version?: string;
   }) => {
     const response = await getCompiledProxy({
@@ -109,7 +122,7 @@ export const getProxy = createAsyncThunk(
     const data = await response.data;
     const logicSig = getLogicSign(data[`result`]);
 
-    const proxyAssets = await getAssetsForAccount(chain, address);
+    const proxyAssets = await getAssetsForAccount(chain, gateway, address);
     const hasAwvt =
       proxyAssets.filter((asset) => asset[`index`] === AWVT_ASSET_INDEX(chain))
         .length > 0;
@@ -120,8 +133,16 @@ export const getProxy = createAsyncThunk(
 
 export const getAccountSwaps = createAsyncThunk(
   `walletConnect/getAccountSwaps`,
-  async ({ chain, address }: { chain: ChainType; address: string }) => {
-    return await getSwapConfigurationsForAccount(chain, address);
+  async ({
+    chain,
+    gateway,
+    address,
+  }: {
+    chain: ChainType;
+    gateway: IpfsGateway;
+    address: string;
+  }) => {
+    return await getSwapConfigurationsForAccount(chain, gateway, address);
   },
 );
 
@@ -130,9 +151,15 @@ export const optAssets = createAsyncThunk(
   async (
     {
       assetIndexes,
+      gateway,
       connector,
       deOptIn = false,
-    }: { assetIndexes: number[]; connector: WalletManager; deOptIn?: boolean },
+    }: {
+      assetIndexes: number[];
+      gateway: IpfsGateway;
+      connector: WalletManager;
+      deOptIn?: boolean;
+    },
     { getState, dispatch },
   ) => {
     let state = getState() as any;
@@ -140,6 +167,7 @@ export const optAssets = createAsyncThunk(
 
     return await optAssetsForAccount(
       state.chain,
+      gateway,
       assetIndexes,
       connector,
       state.address,
@@ -170,6 +198,13 @@ export const walletConnectSlice = createSlice({
     },
     setRequestingAssets(state, action: PayloadAction<Asset[]>) {
       state.selectedRequestingAssets = action.payload;
+    },
+    setGateway: (state, action: PayloadAction<IpfsGateway>) => {
+      state.gateway = action.payload;
+
+      if (typeof window !== `undefined`) {
+        localStorage.setItem(`IpfsGateway`, action.payload);
+      }
     },
     reset: (state) => ({ ...initialState, chain: state.chain }),
     onSessionUpdate: (state, action: PayloadAction<string[]>) => {
@@ -237,6 +272,7 @@ export const selectRequestingAssets = createSelector(
 
 export const {
   switchChain,
+  setGateway,
   reset,
   onSessionUpdate,
   setOfferingAssets,

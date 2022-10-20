@@ -19,12 +19,14 @@
 import { EMPTY_ASSET_IMAGE_URL } from '@/common/constants';
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
+import { IpfsGateway } from '@/models/Gateway';
 import { ipfsToProxyUrl } from '@/utils/ipfsToProxyUrl';
 import algosdk from 'algosdk';
 import { algodForChain } from '../algorand';
 
 export default async function getAssetsForAccount(
   chain: ChainType,
+  gateway: IpfsGateway,
   address: string,
 ) {
   const client = algodForChain(chain);
@@ -46,7 +48,7 @@ export default async function getAssetsForAccount(
       creator: ``,
       index: Number(id),
       name: ``,
-      imageUrl: EMPTY_ASSET_IMAGE_URL,
+      imageUrl: EMPTY_ASSET_IMAGE_URL(gateway),
       decimals: 0,
       unitName: ``,
       amount: Number(amount),
@@ -70,8 +72,8 @@ export default async function getAssetsForAccount(
               ? assetParams[`name`]
               : ``;
             asset[`imageUrl`] = assetParams.hasOwnProperty(`url`)
-              ? ipfsToProxyUrl(assetParams[`url`])
-              : EMPTY_ASSET_IMAGE_URL;
+              ? ipfsToProxyUrl(assetParams[`url`], gateway)
+              : EMPTY_ASSET_IMAGE_URL(gateway);
             asset[`decimals`] = assetParams[`decimals`];
             asset[`unitName`] = assetParams[`unit-name`];
             asset[`creator`] = assetParams[`creator`];
@@ -87,7 +89,7 @@ export default async function getAssetsForAccount(
     amount: algoBalance,
     creator: ``,
     frozen: false,
-    imageUrl: EMPTY_ASSET_IMAGE_URL,
+    imageUrl: EMPTY_ASSET_IMAGE_URL(gateway),
     decimals: 6,
     name: `Algo`,
     unitName: `Algo`,

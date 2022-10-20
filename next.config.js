@@ -18,14 +18,16 @@ const nextConfig = {
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   images: {
     domains: [
+      'ipfs.algonode.xyz',
       'cf-ipfs.com',
-      '*.cf-ipfs.com',
+      'dweb.link',
+      'cloudflare-ipfs.com',
+      'ipfs-gateway.cloud',
+
       'images.unsplash.com',
       'vitals.vercel-insights.com',
       'google-analytics.com',
       '*.google-analytics.com',
-      '*.glitchtip.com',
-      'glitchtip.com',
     ],
   },
 };
