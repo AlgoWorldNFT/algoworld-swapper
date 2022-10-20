@@ -43,8 +43,9 @@ export default function MySwaps() {
   const selectedManageSwap = useAppSelector(
     (state) => state.application.selectedManageSwap,
   );
-  const chain = useAppSelector((state) => state.walletConnect.chain);
-  const address = useAppSelector((state) => state.walletConnect.address);
+  const { gateway, address, chain } = useAppSelector(
+    (state) => state.walletConnect,
+  );
   const isManageSwapPopupOpen = useAppSelector(
     (state) => state.application.isManageSwapPopupOpen,
   );
@@ -60,7 +61,7 @@ export default function MySwaps() {
         open={isManageSwapPopupOpen}
         onClose={() => {
           dispatch(setIsManageSwapPopupOpen(false));
-          dispatch(getAccountSwaps({ chain, address }));
+          dispatch(getAccountSwaps({ chain, gateway, address }));
         }}
         onShare={() => {
           dispatch(setIsManageSwapPopupOpen(false));
@@ -103,6 +104,7 @@ export default function MySwaps() {
                   await dispatch(
                     optAssets({
                       assetIndexes: awvtIndex,
+                      gateway,
                       connector,
                       deOptIn: true,
                     }),
@@ -118,6 +120,7 @@ export default function MySwaps() {
                   await dispatch(
                     optAssets({
                       assetIndexes: awvtIndex,
+                      gateway,
                       connector,
                     }),
                   );

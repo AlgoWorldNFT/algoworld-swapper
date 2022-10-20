@@ -27,9 +27,11 @@ import { setLoadingIndicator } from '@/redux/slices/applicationSlice';
 import { Dispatch } from '@reduxjs/toolkit';
 import { getAccountAssets, getProxy } from '@/redux/slices/walletConnectSlice';
 import WalletManager from '@/utils/wallets/walletManager';
+import { IpfsGateway } from '@/models/Gateway';
 
 export default async function optAssetsForAccount(
   chain: ChainType,
+  gateway: IpfsGateway,
   assetIndexes: number[],
   creatorWallet: WalletManager,
   creatorAddress: string,
@@ -103,8 +105,10 @@ export default async function optAssetsForAccount(
   dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
 
   // Makes sure to reload assets after opt-in
-  dispatch(getAccountAssets({ chain, address: creatorAddress }) as any);
-  dispatch(getProxy({ chain, address: creatorAddress }) as any);
+  dispatch(
+    getAccountAssets({ chain, gateway, address: creatorAddress }) as any,
+  );
+  dispatch(getProxy({ chain, gateway, address: creatorAddress }) as any);
 
   return saveSwapConfigResponse.txId;
 }

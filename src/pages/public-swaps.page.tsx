@@ -54,7 +54,7 @@ export default function PublicSwaps() {
   const [searchInput, setSearchInput] = useState(``);
   const [publicSwapAccounts, setPublicSwapAccounts] = useState<string[]>([]);
   const [isLoading, setLoading] = useState(false);
-  const chain = useAppSelector((state) => state.walletConnect.chain);
+  const { chain, gateway } = useAppSelector((state) => state.walletConnect);
   const rowsPerPage = 50;
 
   const router = useRouter();
@@ -75,6 +75,7 @@ export default function PublicSwaps() {
     } else {
       getPublicSwapCreators(
         AWVT_ASSET_INDEX(chain),
+        gateway,
         chain,
         rowsPerPage,
         undefined,
@@ -84,12 +85,13 @@ export default function PublicSwaps() {
         setLoading(false);
       });
     }
-  }, [chain, creatorAddress, router.isReady]);
+  }, [chain, creatorAddress, gateway, router.isReady]);
 
   const loadMoreSwaps = async (nextToken: string | undefined) => {
     setLoading(true);
     const newSwapCreatorsResponse = await getPublicSwapCreators(
       AWVT_ASSET_INDEX(chain),
+      gateway,
       chain,
       rowsPerPage,
       nextToken,
@@ -233,6 +235,7 @@ export default function PublicSwaps() {
                   rowsPerPage,
                   page + 1,
                 )}
+                gateway={gateway}
                 chain={chain}
               />
             ) : (

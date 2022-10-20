@@ -9,13 +9,15 @@ import { Asset } from '@/models/Asset';
 import AssetsTable from './AssetsTable';
 import getSwapUrl from '@/utils/api/swaps/getSwapUrl';
 import { PUBLIC_SWAP_OPEN_SWAP_BUTTON_ID } from './constants';
+import { IpfsGateway } from '@/models/Gateway';
 
 type Props = {
   address: string;
+  gateway: IpfsGateway;
   chain: ChainType;
 };
 
-const PublicSwapAssetsTable = ({ address, chain }: Props) => {
+const PublicSwapAssetsTable = ({ address, gateway, chain }: Props) => {
   const [swapConfigAssets, setSwapConfigAssets] = useState<Asset[][]>([]);
   const [swapConfigs, setSwapConfigs] = useState<SwapConfiguration[]>([]);
   const [isLoading, setLoading] = useState(false);
@@ -28,6 +30,7 @@ const PublicSwapAssetsTable = ({ address, chain }: Props) => {
       getSwapConfigurations({
         swap_creator: address,
         version: LATEST_SWAP_PROXY_VERSION,
+        gateway: gateway,
         chain_type: chain,
       }).then(async (response) => {
         const swapConfigurationsForProxy =
@@ -46,7 +49,7 @@ const PublicSwapAssetsTable = ({ address, chain }: Props) => {
       setSwapConfigAssets([]);
       setLoading(false);
     }
-  }, [address, chain]);
+  }, [address, chain, gateway]);
 
   return (
     <>

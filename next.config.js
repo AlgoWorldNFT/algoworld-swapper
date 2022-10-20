@@ -24,8 +24,7 @@ const nextConfig = {
       'vitals.vercel-insights.com',
       'google-analytics.com',
       '*.google-analytics.com',
-      '*.glitchtip.com',
-      'glitchtip.com',
+      'ipfs.algonode.xyz',
     ],
   },
 };

@@ -17,6 +17,7 @@
  */
 
 import { ChainType } from '@/models/Chain';
+import { IpfsGateway } from '@/models/Gateway';
 
 export const CHAIN_TYPE: ChainType =
   (process.env.NEXT_PUBLIC_CHAIN_TYPE ?? `TestNet`) === `TestNet`
@@ -47,7 +48,9 @@ export const ALGOEXPLORER_URL = (chain: ChainType) => {
     : `https://testnet.algoexplorer.io`;
 };
 
-export const EMPTY_ASSET_IMAGE_URL = `https://cf-ipfs.com/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`;
+export const EMPTY_ASSET_IMAGE_URL = (gateway: IpfsGateway) => {
+  return `https://${gateway}/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`;
+};
 export const LATEST_SWAP_PROXY_VERSION = `0.0.2`;
 export const ALL_SWAP_PROXY_VERSIONS = [LATEST_SWAP_PROXY_VERSION, `0.0.1`];
 export const AWVT_ASSET_INDEX = (chain: ChainType) => {

@@ -23,12 +23,14 @@ import {
   AWVT_CREATOR_ADDRESS,
 } from '@/common/constants';
 import { ChainType } from '@/models/Chain';
+import { IpfsGateway } from '@/models/Gateway';
 import filterAsync from '@/utils/filterAsync';
 import axios from 'axios';
 import getSwapConfigurationsForAccount from './getSwapConfigurationsForAccount';
 
 export default async function getPublicSwapCreators(
   assetId: number,
+  gateway: IpfsGateway,
   chain: ChainType,
   limit = 10,
   nextToken?: string,
@@ -73,7 +75,11 @@ export default async function getPublicSwapCreators(
           }
 
           const swapConfigs = (
-            await getSwapConfigurationsForAccount(chain, account.address)
+            await getSwapConfigurationsForAccount(
+              chain,
+              gateway,
+              account.address,
+            )
           ).filter((config) => config.isPublic);
 
           return swapConfigs && swapConfigs.length > 0;

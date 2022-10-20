@@ -61,7 +61,7 @@ export const ToAssetPickerDialog = ({
     number | undefined
   >(undefined);
 
-  const chain = useAppSelector((state) => state.walletConnect.chain);
+  const { chain, gateway } = useAppSelector((state) => state.walletConnect);
   const [searchContent, setSearchContent] = useState(``);
   const [autocompleteOpen, setAutocompleteOpen] = useState(false);
 
@@ -99,7 +99,7 @@ export const ToAssetPickerDialog = ({
           name: assetParams.hasOwnProperty(`name`) ? assetParams[`name`] : ``,
           imageUrl: assetParams.hasOwnProperty(`url`)
             ? assetParams[`url`]
-            : EMPTY_ASSET_IMAGE_URL,
+            : EMPTY_ASSET_IMAGE_URL(gateway),
           decimals: assetParams[`decimals`],
           unitName: assetParams[`unit-name`],
           amount: 0,
@@ -110,7 +110,7 @@ export const ToAssetPickerDialog = ({
       .filter((asset: { index: number }) => {
         return !unpackedSelectedAssetIndexes.includes(asset.index);
       });
-  }, [data, error, selectedAssets]);
+  }, [data, error, gateway, selectedAssets]);
   const loading = autocompleteOpen && searchedAssets.length === 0;
 
   return (
