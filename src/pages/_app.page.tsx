@@ -69,7 +69,8 @@ export default function MyApp(props: MyAppProps) {
         <ConnectContext.Provider value={connector}>
           <ThemeProvider theme={darkTheme}>
             <SnackbarProvider
-              maxSnack={3}
+              maxSnack={10}
+              autoHideDuration={30000}
               anchorOrigin={{
                 vertical: `bottom`,
                 horizontal: `center`,
