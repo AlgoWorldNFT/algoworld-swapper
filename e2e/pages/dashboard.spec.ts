@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AW_SWAPPER_BASE_URL } from '../common';
-import pJson from 'package.json';
+import pJson from '@/package.json';
 
 test(`should navigate to the about page`, async ({ page }) => {
   await page.goto(AW_SWAPPER_BASE_URL);
