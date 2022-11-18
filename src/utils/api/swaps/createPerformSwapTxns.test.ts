@@ -9,7 +9,7 @@ import getLogicSign from '../accounts/getLogicSignature';
 import { TransactionToSign, TransactionToSignType } from '@/models/Transaction';
 import { dummyContract } from './__utils__/testUtils';
 import { SwapConfiguration, SwapType } from '@/models/Swap';
-import { INCENTIVE_FEE, INCENTIVE_WALLET } from '@/common/constants';
+import { GET_INCENTIVE_FEE, INCENTIVE_WALLET } from '@/common/constants';
 
 describe(`createPerformSwapTxns`, () => {
   it(`generates asa to asa txns correctly`, async () => {
@@ -28,8 +28,9 @@ describe(`createPerformSwapTxns`, () => {
       offeringAmount: 0,
       requestingAmount: 0,
     } as Asset;
+    const dummySwapVersion = `0.0.2`;
     const dummySwapConfiguration = {
-      version: `0.0.2`,
+      version: dummySwapVersion,
       type: SwapType.ASA_TO_ASA,
       offering: [dummyOfferingAsset],
       requesting: [dummyOfferingAsset],
@@ -89,7 +90,7 @@ describe(`createPerformSwapTxns`, () => {
       encodeAddress((txns[2] as TransactionToSign).transaction.to.publicKey),
     ).toBe(INCENTIVE_WALLET);
     expect((txns[2] as TransactionToSign).transaction.amount).toBe(
-      INCENTIVE_FEE,
+      GET_INCENTIVE_FEE(dummySwapVersion),
     );
   });
 });

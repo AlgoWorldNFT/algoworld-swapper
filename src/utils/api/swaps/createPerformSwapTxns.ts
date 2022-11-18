@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { INCENTIVE_FEE, INCENTIVE_WALLET } from '@/common/constants';
+import { GET_INCENTIVE_FEE, INCENTIVE_WALLET } from '@/common/constants';
 import { Asset } from '@/models/Asset';
 import { ChainType } from '@/models/Chain';
 import { SwapConfiguration, SwapType } from '@/models/Swap';
@@ -32,6 +32,7 @@ async function createAsaToAsaSwapPerformTxns(
   escrowLsig: LogicSigAccount,
   offering: Asset,
   requesting: Asset,
+  version: string,
 ) {
   const suggestedParams = await getTransactionParams(chain);
 
@@ -72,7 +73,7 @@ async function createAsaToAsaSwapPerformTxns(
     algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: userAddress,
       to: INCENTIVE_WALLET,
-      amount: INCENTIVE_FEE,
+      amount: GET_INCENTIVE_FEE(version),
       note: new Uint8Array(Buffer.from(note)),
       suggestedParams,
     }),
@@ -91,6 +92,7 @@ async function createAsasToAlgoSwapPerformTxns(
   escrowLsig: LogicSigAccount,
   offering: Asset[],
   requestingAlgoAmount: number,
+  version: string,
 ) {
   const suggestedParams = await getTransactionParams(chain);
 
@@ -101,7 +103,7 @@ async function createAsasToAlgoSwapPerformTxns(
     algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: userAddress,
       to: INCENTIVE_WALLET,
-      amount: INCENTIVE_FEE,
+      amount: GET_INCENTIVE_FEE(version),
       note: new Uint8Array(Buffer.from(note)),
       suggestedParams,
     }),
@@ -158,6 +160,7 @@ export default async function createPerformSwapTxns(
           escrowLsig,
           swapConfiguration.offering[0],
           swapConfiguration.requesting[0],
+          swapConfiguration.version,
         )
       : await createAsasToAlgoSwapPerformTxns(
           chain,
@@ -166,6 +169,7 @@ export default async function createPerformSwapTxns(
           escrowLsig,
           swapConfiguration.offering,
           swapConfiguration.requesting[0].requestingAmount,
+          swapConfiguration.version,
         );
 
   return txns;

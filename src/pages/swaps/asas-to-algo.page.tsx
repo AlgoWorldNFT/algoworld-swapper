@@ -30,6 +30,7 @@ import {
   ASA_TO_ALGO_MAX_FEE,
   ASA_TO_ASA_FUNDING_FEE,
   AWVT_ASSET_INDEX,
+  GET_INCENTIVE_FEE,
   LATEST_SWAP_PROXY_VERSION,
   TXN_SIGNING_CANCELLED_MESSAGE,
   TXN_SUBMISSION_FAILED_MESSAGE,
@@ -113,6 +114,7 @@ export default function MultiAsaToAlgo() {
       optin_funding_amount:
         ASA_TO_ALGO_FUNDING_BASE_FEE * offeringAssets.length,
       chain_type: chain,
+      version: LATEST_SWAP_PROXY_VERSION,
     });
 
     const data = await response.data;
@@ -482,6 +484,10 @@ export default function MultiAsaToAlgo() {
         onConfirm={handleSwap}
         transactionsFee={(
           0.11 +
+          GET_INCENTIVE_FEE(
+            swapConfiguration?.version ?? LATEST_SWAP_PROXY_VERSION,
+            true,
+          ) +
           (ASA_TO_ALGO_FUNDING_BASE_FEE * offeringAssets.length) / 1e6
         ).toFixed(2)}
         isPublicSwap={isPublicSwap}

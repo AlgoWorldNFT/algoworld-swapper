@@ -17,6 +17,8 @@
  */
 
 import {
+  GET_INCENTIVE_FEE,
+  LATEST_SWAP_PROXY_VERSION,
   PERFORM_SWAP_OPTIN_BUTTON_ID,
   PERFORM_SWAP_PAGE_HEADER_ID,
   PERFORM_SWAP_PERFORM_BUTTON_ID,
@@ -276,6 +278,7 @@ const PerformSwap = () => {
     assetsToOptIn,
     hasNoBalanceForAssets,
     dispatch,
+    gateway,
   ]);
 
   const signAndSendSwapPerformTxns = async (
@@ -408,9 +411,18 @@ const PerformSwap = () => {
         onConfirm={async () => {
           await handlePerformSwap();
         }}
-        transactionsFee={0.5 + 0.01 * 3}
+        transactionsFee={
+          GET_INCENTIVE_FEE(
+            swapConfiguration?.version ?? LATEST_SWAP_PROXY_VERSION,
+            true,
+          ) +
+          0.01 * 3
+        }
       >
-        {`Proceeding with swap will perform transaction to send offering assets from swap's escrow to your wallet and will transfer requested asset to creator of the swap within a single atomic group. Additionally, platform charges a small 0.5 ALGO fee to keep the platform running and incentivise further development and support ❤️`}
+        {`Proceeding with swap will perform transaction to send offering assets from swap's escrow to your wallet and will transfer requested asset to creator of the swap within a single atomic group. Additionally, platform charges a small ${GET_INCENTIVE_FEE(
+          swapConfiguration?.version ?? LATEST_SWAP_PROXY_VERSION,
+          true,
+        )} ALGO fee to keep the platform running and incentivise further development and support ❤️`}
       </ConfirmDialog>
 
       {swapConfiguration && (
