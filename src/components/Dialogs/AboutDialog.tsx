@@ -23,6 +23,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import pJson from '@/package.json';
 
 type Props = {
   open: boolean;
@@ -49,7 +50,7 @@ export default function AboutDialog({ open, changeState }: Props) {
         aria-describedby="scroll-dialog-description"
       >
         <DialogTitle color={`primary`} id="scroll-dialog-title">
-          AlgoWorld Swapper v0.6.1
+          AlgoWorld Swapper v{pJson.version}
         </DialogTitle>
         <DialogContent dividers={true}>
           <DialogContentText ref={descriptionElementRef} tabIndex={-1}>

@@ -28,6 +28,7 @@ import { ConnectContext } from '@/redux/store/connector';
 import {
   ASA_TO_ASA_FUNDING_FEE,
   AWVT_ASSET_INDEX,
+  GET_INCENTIVE_FEE,
   LATEST_SWAP_PROXY_VERSION,
   TXN_SIGNING_CANCELLED_MESSAGE,
   TXN_SUBMISSION_FAILED_MESSAGE,
@@ -107,6 +108,7 @@ export default function AsaToAsa() {
       requested_asa_id: requestingAsset.index,
       requested_asa_amount: requestingAsset.requestingAmount,
       chain_type: chain,
+      version: LATEST_SWAP_PROXY_VERSION,
     });
 
     const data = await response.data;
@@ -479,7 +481,13 @@ export default function AsaToAsa() {
         open={confirmSwapDialogOpen}
         setOpen={setConfirmSwapDialogOpen}
         onConfirm={handleSwap}
-        transactionsFee={0.32}
+        transactionsFee={
+          0.32 +
+          GET_INCENTIVE_FEE(
+            swapConfiguration?.version ?? LATEST_SWAP_PROXY_VERSION,
+            true,
+          )
+        }
         isPublicSwap={isPublicSwap}
         onSwapVisibilityChange={(newState) => {
           setIsPublicSwap(newState);

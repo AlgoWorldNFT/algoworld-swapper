@@ -21,7 +21,7 @@ from urllib import parse
 
 from algoworld_contracts import contracts
 
-from api_utils.utils import INCENTIVE_FEE, INCENTIVE_WALLET, get_algod
+from api_utils.utils import INCENTIVE_WALLET, get_algod, get_incentive_fee
 
 
 @dataclass
@@ -32,6 +32,7 @@ class SwapQueryParams:
     requested_asa_id: int
     requested_asa_amount: int
     chain_type: str
+    version: str
 
 
 def compileSwap(input_params: SwapQueryParams):
@@ -43,7 +44,7 @@ def compileSwap(input_params: SwapQueryParams):
         input_params.requested_asa_id,
         input_params.requested_asa_amount,
         INCENTIVE_WALLET,
-        INCENTIVE_FEE,
+        get_incentive_fee(input_params.version),
     )
 
     response = get_algod(input_params.chain_type).compile(swapper)
@@ -64,6 +65,7 @@ class handler(BaseHTTPRequestHandler):
                 "requested_asa_id": int(raw_params["requested_asa_id"]),
                 "requested_asa_amount": int(raw_params["requested_asa_amount"]),
                 "chain_type": raw_params["chain_type"],
+                "version": raw_params["version"],
             }
         )
 

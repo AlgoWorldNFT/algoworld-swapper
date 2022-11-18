@@ -22,13 +22,26 @@ from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
 
 INCENTIVE_WALLET = "RJVRGSPGSPOG7W3V7IMZZ2BAYCABW3YC5MWGKEOPAEEI5ZK5J2GSF6Y26A"
-INCENTIVE_FEE = 500_000
+INCENTIVE_FEE = 50_000
+INCENTIVE_FEES = {
+    "0.0.1": 500_000,
+    "0.0.2": 500_000,
+    "0.0.3": 50_000,
+}
+
 
 ALGOD_URL = "https://node.algoexplorerapi.io"
 TESTNET_ALGOD_URL = "https://node.testnet.algoexplorerapi.io"
 
 INDEXER_URL = "https://algoindexer.algoexplorerapi.io"
 TESTNET_INDEXER_URL = "https://algoindexer.testnet.algoexplorerapi.io"
+
+
+def get_incentive_fee(version: str):
+    try:
+        return INCENTIVE_FEES[version]
+    except Exception:
+        return INCENTIVE_FEE
 
 
 def get_algod(chain_type: str):

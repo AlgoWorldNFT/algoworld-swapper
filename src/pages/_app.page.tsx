@@ -70,7 +70,7 @@ export default function MyApp(props: MyAppProps) {
           <ThemeProvider theme={darkTheme}>
             <SnackbarProvider
               maxSnack={10}
-              autoHideDuration={30000}
+              autoHideDuration={15000}
               anchorOrigin={{
                 vertical: `bottom`,
                 horizontal: `center`,

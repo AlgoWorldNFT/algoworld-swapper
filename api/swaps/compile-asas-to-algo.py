@@ -20,7 +20,7 @@ from http.server import BaseHTTPRequestHandler
 
 from algoworld_contracts import contracts
 
-from api_utils.utils import INCENTIVE_FEE, INCENTIVE_WALLET, get_algod
+from api_utils.utils import INCENTIVE_WALLET, get_algod, get_incentive_fee
 
 
 @dataclass
@@ -31,6 +31,7 @@ class SwapConfig:
     max_fee: int
     optin_funding_amount: int
     chain_type: str
+    version: str
 
 
 def compileMultiSwap(inputParams: SwapConfig):
@@ -42,7 +43,7 @@ def compileMultiSwap(inputParams: SwapConfig):
         inputParams.max_fee,
         inputParams.optin_funding_amount,
         INCENTIVE_WALLET,
-        INCENTIVE_FEE,
+        get_incentive_fee(inputParams.version),
     )
 
     response = get_algod(inputParams.chain_type).compile(swapper)
@@ -62,6 +63,7 @@ class handler(BaseHTTPRequestHandler):
                 "max_fee": post_body["max_fee"],
                 "optin_funding_amount": post_body["optin_funding_amount"],
                 "chain_type": post_body["chain_type"],
+                "version": post_body["version"],
             }
         )
 
