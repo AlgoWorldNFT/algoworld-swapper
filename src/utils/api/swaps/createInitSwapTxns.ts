@@ -41,7 +41,7 @@ export default async function createInitSwapTxns(
       amount: fundingFee,
       note: new Uint8Array(
         Buffer.from(
-          `I am a fee transaction for configuring algoworld swapper escrow, thank you for using AlgoWorld Swapper :-)`,
+          `I am a fee transaction for configuring algoworld swapper escrow, thank you for using AlgoWorld Swapper 🙂`,
         ),
       ),
       suggestedParams,
@@ -61,7 +61,7 @@ export default async function createInitSwapTxns(
         assetIndex: Number(asset.index),
         note: new Uint8Array(
           Buffer.from(
-            ` I am an asset opt-in transaction for algoworld swapper escrow, thank you for using AlgoWorld Swapper (☞ ͡° ͜ʖ ͡°)☞`,
+            ` I am an asset opt-in transaction for algoworld swapper escrow, thank you for using AlgoWorld Swapper 🙂`,
           ),
         ),
         suggestedParams,

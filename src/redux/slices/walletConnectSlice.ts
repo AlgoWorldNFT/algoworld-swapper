@@ -41,6 +41,7 @@ import { RootState } from '@/redux/store';
 import optAssetsForAccount from '@/utils/api/accounts/optAssetsForAccount';
 import WalletManager from '@/utils/wallets/walletManager';
 import { IpfsGateway } from '@/models/Gateway';
+import recoverSwapConfigurationsForAccount from '@/utils/api/accounts/recoverSwapConfigurationsForAccount';
 
 interface WalletConnectState {
   chain: ChainType;
@@ -49,6 +50,8 @@ interface WalletConnectState {
   assets: Asset[];
   fetching: boolean;
   fetchingSwaps: boolean;
+  recoveringSwaps: boolean;
+  recoveredSwaps: SwapConfiguration[];
   proxy: LogicSigAccount;
   swaps: SwapConfiguration[];
   selectedOfferingAssets: Asset[];
@@ -80,6 +83,8 @@ const initialState = {
   chain: CHAIN_TYPE,
   swaps: [],
   fetching: false,
+  recoveringSwaps: false,
+  recoveredSwaps: [],
   gateway: IpfsGateway.ALGONODE_IO,
   fetchingSwaps: false,
   hasAwvt: false,
@@ -177,6 +182,27 @@ export const optAssets = createAsyncThunk(
   },
 );
 
+export const recoverSwapTxnHistory = createAsyncThunk(
+  `walletConnect/recoverSwapTxnHistory`,
+  async (
+    {
+      gateway,
+    }: {
+      gateway: IpfsGateway;
+    },
+    { getState },
+  ) => {
+    let state = getState() as any;
+    state = state.walletConnect as WalletConnectState;
+
+    return await recoverSwapConfigurationsForAccount(
+      state.chain,
+      gateway,
+      state.address,
+    );
+  },
+);
+
 export const walletConnectSlice = createSlice({
   name: `walletConnect`,
   initialState,
@@ -232,10 +258,18 @@ export const walletConnectSlice = createSlice({
 
     builder.addCase(getAccountSwaps.fulfilled, (state, action) => {
       state.fetchingSwaps = false;
-      state.swaps = action.payload;
+      state.swaps = action.payload as SwapConfiguration[];
     });
     builder.addCase(getAccountSwaps.pending, (state) => {
       state.fetchingSwaps = true;
+    });
+
+    builder.addCase(recoverSwapTxnHistory.fulfilled, (state, action) => {
+      state.recoveringSwaps = false;
+      state.recoveredSwaps = action.payload as SwapConfiguration[];
+    });
+    builder.addCase(recoverSwapTxnHistory.pending, (state) => {
+      state.recoveringSwaps = true;
     });
   },
 });

@@ -55,6 +55,8 @@ import {
   SWAP_DEPOSIT_PERFORMED_MESSAGE,
   SWAP_REMOVED_FROM_PROXY_MESSAGE,
 } from './constants';
+import createInitSwapTxns from '@/utils/api/swaps/createInitSwapTxns';
+import { SwapType } from '@/models/Swap';
 
 type Props = {
   open: boolean;
@@ -66,7 +68,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
   const selectedManageSwap = useAppSelector(
     (state) => state.application.selectedManageSwap,
   );
-  const { chain, swaps, proxy, gateway } = useAppSelector(
+  const { chain, swaps, proxy, gateway, address } = useAppSelector(
     (state) => state.walletConnect,
   );
 
@@ -116,6 +118,47 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     enqueueSnackbar(SIGN_DEPOSIT_TXN_MESSAGE, {
       variant: `info`,
     });
+
+    if (!(await accountExists(chain, selectedManageSwap.escrow))) {
+      const initSwapTxns = await createInitSwapTxns(
+        chain,
+        address,
+        escrow,
+        ASA_TO_ASA_FUNDING_FEE *
+          (selectedManageSwap.type === SwapType.ASA_TO_ASA
+            ? 1
+            : selectedManageSwap.offering.length),
+        selectedManageSwap.offering,
+      );
+
+      const signedInitSwapTxns = await connector
+        .signTransactions(initSwapTxns)
+        .catch(() => {
+          enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
+            variant: `error`,
+          });
+          return undefined;
+        });
+
+      if (!signedInitSwapTxns) {
+        return undefined;
+      }
+
+      const initSwapResponse = await submitTransactions(
+        chain,
+        signedInitSwapTxns,
+      );
+
+      const initTxnId = initSwapResponse.txId;
+      if (initTxnId !== undefined) {
+        enqueueSnackbar(SWAP_DEPOSIT_PERFORMED_MESSAGE, {
+          variant: `success`,
+          action: () => (
+            <ViewOnAlgoExplorerButton chain={chain} txId={initTxnId} />
+          ),
+        });
+      }
+    }
 
     const swapDepositTxns = await createSwapDepositTxns(
       chain,
@@ -351,7 +394,8 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
             Delete
           </LoadingButton>
         )}
-        {swapZeroBalanceAssets.length > 0 && swapAlgoBalance > 0 && (
+        {((swapZeroBalanceAssets.length > 0 && swapAlgoBalance > 0) ||
+          swapAlgoBalance === 0) && (
           <LoadingButton
             onClick={async () => {
               await manageDepositSwap();

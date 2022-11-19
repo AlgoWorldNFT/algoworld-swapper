@@ -49,7 +49,7 @@ export default async function createSwapDepositTxns(
         amount: Math.abs(fundingFee - escrowBalance),
         note: new Uint8Array(
           Buffer.from(
-            `I am a fee transaction for configuring algoworld swapper escrow min balance, thank you for using AlgoWorld Swapper :-)`,
+            `I am a fee transaction for configuring algoworld swapper escrow min balance, thank you for using AlgoWorld Swapper 🙂`,
           ),
         ),
         suggestedParams,
@@ -71,7 +71,7 @@ export default async function createSwapDepositTxns(
           Buffer.from(
             `Transaction for the depositing asset ${
               asset.index
-            } to swapper ${escrow.address()}, thank you for using AlgoWorld Swapper :-)`,
+            } to swapper ${escrow.address()}, thank you for using AlgoWorld Swapper 🙂`,
           ),
         ),
         suggestedParams,
