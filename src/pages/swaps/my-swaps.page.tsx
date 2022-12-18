@@ -26,32 +26,52 @@ import {
   setIsManageSwapPopupOpen,
   setIsWalletPopupOpen,
 } from '@/redux/slices/applicationSlice';
-import { getAccountSwaps, optAssets } from '@/redux/slices/walletConnectSlice';
+import {
+  getAccountSwaps,
+  optAssets,
+  recoverSwapTxnHistory,
+} from '@/redux/slices/walletConnectSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
-import { Box, Button, Container, Grid, LinearProgress } from '@mui/material';
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  LinearProgress,
+  Tooltip,
+} from '@mui/material';
 import { AWVT_ASSET_INDEX, MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
 import { connector } from '@/redux/store/connector';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function MySwaps() {
-  const swaps = useAppSelector((state) => state.walletConnect.swaps);
-  const fetchingSwaps = useAppSelector(
-    (state) => state.walletConnect.fetchingSwaps,
-  );
   const hasAwvt = useAppSelector((state) => state.walletConnect.hasAwvt);
   const dispatch = useAppDispatch();
   const selectedManageSwap = useAppSelector(
     (state) => state.application.selectedManageSwap,
   );
-  const { gateway, address, chain } = useAppSelector(
-    (state) => state.walletConnect,
-  );
+  const {
+    gateway,
+    address,
+    chain,
+    swaps,
+    recoveredSwaps,
+    fetchingSwaps,
+    recoveringSwaps,
+  } = useAppSelector((state) => state.walletConnect);
   const isManageSwapPopupOpen = useAppSelector(
     (state) => state.application.isManageSwapPopupOpen,
   );
+
   const isShareSwapPopupOpen = useAppSelector(
     (state) => state.application.isShareSwapPopupOpen,
   );
+  const [isShowHistoricalSwaps, setIsShowHistoricalSwaps] =
+    useState<boolean>(false);
+
+  const mySwaps = useMemo(() => {
+    return isShowHistoricalSwaps ? recoveredSwaps : swaps;
+  }, [isShowHistoricalSwaps, recoveredSwaps, swaps]);
 
   const awvtIndex = useMemo(() => [AWVT_ASSET_INDEX(chain)], [chain]);
 
@@ -129,6 +149,45 @@ export default function MySwaps() {
                 Opt in visibility token
               </Button>
             )}
+            {isShowHistoricalSwaps ? (
+              <Tooltip title="Click to disable fetching of swaps that are not present in configuration file. This loads all active swaps currently assigned to your configuration file.">
+                <Button
+                  variant="outlined"
+                  onClick={async () => {
+                    setIsShowHistoricalSwaps(!isShowHistoricalSwaps);
+                    await dispatch(
+                      getAccountSwaps({ chain, gateway, address }),
+                    );
+                  }}
+                >
+                  Hide detailed history
+                </Button>
+              </Tooltip>
+            ) : (
+              <Tooltip
+                title="⚠️ PLEASE READ: This option is only useful if you are attempting
+              to recover previously created swaps that are still active but were somehow deleted from your configuration
+              file.
+              Such errors may happen occasionally and are caused by
+              ingestion latency on ipfs data upload. If you see any swaps
+              with this flag enabled, deactivate them and recreate again in
+              order to restore it to your active configuration file."
+              >
+                <Button
+                  variant="outlined"
+                  onClick={async () => {
+                    setIsShowHistoricalSwaps(!isShowHistoricalSwaps);
+                    await dispatch(
+                      recoverSwapTxnHistory({
+                        gateway,
+                      }),
+                    );
+                  }}
+                >
+                  Show detailed history
+                </Button>
+              </Tooltip>
+            )}
           </Grid>
         )}
       </PageHeader>
@@ -149,12 +208,12 @@ export default function MySwaps() {
           >
             Connect Wallet
           </Button>
-        ) : fetchingSwaps ? (
+        ) : fetchingSwaps || recoveringSwaps ? (
           <Box sx={{ width: `100%` }}>
             <LinearProgress />
           </Box>
         ) : (
-          <MySwapsTable swapConfigurations={swaps}></MySwapsTable>
+          <MySwapsTable swapConfigurations={mySwaps}></MySwapsTable>
         )}
       </Container>
     </>

@@ -37,7 +37,7 @@ export default async function createSaveSwapConfigTxns(
     amount: fundingFee,
     note: new Uint8Array(
       Buffer.from(
-        `I am a fee transaction for configuring algoworld swapper proxy, thank you for using AlgoWorld Swapper :-)`,
+        `I am a fee transaction for configuring algoworld swapper proxy, thank you for using AlgoWorld Swapper 🙂`,
       ),
     ),
     suggestedParams,

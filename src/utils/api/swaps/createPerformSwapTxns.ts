@@ -36,7 +36,7 @@ async function createAsaToAsaSwapPerformTxns(
 ) {
   const suggestedParams = await getTransactionParams(chain);
 
-  const note = `I am a asset transfer transaction to perform swap. thank you for using AlgoWorld Swapper! :-)`;
+  const note = `I am a asset transfer transaction to perform swap. thank you for using AlgoWorld Swapper! 🙂`;
 
   const txns = [];
 
@@ -96,7 +96,7 @@ async function createAsasToAlgoSwapPerformTxns(
 ) {
   const suggestedParams = await getTransactionParams(chain);
 
-  const note = `I am a asset transfer transaction to perform swap. thank you for using AlgoWorld Swapper! :-)`;
+  const note = `I am a asset transfer transaction to perform swap. thank you for using AlgoWorld Swapper! 🙂`;
   const txns = [];
 
   const incentiveFeeTxn = createTransactionToSign(

@@ -34,6 +34,7 @@ export default async function loadSwapConfigurations(
   chain: ChainType,
   gateway: IpfsGateway,
   proxyAddress: string,
+  loadAll = false,
 ) {
   const client = indexerForChain(chain);
   const proxyExists = await accountExists(chain, proxyAddress);
@@ -49,6 +50,26 @@ export default async function loadSwapConfigurations(
 
   if (paymentTxns.transactions.length === 0) {
     return [] as SwapConfiguration[];
+  }
+
+  if (loadAll) {
+    const swapConfigurations = {} as { [key: string]: SwapConfiguration };
+    for (const txn of paymentTxns.transactions) {
+      const swapConfigTxn = txn;
+      const configFileUrl = Buffer.from(swapConfigTxn.note, `base64`).toString(
+        `utf-8`,
+      );
+      const configFile = await axios
+        .get(`${ipfsToProxyUrl(configFileUrl, gateway)}/aw_swaps.json`)
+        .then((res) => res.data);
+
+      for (const swapConfig of configFile) {
+        swapConfigurations[swapConfig.escrow] = swapConfig;
+      }
+    }
+    return Object.keys(swapConfigurations).map(function (key) {
+      return swapConfigurations[key];
+    });
   }
 
   const swapConfigTxn = paymentTxns.transactions[0];

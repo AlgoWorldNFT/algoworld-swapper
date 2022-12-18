@@ -59,7 +59,7 @@ export default async function optAssetsForAccount(
           assetIndex: index,
           note: new Uint8Array(
             Buffer.from(
-              ` I am an asset opt-${optPrefix} transaction for algoworld swapper escrow, thank you for using AlgoWorld Swapper (☞ ͡° ͜ʖ ͡°)☞`,
+              ` I am an asset opt-${optPrefix} transaction for algoworld swapper escrow, thank you for using AlgoWorld Swapper 🙂`,
             ),
           ),
           closeRemainderTo: deOptIn ? creatorAddress : undefined,
