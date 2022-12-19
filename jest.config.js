@@ -25,6 +25,7 @@ const customJestConfig = {
     '<rootDir>/src/redux/theme/',
     '_app.page.tsx',
     '_document.page.tsx',
+    'constants.ts',
   ],
   testEnvironment: `jest-environment-jsdom`,
   collectCoverageFrom: [`**/*.{ts,tsx}`],
