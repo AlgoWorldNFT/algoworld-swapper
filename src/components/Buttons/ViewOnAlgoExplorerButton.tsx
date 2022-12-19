@@ -21,6 +21,7 @@ import { Button } from '@mui/material';
 import { ChainType } from '@/models/Chain';
 import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
 import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
+import { VIEW_ON_EXPLORER_BTN_ID } from './constants';
 
 type Props = {
   txId: string;
@@ -30,6 +31,8 @@ type Props = {
 const ViewOnAlgoExplorerButton = ({ txId, chain }: Props) => {
   return (
     <Button
+      id={VIEW_ON_EXPLORER_BTN_ID}
+      rel="noopener noreferrer"
       target={`_blank`}
       href={createAlgoExplorerUrl(chain, txId, AlgoExplorerUrlType.Transaction)}
     >
