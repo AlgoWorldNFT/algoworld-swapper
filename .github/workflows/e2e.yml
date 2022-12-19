@@ -18,6 +18,11 @@ jobs:
         with:
           node-version: '16.x'
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10.8
+
       - name: Install dependencies (with cache)
         uses: bahmutov/npm-install@v1
 
