@@ -1,45 +1,69 @@
 /**
- * @jest-environment node
+ * @jest-environment jsdom
  */
-import WalletConnectClient from './walletConnect';
+import 'jest-canvas-mock';
+import { WalletConnectClient } from './walletConnect';
 
 import { generateAccount } from 'algosdk';
-import WalletConnect from '@walletconnect/client';
+import { PeraWalletConnect } from '@perawallet/connect';
 
 const dummyAccount = generateAccount();
 
-jest.mock(`@walletconnect/client`, () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      connected: false,
+describe(`WalletConnectClient`, () => {
+  beforeAll(() => {
+    const localStorageMock = (function () {
+      let store: { [key: string]: any } = {};
+
+      return {
+        getItem(key: string) {
+          return store[key];
+        },
+
+        setItem(key: string, value: any) {
+          store[key] = value;
+        },
+
+        clear() {
+          store = {};
+        },
+
+        removeItem(key: string) {
+          delete store[key];
+        },
+
+        getAll() {
+          return store;
+        },
+      };
+    })();
+
+    Object.defineProperty(window, `localStorage`, { value: localStorageMock });
+  });
+  it(`Initializes and disconnects correctly`, async () => {
+    const mockedWalletConnect = {
+      isConnected: false,
       createSession: jest.fn(),
+      reconnectSession: jest.fn(),
       on: jest.fn(),
       off: jest.fn(),
-      accounts: [{ address: dummyAccount.addr }],
+      connector: {
+        accounts: [dummyAccount.addr],
+        on: jest.fn(),
+      },
+      accounts: [dummyAccount.addr],
+      connect: jest.fn(async () => [dummyAccount.addr]),
+      disconnect: jest.fn(),
       killSession: jest.fn(),
-    };
-  });
-});
-
-describe(`WalletConnectClient`, () => {
-  it(`Initializes and disconnects correctly`, async () => {
-    const mockedWalletConnect = new WalletConnect({});
+    } as unknown as PeraWalletConnect;
     const walletConnectClient = new WalletConnectClient(mockedWalletConnect);
 
     expect(walletConnectClient.connected()).toBe(false);
 
     await walletConnectClient.connect();
 
-    expect(mockedWalletConnect.createSession).toBeCalledTimes(1);
-    expect(mockedWalletConnect.on).toBeCalledTimes(3);
-    expect(walletConnectClient.accounts()).toStrictEqual([
-      {
-        address: dummyAccount.addr,
-      },
-    ]);
+    expect(mockedWalletConnect.connect).toBeCalledTimes(1);
+    expect(walletConnectClient.accounts()).toStrictEqual([dummyAccount.addr]);
 
     await walletConnectClient.disconnect();
-    expect(mockedWalletConnect.killSession).toBeCalledTimes(1);
-    expect(mockedWalletConnect.off).toBeCalledTimes(3);
   });
 });

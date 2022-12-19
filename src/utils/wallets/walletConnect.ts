@@ -1,15 +1,13 @@
 import { AlgoWorldWallet, WalletType } from '@/models/Wallet';
-import WalletConnect from '@walletconnect/client';
-import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
-import { encodeAddress, Transaction } from 'algosdk';
+import { encodeAddress, Transaction, decodeSignedTransaction } from 'algosdk';
 import store from '@/redux/store';
-import { onSessionUpdate, reset } from '@/redux/slices/walletConnectSlice';
-import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
-import getWalletConnectTxn from '../api/transactions/walletConnect/getWalletConnectTxn';
+import { onSessionUpdate } from '@/redux/slices/walletConnectSlice';
 import { CONNECTED_WALLET_TYPE } from '@/common/constants';
+import { PeraWalletConnect } from '@perawallet/connect';
+import getWalletConnectTxn from '../api/transactions/walletConnect/getWalletConnectTxn';
 
 export class WalletConnectSingleton {
-  private static _instance: WalletConnect;
+  private static _instance: PeraWalletConnect;
 
   private constructor() {
     //...
@@ -19,59 +17,37 @@ export class WalletConnectSingleton {
     // Do you need arguments? Make it a regular static method instead.
     return (
       this._instance ||
-      (this._instance = new WalletConnect({
-        bridge: `https://bridge.walletconnect.org`,
-        qrcodeModal: QRCodeModal,
+      (this._instance = new PeraWalletConnect({
+        shouldShowSignTxnToast: false,
       }))
     );
   }
 }
 
-export default class WalletConnectClient implements AlgoWorldWallet {
-  private client: WalletConnect;
+export class WalletConnectClient implements AlgoWorldWallet {
+  private client: PeraWalletConnect;
 
-  constructor(client: WalletConnect) {
+  constructor(client: PeraWalletConnect) {
     this.client = client;
   }
 
-  private subsribeToEvents = async () => {
-    // Subscribe to connection events
-    console.log(`%cin subscribeToEvents`, `background: yellow`);
-    this.client.on(`connect`, (error, payload) => {
-      console.log(`%cOn connect`, `background: yellow`);
-      if (error) {
-        throw error;
-      }
-      const { accounts } = payload.params[0];
-      store.dispatch(onSessionUpdate(accounts));
-      QRCodeModal.close();
-      localStorage.setItem(CONNECTED_WALLET_TYPE, WalletType.PeraWallet);
-    });
-
-    this.client.on(`session_update`, (error, payload) => {
-      console.log(`%cOn session_update`, `background: yellow`);
-      if (error) {
-        throw error;
-      }
-      const { accounts } = payload.params[0];
-      store.dispatch(onSessionUpdate(accounts));
-    });
-
-    this.client.on(`disconnect`, (error) => {
-      console.log(`%cOn disconnect`, `background: yellow`);
-      localStorage.removeItem(CONNECTED_WALLET_TYPE);
-      if (error) {
-        throw error;
-      }
-      store.dispatch(reset());
-    });
-  };
-
   public connect = async () => {
-    if (this.client.connected) return;
-    if (this.client.pending) return QRCodeModal.open(this.client.uri, null);
-    await this.client.createSession();
-    await this.subsribeToEvents();
+    if (this.client.isConnected) return;
+    let accounts = [];
+
+    try {
+      accounts = await this.client.connect();
+    } catch (e) {
+      console.warn(e);
+      accounts = await this.client.reconnectSession();
+    }
+
+    if (this.client.connector) {
+      this.client.connector.on(`disconnect`, this.disconnect);
+    }
+
+    localStorage.setItem(CONNECTED_WALLET_TYPE, WalletType.PeraWallet);
+    store.dispatch(onSessionUpdate(accounts));
   };
 
   public address = () => {
@@ -79,36 +55,50 @@ export default class WalletConnectClient implements AlgoWorldWallet {
   };
 
   public accounts = () => {
-    return this.client.accounts;
+    return this.client.connector?.accounts || [];
   };
 
   public signTransactions = async (txnGroup: Transaction[]) => {
-    const userRequest = formatJsonRpcRequest(`algo_signTxn`, [
-      txnGroup.map((value) => {
-        if (
-          this.client.accounts.includes(encodeAddress(value.from.publicKey))
-        ) {
-          return getWalletConnectTxn(value, true);
-        } else {
-          return getWalletConnectTxn(value, false);
+    if (!this.client.isConnected) {
+      throw new Error(`Client not connected`);
+    }
+
+    const txns = txnGroup.map((txn) => {
+      if (
+        this.client.connector?.accounts.includes(
+          encodeAddress(txn.from.publicKey),
+        )
+      ) {
+        return getWalletConnectTxn(txn, true);
+      } else {
+        return getWalletConnectTxn(txn, false);
+      }
+    });
+
+    const response = await this.client.signTransaction(txns);
+
+    return txnGroup.map((txn) => {
+      for (const signedTxn of response) {
+        const decodedTxn = decodeSignedTransaction(signedTxn);
+        console.log(decodedTxn.txn.txID().toString());
+        if (decodedTxn.txn.txID() === txn.txID().toString()) {
+          return signedTxn;
         }
-      }),
-    ]);
-    return await this.client.sendCustomRequest(userRequest);
+      }
+      return null;
+    });
   };
 
   public disconnect = async () => {
-    if (this.client) {
-      await this.client.killSession();
-      this.client.off(`connect`);
-      this.client.off(`session_update`);
-      this.client.off(`disconnect`);
+    if (this.client && this.client.isConnected) {
+      localStorage.removeItem(CONNECTED_WALLET_TYPE);
+      await this.client.disconnect();
     } else {
       return Promise.resolve();
     }
   };
 
   public connected = () => {
-    return this.client.connected;
+    return this.client.isConnected;
   };
 }

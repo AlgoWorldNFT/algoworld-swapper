@@ -6,8 +6,8 @@ import {
   signLogicSigTransactionObject,
 } from 'algosdk';
 import MnemonicClient from './mnemonic';
-import MyAlgoWalletClient, { MyAlgoSingleton } from './myAlgoWallet';
-import WalletConnectClient, { WalletConnectSingleton } from './walletConnect';
+import { MyAlgoWalletClient, MyAlgoSingleton } from './myAlgoWallet';
+import { WalletConnectClient, WalletConnectSingleton } from './walletConnect';
 
 export default class WalletManager {
   private client: AlgoWorldWallet | undefined;
@@ -18,7 +18,7 @@ export default class WalletManager {
     } else if (walletType === WalletType.MyAlgoWallet) {
       this.client = new MyAlgoWalletClient(MyAlgoSingleton.Instance);
     } else {
-      const mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? phrase ?? ``;
+      const mnemonic = phrase ?? process.env.NEXT_PUBLIC_MNEMONIC ?? ``;
       this.client = new MnemonicClient(mnemonic);
     }
   };

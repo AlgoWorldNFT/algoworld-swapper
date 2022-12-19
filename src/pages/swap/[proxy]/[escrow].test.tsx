@@ -2,7 +2,7 @@ import { PERFORM_SWAP_PAGE_HEADER_ID } from '@/common/constants';
 import renderWithProviders from '@/__utils__/renderWithProviders';
 import { queryByAttribute } from '@testing-library/react';
 
-jest.mock(`algorand-walletconnect-qrcode-modal`, () => {
+jest.mock(`@perawallet/connect`, () => {
   return jest.fn();
 });
 
@@ -22,10 +22,10 @@ import PerformSwap from './[escrow].page';
 
 describe(`Perform Swap Page`, () => {
   it(`renders a heading`, () => {
-    const dom = renderWithProviders(<PerformSwap />);
+    const { container } = renderWithProviders(<PerformSwap />);
 
     const getById = queryByAttribute.bind(null, `id`);
-    const headerComponent = getById(dom.container, PERFORM_SWAP_PAGE_HEADER_ID);
+    const headerComponent = getById(container, PERFORM_SWAP_PAGE_HEADER_ID);
 
     expect(headerComponent).toBeInTheDocument();
     expect(headerComponent?.textContent?.toLowerCase()).toContain(

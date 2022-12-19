@@ -1,6 +1,6 @@
 import { queryByAttribute } from '@testing-library/react';
 
-jest.mock(`algorand-walletconnect-qrcode-modal`, () => {
+jest.mock(`@perawallet/connect`, () => {
   return jest.fn();
 });
 

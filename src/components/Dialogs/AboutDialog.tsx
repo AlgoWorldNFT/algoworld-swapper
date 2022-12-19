@@ -23,7 +23,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import pJson from '@/package.json';
+import pJson from '../../../package.json';
+import { ABOUT_DIALOG_ID } from './constants';
 
 type Props = {
   open: boolean;
@@ -44,6 +45,7 @@ export default function AboutDialog({ open, changeState }: Props) {
   return (
     <div>
       <Dialog
+        id={ABOUT_DIALOG_ID}
         open={open}
         scroll={`paper`}
         aria-labelledby="scroll-dialog-title"
