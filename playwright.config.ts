@@ -26,7 +26,7 @@ if (BASE_URL.includes(`localhost:3000`)) {
     command:
       VERCEL_TOKEN === null
         ? `vercel dev`
-        : `vercel dev --token ${VERCEL_TOKEN}`,
+        : `vercel dev --token ${VERCEL_TOKEN} --yes`,
     url: `http://localhost:3000`,
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
