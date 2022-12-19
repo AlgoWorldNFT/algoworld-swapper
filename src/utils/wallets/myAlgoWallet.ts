@@ -18,7 +18,7 @@ export class MyAlgoSingleton {
   }
 }
 
-export default class MyAlgoWalletClient implements AlgoWorldWallet {
+export class MyAlgoWalletClient implements AlgoWorldWallet {
   private client: MyAlgoConnect | undefined;
   private userAccounts: string[] = [];
 

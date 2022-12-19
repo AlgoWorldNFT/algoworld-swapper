@@ -6,8 +6,8 @@ import {
   signLogicSigTransactionObject,
 } from 'algosdk';
 import MnemonicClient from './mnemonic';
-import MyAlgoWalletClient, { MyAlgoSingleton } from './myAlgoWallet';
-import WalletConnectClient, { WalletConnectSingleton } from './walletConnect';
+import { MyAlgoWalletClient, MyAlgoSingleton } from './myAlgoWallet';
+import { WalletConnectClient, WalletConnectSingleton } from './walletConnect';
 
 export default class WalletManager {
   private client: AlgoWorldWallet | undefined;

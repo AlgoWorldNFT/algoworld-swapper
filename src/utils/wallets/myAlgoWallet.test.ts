@@ -1,4 +1,4 @@
-import MyAlgoWalletClient from './myAlgoWallet';
+import { MyAlgoWalletClient } from './myAlgoWallet';
 
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 import { generateAccount } from 'algosdk';

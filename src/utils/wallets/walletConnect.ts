@@ -27,7 +27,7 @@ export class WalletConnectSingleton {
   }
 }
 
-export default class WalletConnectClient implements AlgoWorldWallet {
+export class WalletConnectClient implements AlgoWorldWallet {
   private client: WalletConnect;
 
   constructor(client: WalletConnect) {

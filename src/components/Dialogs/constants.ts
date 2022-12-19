@@ -1,5 +1,7 @@
 export const CONNECT_WALLET_DIALOG_ID = `AWConnectWalletDialog`;
 
+export const ABOUT_DIALOG_ID = `AWAboutDialog`;
+
 export const DIALOG_SELECT_BTN_ID = `AWDialogSelectButton`;
 export const DIALOG_CANCEL_BTN_ID = `AWDialogCancelButton`;
 

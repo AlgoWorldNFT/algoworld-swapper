@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import WalletConnectClient from './walletConnect';
+import { WalletConnectClient } from './walletConnect';
 
 import { generateAccount } from 'algosdk';
 import WalletConnect from '@walletconnect/client';
