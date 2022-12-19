@@ -147,7 +147,11 @@ const Footer = () => {
               icon={
                 <>
                   {item.url ? (
-                    <Link id={NAV_BAR_FOOTER_ITEM_ID(item.id)} href={item.url}>
+                    <Link
+                      legacyBehavior
+                      id={NAV_BAR_FOOTER_ITEM_ID(item.id)}
+                      href={item.url}
+                    >
                       <item.icon />
                     </Link>
                   ) : (

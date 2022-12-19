@@ -17,8 +17,7 @@
  */
 
 import WalletConnect from '@walletconnect/client';
-import { Transaction } from 'algosdk';
-import { LogicSigAccount } from 'algosdk/dist/types/src/logicsig';
+import { LogicSigAccount, Transaction } from 'algosdk';
 
 export enum TransactionToSignType {
   UserTransaction,
