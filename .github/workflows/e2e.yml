@@ -28,6 +28,7 @@ jobs:
         env:
           E2E_TESTS_BOB_MNEMONIC: ${{ secrets.E2E_TESTS_BOB_MNEMONIC }}
           E2E_TESTS_ALICE_MNEMONIC: ${{ secrets.E2E_TESTS_ALICE_MNEMONIC }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: DEBUG=pw:api yarn run test:e2e:ci:local
 
       - uses: actions/upload-artifact@v3
