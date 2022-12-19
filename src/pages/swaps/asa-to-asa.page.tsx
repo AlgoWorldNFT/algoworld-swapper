@@ -35,7 +35,6 @@ import {
 } from '@/common/constants';
 import { SwapConfiguration, SwapType } from '@/models/Swap';
 import { useAsync } from 'react-use';
-import { LogicSigAccount } from 'algosdk/dist/types/src/logicsig';
 import ConfirmDialog from '@/components/Dialogs/ConfirmDialog';
 import getCompiledSwap from '@/utils/api/swaps/getCompiledSwap';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
@@ -66,6 +65,7 @@ import {
   ASA_TO_ASA_PAGE_HEADER_ID,
   CREATE_SWAP_BTN_ID,
 } from '@/common/constants';
+import { LogicSigAccount } from 'algosdk';
 
 export default function AsaToAsa() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
