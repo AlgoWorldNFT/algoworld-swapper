@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies (with cache)
         uses: bahmutov/npm-install@v1
 
-      - name: Install Playwright Browsers
-        run: npx playwright install chromium
+      - name: Install Playwright Browsers & Deps
+        run: npx playwright install chromium && cd api/swaps && pip install -r requirements.txt
 
       - name: Run Playwright tests
         env:
