@@ -47,7 +47,7 @@ const SwapTypePickerCard = ({
         minWidth: 150,
       }}
     >
-      <Link href={swapPageUrl}>
+      <Link legacyBehavior href={swapPageUrl}>
         <CardActionArea disabled={disabled}>
           <CardContent>
             <Grid

@@ -277,7 +277,7 @@ const NavBar = () => {
       <AppBar id={NAV_BAR_ID} position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <Link href="/">
+            <Link legacyBehavior href="/">
               <IconButton
                 id={NAV_BAR_ICON_HOME_BTN_ID}
                 size="medium"
@@ -337,6 +337,7 @@ const NavBar = () => {
                     key={page.title}
                     href={page.url}
                     passHref
+                    legacyBehavior
                   >
                     <a
                       target={page.target}
@@ -383,6 +384,7 @@ const NavBar = () => {
                   key={page.title}
                   href={page.url}
                   passHref
+                  legacyBehavior
                 >
                   <a
                     target={page.target}
