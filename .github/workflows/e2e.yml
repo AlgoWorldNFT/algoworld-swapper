@@ -4,11 +4,6 @@ on:
     branches: [main]
 jobs:
   e2e_test:
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      E2E_TESTS_BASE_URL: 'https://pr${{ github.event.number }}-${{ github.run_number }}.vercel-action.millionalgos.com'
-      E2E_TESTS_BASE_URL_ALIAS: 'pr${{ github.event.number }}-${{ github.run_number }}.vercel-action.millionalgos.com'
-
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -18,11 +13,6 @@ jobs:
           access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/checkout@v3
-
-      - name: Expose e2e base url
-        run: |
-          echo "${{ env.E2E_TESTS_BASE_URL }}"
-        shell: bash
 
       - uses: actions/setup-node@v3
         with:
@@ -34,22 +24,11 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install chromium
 
-      - name: Deploy preview
-        uses: amondnet/vercel-action@v25.1.0
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
-          vercel-project-id: ${{ secrets.VERCEL_STAGING_PROJECT_ID}} #Required
-          working-directory: ./
-          alias-domains: ${{ env.E2E_TESTS_BASE_URL_ALIAS }}
-
       - name: Run Playwright tests
         env:
           E2E_TESTS_BOB_MNEMONIC: ${{ secrets.E2E_TESTS_BOB_MNEMONIC }}
           E2E_TESTS_ALICE_MNEMONIC: ${{ secrets.E2E_TESTS_ALICE_MNEMONIC }}
-        run: |
-          E2E_TESTS_BASE_URL=${{ env.E2E_TESTS_BASE_URL }} DEBUG=pw:api yarn run test:e2e:ci
+        run: DEBUG=pw:api yarn run test:e2e:ci:local
 
       - uses: actions/upload-artifact@v3
         if: always()
