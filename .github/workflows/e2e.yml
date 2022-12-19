@@ -4,6 +4,11 @@ on:
     branches: [main]
 jobs:
   e2e_test:
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      E2E_TESTS_BASE_URL: 'https://pr${{ github.event.number }}-${{ github.run_number }}.vercel-action.millionalgos.com'
+      E2E_TESTS_BASE_URL_ALIAS: 'pr${{ github.event.number }}-${{ github.run_number }}.vercel-action.millionalgos.com'
+
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -14,27 +19,37 @@ jobs:
 
       - uses: actions/checkout@v3
 
+      - name: Expose e2e base url
+        run: |
+          echo "${{ env.E2E_TESTS_BASE_URL }}"
+        shell: bash
+
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.10.8
-
       - name: Install dependencies (with cache)
         uses: bahmutov/npm-install@v1
 
-      - name: Install Playwright Browsers & Deps
-        run: npx playwright install chromium && cd api/swaps && pip install -r requirements.txt
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium
+
+      - name: Deploy preview
+        uses: amondnet/vercel-action@v25.1.0
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
+          vercel-project-id: ${{ secrets.VERCEL_STAGING_PROJECT_ID}} #Required
+          working-directory: ./
+          alias-domains: ${{ env.E2E_TESTS_BASE_URL_ALIAS }}
 
       - name: Run Playwright tests
         env:
           E2E_TESTS_BOB_MNEMONIC: ${{ secrets.E2E_TESTS_BOB_MNEMONIC }}
           E2E_TESTS_ALICE_MNEMONIC: ${{ secrets.E2E_TESTS_ALICE_MNEMONIC }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: DEBUG=pw:api yarn run test:e2e:ci:local
+        run: |
+          E2E_TESTS_BASE_URL=${{ env.E2E_TESTS_BASE_URL }} DEBUG=pw:api yarn run test:e2e:ci
 
       - uses: actions/upload-artifact@v3
         if: always()
