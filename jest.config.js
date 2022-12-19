@@ -21,7 +21,11 @@ const customJestConfig = {
     '/__fixtures__/',
     '/__utils__/',
   ],
-  coveragePathIgnorePatterns: ['<rootDir>/src/redux/theme/'],
+  coveragePathIgnorePatterns: [
+    '<rootDir>/src/redux/theme/',
+    '_app.page.tsx',
+    '_document.page.tsx',
+  ],
   testEnvironment: `jest-environment-jsdom`,
   collectCoverageFrom: [`**/*.{ts,tsx}`],
   coverageReporters: ['text', 'cobertura'],
