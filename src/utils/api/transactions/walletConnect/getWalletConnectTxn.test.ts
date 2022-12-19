@@ -1,12 +1,5 @@
-import algosdk, { Transaction } from 'algosdk';
+import { Transaction } from 'algosdk';
 import getWalletConnectTxn from './getWalletConnectTxn';
-
-jest.mock(`algosdk`, () => {
-  const mockAlgosdk = {
-    encodeUnsignedTransaction: jest.fn(),
-  };
-  return mockAlgosdk;
-});
 
 describe(`getWalletConnectTxn`, () => {
   it(`should return the correct object`, () => {
@@ -19,20 +12,16 @@ describe(`getWalletConnectTxn`, () => {
       genesisHash: Buffer.from(`test-genesis-hash`, `base64`),
     } as unknown as Transaction;
 
-    (algosdk.encodeUnsignedTransaction as jest.Mock).mockReturnValue(
-      Buffer.from(`encoded-txn`),
-    );
-
     const result = getWalletConnectTxn(txn, true);
-    expect(result).toEqual({
-      txn: `ZW5jb2RlZC10eG4=`,
+    expect(result[0]).toEqual({
+      txn: txn,
       message: `Sign transaction to proceed`,
       signers: undefined,
     });
 
     const result2 = getWalletConnectTxn(txn, false);
-    expect(result2).toEqual({
-      txn: `ZW5jb2RlZC10eG4=`,
+    expect(result2[0]).toEqual({
+      txn: txn,
       message: `Sign transaction to proceed`,
       signers: [],
     });

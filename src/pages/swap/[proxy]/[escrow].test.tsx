@@ -1,8 +1,8 @@
 import { PERFORM_SWAP_PAGE_HEADER_ID } from '@/common/constants';
 import renderWithProviders from '@/__utils__/renderWithProviders';
-import { queryByAttribute, act } from '@testing-library/react';
+import { queryByAttribute } from '@testing-library/react';
 
-jest.mock(`algorand-walletconnect-qrcode-modal`, () => {
+jest.mock(`@perawallet/connect`, () => {
   return jest.fn();
 });
 
