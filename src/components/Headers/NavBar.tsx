@@ -242,7 +242,11 @@ const NavBar = () => {
     if (!connectedWalletType || connectedWalletType === ``) {
       return;
     } else {
-      connect(connectedWalletType as WalletType, false);
+      try {
+        connect(connectedWalletType as WalletType, false);
+      } catch (e) {
+        localStorage.removeItem(CONNECTED_WALLET_TYPE);
+      }
     }
 
     if (address) {
