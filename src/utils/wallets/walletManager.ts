@@ -18,7 +18,7 @@ export default class WalletManager {
     } else if (walletType === WalletType.MyAlgoWallet) {
       this.client = new MyAlgoWalletClient(MyAlgoSingleton.Instance);
     } else {
-      const mnemonic = phrase ?? process.env.NEXT_PUBLIC_MNEMONIC ?? ``;
+      const mnemonic = process.env.NEXT_PUBLIC_MNEMONIC ?? phrase ?? ``;
       this.client = new MnemonicClient(mnemonic);
     }
   };

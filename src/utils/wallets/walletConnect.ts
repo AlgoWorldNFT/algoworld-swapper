@@ -46,8 +46,10 @@ export class WalletConnectClient implements AlgoWorldWallet {
       this.client.connector.on(`disconnect`, this.disconnect);
     }
 
-    localStorage.setItem(CONNECTED_WALLET_TYPE, WalletType.PeraWallet);
-    store.dispatch(onSessionUpdate(accounts));
+    if (accounts.length > 0) {
+      localStorage.setItem(CONNECTED_WALLET_TYPE, WalletType.PeraWallet);
+      store.dispatch(onSessionUpdate(accounts));
+    }
   };
 
   public address = () => {
