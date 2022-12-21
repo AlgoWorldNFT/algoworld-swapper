@@ -19,6 +19,9 @@
 import { createTheme } from '@mui/material/styles';
 
 const darkTheme = createTheme({
+  typography: {
+    fontFamily: `Helvetica Neue`,
+  },
   palette: {
     mode: `dark`,
     primary: {

@@ -30,6 +30,7 @@ import {
   ListItemAvatar,
   Divider,
   ListItemButton,
+  Typography,
 } from '@mui/material';
 import { CONNECT_PROVIDER_DIALOG_ID } from './constants';
 import Image from 'next/image';
@@ -84,8 +85,12 @@ const ConnectProviderDialog = ({ open }: Props) => {
                     </div>
                   </ListItemAvatar>
                   <ListItemText
-                    sx={{ fontStyle: `bold`, pl: 2, pr: 2 }}
-                    primary={provider.metadata.name}
+                    sx={{ pl: 2, pr: 2 }}
+                    primary={
+                      <Typography fontWeight={`bold`} variant="h5">
+                        {provider.metadata.name}
+                      </Typography>
+                    }
                     secondary={provider.isActive ? `Active` : ``}
                   />
                 </ListItemButton>
