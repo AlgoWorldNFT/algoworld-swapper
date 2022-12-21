@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from './Layout';
 import renderWithProviders from '@/__utils__/renderWithProviders';
+import { act } from '@testing-library/react';
 
 jest.mock(`next/dist/client/router`, () => ({
   __esModule: true,
@@ -21,12 +22,17 @@ jest.mock(`next/dist/client/router`, () => ({
 
 describe(`Layout`, () => {
   it(`should render the children in the main`, () => {
-    const { getByText } = renderWithProviders(
-      <Layout>
-        <p>Test Children</p>
-      </Layout>,
-    );
+    let byText: any;
+    act(() => {
+      const { getByText } = renderWithProviders(
+        <Layout>
+          <p>Test Children</p>
+        </Layout>,
+      );
 
-    expect(getByText(`Test Children`)).toBeInTheDocument();
+      byText = getByText;
+    });
+
+    expect(byText(`Test Children`)).toBeInTheDocument();
   });
 });

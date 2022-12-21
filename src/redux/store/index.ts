@@ -22,7 +22,6 @@ import {
   combineReducers,
 } from '@reduxjs/toolkit';
 import applicationReducer from '../slices/applicationSlice';
-import logger from '../middleware/logger';
 
 const rootReducer = combineReducers({
   application: applicationReducer,
@@ -35,7 +34,7 @@ export const setupStore = (preloadedState?: PreloadedState<any>) => {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: false,
-      }).concat(logger),
+      }),
   });
 };
 
