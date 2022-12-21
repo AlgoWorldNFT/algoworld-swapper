@@ -68,7 +68,7 @@ export default async function createSwapDeactivateTxns(
       suggestedParams,
     }),
     escrow,
-    TransactionToSignType.UserTransaction,
+    TransactionToSignType.LsigTransaction,
   );
   txns.push(closeSwapTxn);
 

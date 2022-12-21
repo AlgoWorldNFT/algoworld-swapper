@@ -22,8 +22,7 @@ import FromSwapCard from '@/components/Cards/FromSwapCard';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 
-import { useContext, useMemo, useState } from 'react';
-import { ConnectContext } from '@/redux/store/connector';
+import { useMemo, useState } from 'react';
 
 import {
   ASA_TO_ASA_FUNDING_FEE,
@@ -47,15 +46,13 @@ import { Asset } from '@/models/Asset';
 import createSaveSwapConfigTxns from '@/utils/api/swaps/createSaveSwapConfigTxns';
 import saveSwapConfigurations from '@/utils/api/swaps/saveSwapConfigurations';
 import createSwapDepositTxns from '@/utils/api/swaps/createSwapDepositTxns';
-import { useSnackbar } from 'notistack';
 import {
   getAccountAssets,
   getAccountSwaps,
   optAssets,
   setOfferingAssets,
   setRequestingAssets,
-} from '@/redux/slices/walletConnectSlice';
-import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
+} from '@/redux/slices/applicationSlice';
 import ShareSwapDialog from '@/components/Dialogs/ShareSwapDialog';
 import LoadingButton from '@mui/lab/LoadingButton';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
@@ -66,6 +63,10 @@ import {
   CREATE_SWAP_BTN_ID,
 } from '@/common/constants';
 import { LogicSigAccount } from 'algosdk';
+import { useWallet } from '@txnlab/use-wallet';
+import processTransactions from '@/utils/api/transactions/processTransactions';
+
+import { toast } from 'react-toastify';
 
 export default function AsaToAsa() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
@@ -74,27 +75,35 @@ export default function AsaToAsa() {
   const [shareSwapDialogOpen, setShareSwapDialogOpen] =
     useState<boolean>(false);
 
-  const connector = useContext(ConnectContext);
-  const { gateway, address, chain, proxy } = useAppSelector(
-    (state) => state.walletConnect,
+  const { gateway, chain, proxy } = useAppSelector(
+    (state) => state.application,
   );
-  const hasAwvt = useAppSelector((state) => state.walletConnect.hasAwvt);
+
+  const { activeAddress, signTransactions } = useWallet();
+  const address = useMemo(() => {
+    return activeAddress || ``;
+  }, [activeAddress]);
+
+  const hasAwvt = useAppSelector((state) => state.application.hasAwvt);
   const offeringAssets = useAppSelector(
-    (state) => state.walletConnect.selectedOfferingAssets,
+    (state) => state.application.selectedOfferingAssets,
   );
-  const existingAssets = useAppSelector((state) => state.walletConnect.assets);
+  const existingAssets = useAppSelector((state) => state.application.assets);
   const requestingAssets = useAppSelector(
-    (state) => state.walletConnect.selectedRequestingAssets,
+    (state) => state.application.selectedRequestingAssets,
   );
-  const existingSwaps = useAppSelector((state) => state.walletConnect.swaps);
-  const { enqueueSnackbar } = useSnackbar();
+  const existingSwaps = useAppSelector((state) => state.application.swaps);
   const dispatch = useAppDispatch();
 
   const { setLoading, resetLoading } = useLoadingIndicator();
   const [isPublicSwap, setIsPublicSwap] = useState(false);
 
   const escrowState = useAsync(async () => {
-    if (offeringAssets.length === 0 || requestingAssets.length === 0) {
+    if (
+      offeringAssets.length === 0 ||
+      requestingAssets.length === 0 ||
+      !address
+    ) {
       return;
     }
 
@@ -123,7 +132,8 @@ export default function AsaToAsa() {
       escrowState.loading ||
       escrowState.error ||
       !proxy ||
-      !escrowState.value
+      !escrowState.value ||
+      !address
     ) {
       return undefined;
     }
@@ -162,6 +172,10 @@ export default function AsaToAsa() {
   }, [existingAssets, offeringAssets, requestingAssets]);
 
   const signAndSendSwapInitTxns = async (escrow: LogicSigAccount) => {
+    if (!address) {
+      return undefined;
+    }
+
     const offeringAsset = offeringAssets[0];
     const initSwapTxns = await createInitSwapTxns(
       chain,
@@ -171,14 +185,13 @@ export default function AsaToAsa() {
       [offeringAsset],
     );
 
-    const signedInitSwapTxns = await connector
-      .signTransactions(initSwapTxns)
-      .catch(() => {
-        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-          variant: `error`,
-        });
-        return undefined;
-      });
+    const signedInitSwapTxns = await processTransactions(
+      initSwapTxns,
+      signTransactions,
+    ).catch(() => {
+      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+      return undefined;
+    });
 
     if (!signedInitSwapTxns) {
       return undefined;
@@ -196,6 +209,10 @@ export default function AsaToAsa() {
     proxy: LogicSigAccount,
     swapConfiguration: SwapConfiguration,
   ) => {
+    if (!address) {
+      return undefined;
+    }
+
     const cidResponse = await saveSwapConfigurations([
       ...existingSwaps,
       swapConfiguration,
@@ -209,14 +226,13 @@ export default function AsaToAsa() {
       (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
       cidData,
     );
-    const signedSaveSwapConfigTxns = await connector
-      .signTransactions(saveSwapConfigTxns)
-      .catch(() => {
-        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-          variant: `error`,
-        });
-        return undefined;
-      });
+    const signedSaveSwapConfigTxns = await processTransactions(
+      saveSwapConfigTxns,
+      signTransactions,
+    ).catch(() => {
+      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+      return undefined;
+    });
 
     if (!signedSaveSwapConfigTxns) {
       return undefined;
@@ -234,6 +250,10 @@ export default function AsaToAsa() {
     escrow: LogicSigAccount,
     offeringAsset: Asset,
   ) => {
+    if (!address) {
+      return undefined;
+    }
+
     const swapDepositTxns = await createSwapDepositTxns(
       chain,
       address,
@@ -242,14 +262,13 @@ export default function AsaToAsa() {
       ASA_TO_ASA_FUNDING_FEE,
     );
 
-    const signedSwapDepositTxns = await connector
-      .signTransactions(swapDepositTxns)
-      .catch(() => {
-        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-          variant: `error`,
-        });
-        return undefined;
-      });
+    const signedSwapDepositTxns = await processTransactions(
+      swapDepositTxns,
+      signTransactions,
+    ).catch(() => {
+      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+      return undefined;
+    });
 
     if (!signedSwapDepositTxns) {
       return undefined;
@@ -280,18 +299,11 @@ export default function AsaToAsa() {
     );
     if (!depositTxnId) {
       resetLoading();
-      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
-        variant: `error`,
-      });
+      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
       return;
     }
 
-    enqueueSnackbar(`Deposit of offering asset performed...`, {
-      variant: `success`,
-      action: () => (
-        <ViewOnAlgoExplorerButton chain={chain} txId={depositTxnId} />
-      ),
-    });
+    toast.success(`Deposit of offering asset performed...`);
 
     resetLoading();
     setShareSwapDialogOpen(true);
@@ -307,7 +319,9 @@ export default function AsaToAsa() {
         optAssets({
           assetIndexes: [AWVT_ASSET_INDEX(chain)],
           gateway,
-          connector,
+          chain,
+          activeAddress: address,
+          signTransactions,
         }),
       );
     }
@@ -322,18 +336,11 @@ export default function AsaToAsa() {
     );
     if (!saveSwapTxnId) {
       resetLoading();
-      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
-        variant: `error`,
-      });
+      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
       return;
     }
 
-    enqueueSnackbar(`New swap configuration saved...`, {
-      variant: `success`,
-      action: () => (
-        <ViewOnAlgoExplorerButton chain={chain} txId={saveSwapTxnId} />
-      ),
-    });
+    toast.success(`New swap configuration saved...`);
   };
 
   const handleSwap = async () => {
@@ -357,18 +364,11 @@ export default function AsaToAsa() {
     const swapInitTxnId = await signAndSendSwapInitTxns(escrow);
     if (!swapInitTxnId) {
       resetLoading();
-      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
-        variant: `error`,
-      });
+      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
       return;
     }
 
-    enqueueSnackbar(`Swap initiation transactions signed...`, {
-      variant: `success`,
-      action: () => (
-        <ViewOnAlgoExplorerButton chain={chain} txId={swapInitTxnId} />
-      ),
-    });
+    toast.success(`Swap initiation transactions signed...`);
 
     if (!swapExists(escrow.address(), existingSwaps) && swapConfiguration) {
       await handleStoreConfiguration();
@@ -378,8 +378,11 @@ export default function AsaToAsa() {
   };
 
   const resetStates = () => {
-    dispatch(getAccountAssets({ chain, gateway, address }) as any);
-    dispatch(getAccountSwaps({ chain, gateway, address }));
+    if (address) {
+      dispatch(getAccountAssets({ chain, gateway, address }) as any);
+      dispatch(getAccountSwaps({ chain, gateway, address }));
+    }
+
     setConfirmSwapDialogOpen(false);
     setShareSwapDialogOpen(false);
     resetLoading();
@@ -449,7 +452,9 @@ export default function AsaToAsa() {
                             optAssets({
                               assetIndexes: assetsToOptIn,
                               gateway,
-                              connector,
+                              chain,
+                              activeAddress: address,
+                              signTransactions,
                             }),
                           );
                         }}

@@ -61,7 +61,7 @@ export const ToAssetPickerDialog = ({
     number | undefined
   >(undefined);
 
-  const { chain, gateway } = useAppSelector((state) => state.walletConnect);
+  const { chain, gateway } = useAppSelector((state) => state.application);
   const [searchContent, setSearchContent] = useState(``);
   const [autocompleteOpen, setAutocompleteOpen] = useState(false);
 

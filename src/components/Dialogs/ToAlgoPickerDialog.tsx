@@ -27,7 +27,7 @@ import { Asset } from '@/models/Asset';
 import { useState } from 'react';
 import CryptoTextField from '../TextFields/CryptoTextField';
 import { CoinType } from '@/models/CoinType';
-import { selectAssets } from '@/redux/slices/walletConnectSlice';
+import { selectAssets } from '@/redux/slices/applicationSlice';
 import { useAppSelector } from '@/redux/store/hooks';
 import {
   DIALOG_CANCEL_BTN_ID,

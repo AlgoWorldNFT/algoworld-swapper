@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import 'react-toastify/dist/ReactToastify.css';
 import * as React from 'react';
 import Head from 'next/head';
 import { AppProps } from 'next/app';
@@ -26,12 +27,17 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import { Provider } from 'react-redux';
 import darkTheme from '../redux/theme/darkTheme';
 import createEmotionCache from '../utils/createEmotionCache';
-import { SnackbarProvider } from 'notistack';
 import Layout from '@/components/Layouts/Layout';
 import store from '@/redux/store';
-import { ConnectContext, connector } from '@/redux/store/connector';
-import { Slide } from '@mui/material';
 import { GoogleAnalytics } from 'nextjs-google-analytics';
+import {
+  reconnectProviders,
+  initializeProviders,
+  WalletProvider,
+  PROVIDER_ID,
+} from '@txnlab/use-wallet';
+
+import { ToastContainer } from 'react-toastify';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -40,8 +46,22 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
+const walletProviders = initializeProviders([
+  PROVIDER_ID.MYALGO,
+  PROVIDER_ID.PERA,
+  PROVIDER_ID.EXODUS,
+  PROVIDER_ID.DEFLY,
+  PROVIDER_ID.WALLETCONNECT,
+  PROVIDER_ID.ALGOSIGNER,
+]);
+
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+
+  React.useEffect(() => {
+    reconnectProviders(walletProviders);
+  }, []);
+
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -66,27 +86,24 @@ export default function MyApp(props: MyAppProps) {
       </Head>
 
       <Provider store={store}>
-        <ConnectContext.Provider value={connector}>
+        <WalletProvider value={walletProviders}>
           <ThemeProvider theme={darkTheme}>
-            <SnackbarProvider
-              maxSnack={10}
-              autoHideDuration={15000}
-              anchorOrigin={{
-                vertical: `bottom`,
-                horizontal: `center`,
-              }}
-              TransitionComponent={Slide}
-            >
-              <CssBaseline />
-              <Layout title="AlgoWorld Swapper">
-                <>
-                  <GoogleAnalytics />
-                  <Component {...pageProps} />
-                </>
-              </Layout>
-            </SnackbarProvider>
+            <CssBaseline />
+            <Layout title="AlgoWorld Swapper">
+              <>
+                <GoogleAnalytics />
+                <Component {...pageProps} />
+              </>
+            </Layout>
+            <ToastContainer
+              autoClose={15000}
+              position="bottom-center"
+              hideProgressBar
+              draggable={false}
+              theme={`dark`}
+            />
           </ThemeProvider>
-        </ConnectContext.Provider>
+        </WalletProvider>
       </Provider>
     </CacheProvider>
   );

@@ -21,7 +21,6 @@ import {
   TXN_SIGNING_CANCELLED_MESSAGE,
   TXN_SUBMISSION_FAILED_MESSAGE,
 } from '@/common/constants';
-import { connector } from '@/redux/store/connector';
 import { useAppSelector } from '@/redux/store/hooks';
 import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import createSwapDepositTxns from '@/utils/api/swaps/createSwapDepositTxns';
@@ -35,12 +34,13 @@ import {
   Button,
   Divider,
   Typography,
+  Link,
 } from '@mui/material';
 import { LogicSigAccount } from 'algosdk';
-import { useSnackbar } from 'notistack';
+
+import { toast } from 'react-toastify';
 import { useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
-import ViewOnAlgoExplorerButton from '../Buttons/ViewOnAlgoExplorerButton';
 import createSwapDeactivateTxns from '@/utils/api/swaps/createSwapDeactivateTxns';
 import accountExists from '@/utils/api/accounts/accountExists';
 import createSaveSwapConfigTxns from '@/utils/api/swaps/createSaveSwapConfigTxns';
@@ -57,6 +57,10 @@ import {
 } from './constants';
 import createInitSwapTxns from '@/utils/api/swaps/createInitSwapTxns';
 import { SwapType } from '@/models/Swap';
+import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
+import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
+import processTransactions from '@/utils/api/transactions/processTransactions';
+import { useWallet } from '@txnlab/use-wallet';
 
 type Props = {
   open: boolean;
@@ -68,13 +72,18 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
   const selectedManageSwap = useAppSelector(
     (state) => state.application.selectedManageSwap,
   );
-  const { chain, swaps, proxy, gateway, address } = useAppSelector(
-    (state) => state.walletConnect,
+  const { chain, swaps, proxy, gateway } = useAppSelector(
+    (state) => state.application,
   );
 
-  const { enqueueSnackbar } = useSnackbar();
   const [depositLoading, setDepositLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+
+  const { signTransactions, activeAccount } = useWallet();
+  const address = useMemo(
+    () => activeAccount?.address as string,
+    [activeAccount],
+  );
 
   const swapAssetsState = useAsync(async () => {
     if (!selectedManageSwap) {
@@ -115,9 +124,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
     setDepositLoading(true);
-    enqueueSnackbar(SIGN_DEPOSIT_TXN_MESSAGE, {
-      variant: `info`,
-    });
+    toast.info(SIGN_DEPOSIT_TXN_MESSAGE);
 
     if (!(await accountExists(chain, selectedManageSwap.escrow))) {
       const initSwapTxns = await createInitSwapTxns(
@@ -131,14 +138,13 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
         selectedManageSwap.offering,
       );
 
-      const signedInitSwapTxns = await connector
-        .signTransactions(initSwapTxns)
-        .catch(() => {
-          enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-            variant: `error`,
-          });
-          return undefined;
-        });
+      const signedInitSwapTxns = await processTransactions(
+        initSwapTxns,
+        signTransactions,
+      ).catch(() => {
+        toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+        return undefined;
+      });
 
       if (!signedInitSwapTxns) {
         return undefined;
@@ -149,14 +155,21 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
         signedInitSwapTxns,
       );
 
-      const initTxnId = initSwapResponse.txId;
+      const initTxnId = initSwapResponse.txId || ``;
+      const algoexplorerUrl = createAlgoExplorerUrl(
+        chain,
+        initTxnId,
+        AlgoExplorerUrlType.Transaction,
+      );
       if (initTxnId !== undefined) {
-        enqueueSnackbar(SWAP_DEPOSIT_PERFORMED_MESSAGE, {
-          variant: `success`,
-          action: () => (
-            <ViewOnAlgoExplorerButton chain={chain} txId={initTxnId} />
-          ),
-        });
+        toast.success(
+          <>
+            {`${SWAP_DEPOSIT_PERFORMED_MESSAGE}\n`}
+            <Link href={algoexplorerUrl} target={`_blank`}>
+              View on AlgoExplorer
+            </Link>
+          </>,
+        );
       }
     }
 
@@ -168,15 +181,14 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       ASA_TO_ASA_FUNDING_FEE,
     );
 
-    const signedSwapDepositTxns = await connector
-      .signTransactions(swapDepositTxns)
-      .catch(() => {
-        setDepositLoading(false);
-        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-          variant: `error`,
-        });
-        return;
-      });
+    const signedSwapDepositTxns = await processTransactions(
+      swapDepositTxns,
+      signTransactions,
+    ).catch(() => {
+      setDepositLoading(false);
+      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+      return;
+    });
 
     if (!signedSwapDepositTxns) {
       return;
@@ -190,18 +202,24 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     const depositTxnId = signedSwapDepositResponse.txId;
     if (!depositTxnId) {
       setDepositLoading(false);
-      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
-        variant: `error`,
-      });
+      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
       return;
     }
 
-    enqueueSnackbar(SWAP_DEPOSIT_PERFORMED_MESSAGE, {
-      variant: `success`,
-      action: () => (
-        <ViewOnAlgoExplorerButton chain={chain} txId={depositTxnId} />
-      ),
-    });
+    const algoexplorerUrl = createAlgoExplorerUrl(
+      chain,
+      depositTxnId,
+      AlgoExplorerUrlType.Transaction,
+    );
+
+    toast.success(
+      <>
+        {`${SWAP_DEPOSIT_PERFORMED_MESSAGE}\n`}
+        <Link target={`_blank`} href={algoexplorerUrl}>
+          View on AlgoExplorer
+        </Link>
+      </>,
+    );
 
     setDepositLoading(false);
     return;
@@ -212,12 +230,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
     setDeleteLoading(true);
-    enqueueSnackbar(
-      `Open your wallet to sign the delete transaction 1 of 2...`,
-      {
-        variant: `info`,
-      },
-    );
+    toast.info(`Open your wallet to sign the delete transaction 1 of 2...`);
 
     const swapDeactivateTxns = await createSwapDeactivateTxns(
       chain,
@@ -226,15 +239,14 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       selectedManageSwap.offering,
     );
 
-    const signedSwapDeactivateTxns = await connector
-      .signTransactions(swapDeactivateTxns)
-      .catch(() => {
-        setDeleteLoading(false);
-        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-          variant: `error`,
-        });
-        return;
-      });
+    const signedSwapDeactivateTxns = await processTransactions(
+      swapDeactivateTxns,
+      signTransactions,
+    ).catch(() => {
+      setDeleteLoading(false);
+      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+      return;
+    });
 
     if (!signedSwapDeactivateTxns) {
       return;
@@ -247,9 +259,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     const deactivateTxnId = signedSwapDeactivateResponse.txId;
     if (!deactivateTxnId) {
       setDeleteLoading(false);
-      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
-        variant: `error`,
-      });
+      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
       return;
     }
 
@@ -259,12 +269,7 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     const cidResponse = await saveSwapConfigurations(newSwapConfigs);
     const cidData = await cidResponse.data;
 
-    enqueueSnackbar(
-      `Open your wallet to sign the delete transaction 2 of 2...`,
-      {
-        variant: `info`,
-      },
-    );
+    toast.info(`Open your wallet to sign the delete transaction 2 of 2...`);
 
     const saveSwapConfigTxns = await createSaveSwapConfigTxns(
       chain,
@@ -274,15 +279,14 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       cidData,
     );
 
-    const signedSaveSwapConfigTxns = await connector
-      .signTransactions(saveSwapConfigTxns)
-      .catch(() => {
-        setDeleteLoading(false);
-        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-          variant: `error`,
-        });
-        return;
-      });
+    const signedSaveSwapConfigTxns = await processTransactions(
+      saveSwapConfigTxns,
+      signTransactions,
+    ).catch(() => {
+      setDeleteLoading(false);
+      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+      return;
+    });
 
     if (!signedSaveSwapConfigTxns) {
       return;
@@ -295,28 +299,41 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     const saveSwapConfigResponseTxn = saveSwapConfigResponse.txId;
     if (!saveSwapConfigResponseTxn) {
       setDeleteLoading(false);
-      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
-        variant: `error`,
-      });
+      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
       return;
     }
 
-    enqueueSnackbar(SWAP_REMOVED_FROM_PROXY_MESSAGE, {
-      variant: `success`,
-      action: () => (
-        <ViewOnAlgoExplorerButton
-          chain={chain}
-          txId={saveSwapConfigResponseTxn}
-        />
-      ),
-    });
+    toast.success(
+      <>
+        {`${SWAP_REMOVED_FROM_PROXY_MESSAGE}\n`}
+        <Link
+          target="_blank"
+          href={createAlgoExplorerUrl(
+            chain,
+            saveSwapConfigResponseTxn,
+            AlgoExplorerUrlType.Transaction,
+          )}
+        >
+          View on AlgoExplorer
+        </Link>
+      </>,
+    );
 
-    enqueueSnackbar(SWAP_DEACTIVATION_PERFORMED_MESSAGE, {
-      variant: `success`,
-      action: () => (
-        <ViewOnAlgoExplorerButton chain={chain} txId={deactivateTxnId} />
-      ),
-    });
+    toast.success(
+      <>
+        {`${SWAP_DEACTIVATION_PERFORMED_MESSAGE}\n`}
+        <Link
+          target="_blank"
+          href={createAlgoExplorerUrl(
+            chain,
+            deactivateTxnId,
+            AlgoExplorerUrlType.Transaction,
+          )}
+        >
+          View on AlgoExplorer
+        </Link>
+      </>,
+    );
 
     setDeleteLoading(false);
   };

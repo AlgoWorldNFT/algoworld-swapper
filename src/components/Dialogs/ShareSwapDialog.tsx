@@ -26,7 +26,8 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
-import { useSnackbar } from 'notistack';
+
+import { toast } from 'react-toastify';
 import { useCopyToClipboard } from 'react-use';
 import {
   DIALOG_CANCEL_BTN_ID,
@@ -55,9 +56,7 @@ const ShareSwapDialog = ({
 }: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_result, copyToClipboard] = useCopyToClipboard();
-  const selectedChain = useAppSelector((state) => state.walletConnect.chain);
-  const { enqueueSnackbar } = useSnackbar();
-
+  const selectedChain = useAppSelector((state) => state.application.chain);
   return (
     <Dialog
       id={SHARE_SWAP_DIALOG_ID}
@@ -89,9 +88,7 @@ const ShareSwapDialog = ({
           onClick={() => {
             if (swapConfiguration) {
               copyToClipboard(getSwapUrl(swapConfiguration, selectedChain));
-              enqueueSnackbar(`Copied to clipboard...`, {
-                variant: `success`,
-              });
+              toast.success(`Copied to clipboard...`);
             }
           }}
         >

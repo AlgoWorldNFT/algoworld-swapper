@@ -23,8 +23,9 @@ import { Asset } from '@/models/Asset';
 import { FromAssetPickerDialog } from '../Dialogs/FromAssetPickerDialog';
 import AssetListView from '../Lists/AssetListView';
 import { useAppSelector, useAppDispatch } from '@/redux/store/hooks';
-import { setOfferingAssets } from '@/redux/slices/walletConnectSlice';
+import { setOfferingAssets } from '@/redux/slices/applicationSlice';
 import { FROM_SWAP_OFFERING_ASSET_BTN_ID } from './constants';
+import { useWallet } from '@txnlab/use-wallet';
 
 type Props = {
   cardTitle: string;
@@ -33,12 +34,12 @@ type Props = {
 };
 
 const FromSwapCard = ({ cardTitle, maxAssets, disabled = false }: Props) => {
-  const assets = useAppSelector((state) => state.walletConnect.assets);
-  const address = useAppSelector((state) => state.walletConnect.address);
+  const assets = useAppSelector((state) => state.application.assets);
+  const { activeAddress } = useWallet();
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
 
   const offeringAssets = useAppSelector(
-    (state) => state.walletConnect.selectedOfferingAssets,
+    (state) => state.application.selectedOfferingAssets,
   );
   const dispatch = useAppDispatch();
 
@@ -76,7 +77,9 @@ const FromSwapCard = ({ cardTitle, maxAssets, disabled = false }: Props) => {
               <Button
                 id={FROM_SWAP_OFFERING_ASSET_BTN_ID}
                 disabled={
-                  offeringAssets.length >= maxAssets || !address || disabled
+                  offeringAssets.length >= maxAssets ||
+                  !activeAddress ||
+                  disabled
                 }
                 variant="outlined"
                 onClick={() => {

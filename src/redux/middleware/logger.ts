@@ -28,36 +28,36 @@ const logger: Middleware =
   ({ getState }: { getState: StoreGetSate }) =>
   (next: Dispatch) =>
   (action: PayloadAction<any, string, any, SerializedError>) => {
-    if (action.type === `walletConnect/switchChain`) {
+    if (action.type === `application/switchChain`) {
       console.log(`switch chain: `, action.payload);
     }
-    if (action.type === `walletConnect/getAccountAssets/pending`) {
+    if (action.type === `application/getAccountAssets/pending`) {
       console.log(`loading assets...`);
     }
-    if (action.type === `walletConnect/getAccountAssets/fulfilled`) {
+    if (action.type === `application/getAccountAssets/fulfilled`) {
       console.log(`assets sucessfully loaded`);
     }
-    if (action.type === `walletConnect/getAccountAssets/rejected`) {
+    if (action.type === `application/getAccountAssets/rejected`) {
       console.error(action.error.message);
     }
 
-    if (action.type === `walletConnect/getProxy/pending`) {
+    if (action.type === `application/getProxy/pending`) {
       console.log(`loading proxy...`);
     }
-    if (action.type === `walletConnect/getProxy/fulfilled`) {
+    if (action.type === `application/getProxy/fulfilled`) {
       console.log(`proxy sucessfully loaded`);
     }
 
-    if (action.type === `walletConnect/getAccountSwaps/pending`) {
+    if (action.type === `application/getAccountSwaps/pending`) {
       console.log(`loading swaps...`);
     }
-    if (action.type === `walletConnect/getAccountSwaps/fulfilled`) {
+    if (action.type === `application/getAccountSwaps/fulfilled`) {
       console.log(`swaps sucessfully loaded`);
     }
 
     const result = next(action);
-    if (action.type === `walletConnect/reset`) {
-      console.log(`reset state`, getState().walletConnect);
+    if (action.type === `application/reset`) {
+      console.log(`reset state`, getState().application);
     }
 
     return result;

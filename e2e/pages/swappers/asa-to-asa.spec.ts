@@ -6,7 +6,7 @@ import {
   NAV_BAR_SETTINGS_MENU_ITEM_ID,
 } from '@/components/Headers/constants';
 import {
-  CONNECT_WALLET_DIALOG_ID,
+  CONNECT_PROVIDER_DIALOG_ID,
   FROM_ASSET_PICKER_DIALOG_SEARCH_ID,
   DIALOG_SELECT_BTN_ID,
   FROM_ASSET_PICKER_DIALOG_ID,
@@ -59,7 +59,9 @@ test.afterAll(async () => {
 test.describe(`Asa to Asa Swap`, () => {
   test(`Bob should be able to load and connect wallet`, async () => {
     await page.locator(`id=${NAV_BAR_CONNECT_BTN_ID}`).click();
-    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeVisible();
+    await expect(
+      page.locator(`id=${CONNECT_PROVIDER_DIALOG_ID}`),
+    ).toBeVisible();
     await page.locator(`div[role="button"]:has-text("Mnemonic")`).click();
     await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeVisible();
     await page
@@ -69,7 +71,7 @@ test.describe(`Asa to Asa Swap`, () => {
     await page.locator(`id=${MNEMONIC_DIALOG_SELECT_BUTTON_ID}`).click();
 
     await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeHidden();
-    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
+    await expect(page.locator(`id=${CONNECT_PROVIDER_DIALOG_ID}`)).toBeHidden();
   });
 
   test(`Bob should be able to navigate to Asa to Asa page`, async () => {
@@ -156,7 +158,9 @@ test.describe(`Asa to Asa Swap`, () => {
 
   test(`Alice should be able to load and connect wallet`, async () => {
     await page.locator(`id=${NAV_BAR_CONNECT_BTN_ID}`).click();
-    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeVisible();
+    await expect(
+      page.locator(`id=${CONNECT_PROVIDER_DIALOG_ID}`),
+    ).toBeVisible();
     await page.locator(`div[role="button"]:has-text("Mnemonic")`).click();
     await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeVisible();
     await page
@@ -165,7 +169,7 @@ test.describe(`Asa to Asa Swap`, () => {
 
     await page.locator(`id=${MNEMONIC_DIALOG_SELECT_BUTTON_ID}`).click();
     await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeHidden();
-    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
+    await expect(page.locator(`id=${CONNECT_PROVIDER_DIALOG_ID}`)).toBeHidden();
   });
 
   test(`Alice should successfully perform swap created by Bob`, async () => {
@@ -199,7 +203,9 @@ test.describe(`Asa to Asa Swap`, () => {
 
   test(`Bob should successfully remove created swap`, async () => {
     await page.locator(`id=${NAV_BAR_CONNECT_BTN_ID}`).click();
-    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeVisible();
+    await expect(
+      page.locator(`id=${CONNECT_PROVIDER_DIALOG_ID}`),
+    ).toBeVisible();
     await page.locator(`div[role="button"]:has-text("Mnemonic")`).click();
     await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeVisible();
     await page
@@ -207,7 +213,7 @@ test.describe(`Asa to Asa Swap`, () => {
       .fill(process.env.E2E_TESTS_BOB_MNEMONIC ?? ``);
     await page.locator(`id=${MNEMONIC_DIALOG_SELECT_BUTTON_ID}`).click();
     await expect(page.locator(`id=${MNEMONIC_DIALOG_ID}`)).toBeHidden();
-    await expect(page.locator(`id=${CONNECT_WALLET_DIALOG_ID}`)).toBeHidden();
+    await expect(page.locator(`id=${CONNECT_PROVIDER_DIALOG_ID}`)).toBeHidden();
 
     await page.locator(`id=${NAV_BAR_SETTINGS_BTN_ID}`).click();
     await Promise.all([

@@ -18,6 +18,7 @@
 
 import { ChainType } from '@/models/Chain';
 import { IpfsGateway } from '@/models/Gateway';
+import { PROVIDER_ID } from '@txnlab/use-wallet';
 
 export const CHAIN_TYPE: ChainType =
   (process.env.NEXT_PUBLIC_CHAIN_TYPE ?? `TestNet`) === `TestNet`
@@ -95,3 +96,5 @@ export const PERFORM_SWAP_PERFORM_BUTTON_ID = `AWPerformSwapPerformButton`;
 
 export const PUBLIC_SWAPS_SEARCH_FIELD_ID = `AWPublicSwapsSearchField`;
 export const PUBLIC_SWAPS_SEARCH_BUTTON_ID = `AWPublicSwapsSearchButton`;
+
+export const WALLET_PROVIDER_IDS = [PROVIDER_ID.MYALGO, PROVIDER_ID.PERA];

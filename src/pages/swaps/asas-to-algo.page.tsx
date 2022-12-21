@@ -22,8 +22,7 @@ import FromSwapCard from '@/components/Cards/FromSwapCard';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
 
-import { useContext, useMemo, useState } from 'react';
-import { ConnectContext } from '@/redux/store/connector';
+import { useMemo, useState } from 'react';
 
 import {
   ASA_TO_ALGO_FUNDING_BASE_FEE,
@@ -48,7 +47,6 @@ import { Asset } from '@/models/Asset';
 import createSaveSwapConfigTxns from '@/utils/api/swaps/createSaveSwapConfigTxns';
 import saveSwapConfigurations from '@/utils/api/swaps/saveSwapConfigurations';
 import createSwapDepositTxns from '@/utils/api/swaps/createSwapDepositTxns';
-import { useSnackbar } from 'notistack';
 import {
   getAccountAssets,
   getAccountSwaps,
@@ -58,8 +56,7 @@ import {
   selectRequestingAssets,
   setOfferingAssets,
   setRequestingAssets,
-} from '@/redux/slices/walletConnectSlice';
-import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
+} from '@/redux/slices/applicationSlice';
 import ShareSwapDialog from '@/components/Dialogs/ShareSwapDialog';
 import LoadingButton from '@mui/lab/LoadingButton';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
@@ -72,6 +69,10 @@ import {
   CREATE_SWAP_BTN_ID,
 } from '@/common/constants';
 import { LogicSigAccount } from 'algosdk';
+import { useWallet } from '@txnlab/use-wallet';
+import processTransactions from '@/utils/api/transactions/processTransactions';
+
+import { toast } from 'react-toastify';
 
 export default function MultiAsaToAlgo() {
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
@@ -80,17 +81,21 @@ export default function MultiAsaToAlgo() {
   const [shareSwapDialogOpen, setShareSwapDialogOpen] =
     useState<boolean>(false);
 
-  const connector = useContext(ConnectContext);
-  const { address, chain, gateway, proxy } = useAppSelector(
-    (state) => state.walletConnect,
+  const { signTransactions } = useWallet();
+
+  const { chain, gateway, proxy } = useAppSelector(
+    (state) => state.application,
   );
+
+  const { activeAddress } = useWallet();
+  const address = useMemo(() => activeAddress as string, [activeAddress]);
+
   const offeringAssets = useAppSelector(selectOfferingAssets);
   const offeringAssetAmounts = useAppSelector(selectOfferingAssetAmounts);
-  const existingAssets = useAppSelector((state) => state.walletConnect.assets);
+  const existingAssets = useAppSelector((state) => state.application.assets);
   const requestingAssets = useAppSelector(selectRequestingAssets);
-  const existingSwaps = useAppSelector((state) => state.walletConnect.swaps);
-  const hasAwvt = useAppSelector((state) => state.walletConnect.hasAwvt);
-  const { enqueueSnackbar } = useSnackbar();
+  const existingSwaps = useAppSelector((state) => state.application.swaps);
+  const hasAwvt = useAppSelector((state) => state.application.hasAwvt);
   const dispatch = useAppDispatch();
 
   const { setLoading, resetLoading } = useLoadingIndicator();
@@ -171,14 +176,13 @@ export default function MultiAsaToAlgo() {
       offeringAssets,
     );
 
-    const signedInitSwapTxns = await connector
-      .signTransactions(initSwapTxns)
-      .catch(() => {
-        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-          variant: `error`,
-        });
-        return undefined;
-      });
+    const signedInitSwapTxns = await processTransactions(
+      initSwapTxns,
+      signTransactions,
+    ).catch(() => {
+      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+      return undefined;
+    });
 
     if (!signedInitSwapTxns) {
       return undefined;
@@ -209,14 +213,13 @@ export default function MultiAsaToAlgo() {
       (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
       cidData,
     );
-    const signedSaveSwapConfigTxns = await connector
-      .signTransactions(saveSwapConfigTxns)
-      .catch(() => {
-        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-          variant: `error`,
-        });
-        return undefined;
-      });
+    const signedSaveSwapConfigTxns = await processTransactions(
+      saveSwapConfigTxns,
+      signTransactions,
+    ).catch(() => {
+      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+      return undefined;
+    });
 
     if (!signedSaveSwapConfigTxns) {
       return undefined;
@@ -242,14 +245,13 @@ export default function MultiAsaToAlgo() {
       ASA_TO_ASA_FUNDING_FEE,
     );
 
-    const signedSwapDepositTxns = await connector
-      .signTransactions(swapDepositTxns)
-      .catch(() => {
-        enqueueSnackbar(TXN_SIGNING_CANCELLED_MESSAGE, {
-          variant: `error`,
-        });
-        return undefined;
-      });
+    const signedSwapDepositTxns = await processTransactions(
+      swapDepositTxns,
+      signTransactions,
+    ).catch(() => {
+      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+      return undefined;
+    });
 
     if (!signedSwapDepositTxns) {
       return undefined;
@@ -280,18 +282,11 @@ export default function MultiAsaToAlgo() {
     );
     if (!depositTxnId) {
       resetLoading();
-      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
-        variant: `error`,
-      });
+      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
       return;
     }
 
-    enqueueSnackbar(`Deposit of offering asset performed...`, {
-      variant: `success`,
-      action: () => (
-        <ViewOnAlgoExplorerButton chain={chain} txId={depositTxnId} />
-      ),
-    });
+    toast.success(`Deposit of offering asset performed...`);
 
     resetLoading();
     setShareSwapDialogOpen(true);
@@ -307,7 +302,9 @@ export default function MultiAsaToAlgo() {
         optAssets({
           assetIndexes: [AWVT_ASSET_INDEX(chain)],
           gateway,
-          connector,
+          chain,
+          activeAddress: address,
+          signTransactions,
         }),
       );
     }
@@ -322,18 +319,11 @@ export default function MultiAsaToAlgo() {
     );
     if (!saveSwapTxnId) {
       resetLoading();
-      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
-        variant: `error`,
-      });
+      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
       return;
     }
 
-    enqueueSnackbar(`New swap configuration saved...`, {
-      variant: `success`,
-      action: () => (
-        <ViewOnAlgoExplorerButton chain={chain} txId={saveSwapTxnId} />
-      ),
-    });
+    toast.success(`New swap configuration saved...`);
   };
 
   const handleSwap = async () => {
@@ -357,18 +347,11 @@ export default function MultiAsaToAlgo() {
     const swapInitTxnId = await signAndSendSwapInitTxns(escrow);
     if (!swapInitTxnId) {
       resetLoading();
-      enqueueSnackbar(TXN_SUBMISSION_FAILED_MESSAGE, {
-        variant: `error`,
-      });
+      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
       return;
     }
 
-    enqueueSnackbar(`Swap initiation transactions signed...`, {
-      variant: `success`,
-      action: () => (
-        <ViewOnAlgoExplorerButton chain={chain} txId={swapInitTxnId} />
-      ),
-    });
+    toast.success(`Swap initiation transactions signed...`);
 
     if (!swapExists(escrow.address(), existingSwaps) && swapConfiguration) {
       await handleStoreConfiguration();
@@ -450,7 +433,9 @@ export default function MultiAsaToAlgo() {
                             optAssets({
                               assetIndexes: assetsToOptIn,
                               gateway,
-                              connector,
+                              chain,
+                              activeAddress: address,
+                              signTransactions,
                             }),
                           );
                         }}
