@@ -12,12 +12,6 @@ jest.mock(`next/router`, () => {
   };
 });
 
-jest.mock(`notistack`, () => {
-  return {
-    useSnackbar: jest.fn().mockReturnValue({ enqueueSnackbar: jest.fn() }),
-  };
-});
-
 import PerformSwap from './[escrow].page';
 
 describe(`Perform Swap Page`, () => {

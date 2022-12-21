@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { render, queryByAttribute } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import ConfirmDialog from './ConfirmDialog';
 
 describe(`ConfirmDialog`, () => {

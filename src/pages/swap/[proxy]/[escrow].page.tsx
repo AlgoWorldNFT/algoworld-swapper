@@ -23,7 +23,6 @@ import {
   PERFORM_SWAP_PAGE_HEADER_ID,
   PERFORM_SWAP_PERFORM_BUTTON_ID,
 } from '@/common/constants';
-import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
 import ConfirmDialog from '@/components/Dialogs/ConfirmDialog';
 import InfoDialog from '@/components/Dialogs/InfoDialog';
 import PageHeader from '@/components/Headers/PageHeader';
@@ -33,8 +32,7 @@ import { SwapConfiguration } from '@/models/Swap';
 import { ellipseAddress } from '@/redux/helpers/utilities';
 import useLoadingIndicator from '@/redux/hooks/useLoadingIndicator';
 import { setIsWalletPopupOpen } from '@/redux/slices/applicationSlice';
-import { getAccountAssets, optAssets } from '@/redux/slices/walletConnectSlice';
-import { connector } from '@/redux/store/connector';
+import { getAccountAssets, optAssets } from '@/redux/slices/applicationSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import accountExists from '@/utils/api/accounts/accountExists';
 import getAssetsForAccount from '@/utils/api/accounts/getAssetsForAccount';
@@ -42,6 +40,7 @@ import getLogicSign from '@/utils/api/accounts/getLogicSignature';
 import getAssetsToOptIn from '@/utils/api/assets/getAssetsToOptIn';
 import createPerformSwapTxns from '@/utils/api/swaps/createPerformSwapTxns';
 import loadSwapConfigurations from '@/utils/api/swaps/loadSwapConfigurations';
+import processTransactions from '@/utils/api/transactions/processTransactions';
 import submitTransactions from '@/utils/api/transactions/submitTransactions';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
@@ -54,11 +53,16 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { useWallet } from '@txnlab/use-wallet';
 import { LogicSigAccount } from 'algosdk';
 import { useRouter } from 'next/router';
-import { useSnackbar } from 'notistack';
+
+import { toast } from 'react-toastify';
 import { useMemo, useState } from 'react';
 import { useAsync, useAsyncRetry } from 'react-use';
+import Link from 'next/link';
+import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
+import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
 
 const PerformSwap = () => {
   const router = useRouter();
@@ -67,8 +71,8 @@ const PerformSwap = () => {
     escrow: string;
   };
 
-  const { chain, address, assets, gateway } = useAppSelector(
-    (state) => state.walletConnect,
+  const { chain, assets, gateway } = useAppSelector(
+    (state) => state.application,
   );
 
   const [confirmSwapDialogOpen, setConfirmSwapDialogOpen] =
@@ -78,8 +82,12 @@ const PerformSwap = () => {
 
   const dispatch = useAppDispatch();
 
-  const { enqueueSnackbar } = useSnackbar();
   const { setLoading, resetLoading } = useLoadingIndicator();
+
+  const { signTransactions, activeAddress } = useWallet();
+  const address = useMemo(() => {
+    return activeAddress as string;
+  }, [activeAddress]);
 
   const swapConfigsState = useAsyncRetry(async () => {
     return await loadSwapConfigurations(chain, gateway, proxy as string);
@@ -192,7 +200,9 @@ const PerformSwap = () => {
                 optAssets({
                   assetIndexes: assetsToOptIn,
                   gateway,
-                  connector,
+                  chain,
+                  activeAddress: address,
+                  signTransactions,
                 }),
               );
             }}
@@ -279,6 +289,8 @@ const PerformSwap = () => {
     hasNoBalanceForAssets,
     dispatch,
     gateway,
+    chain,
+    signTransactions,
   ]);
 
   const signAndSendSwapPerformTxns = async (
@@ -292,14 +304,13 @@ const PerformSwap = () => {
       swapConfiguration,
     );
 
-    const signedPerformSwapTxns = await connector
-      .signTransactions(performSwapTxns)
-      .catch(() => {
-        enqueueSnackbar(`You have cancelled transactions signing...`, {
-          variant: `error`,
-        });
-        return undefined;
-      });
+    const signedPerformSwapTxns = await processTransactions(
+      performSwapTxns,
+      signTransactions,
+    ).catch(() => {
+      toast.error(`You have cancelled transactions signing...`);
+      return undefined;
+    });
 
     if (!signedPerformSwapTxns) {
       return undefined;
@@ -337,10 +348,21 @@ const PerformSwap = () => {
       return;
     }
 
-    enqueueSnackbar(`Swap performed successfully...`, {
-      variant: `success`,
-      action: () => <ViewOnAlgoExplorerButton chain={chain} txId={txId} />,
-    });
+    toast.success(
+      <>
+        {`Swap performed successfully...\n`}
+        <Link
+          href={createAlgoExplorerUrl(
+            chain,
+            txId,
+            AlgoExplorerUrlType.Transaction,
+          )}
+          target="_blank"
+        >
+          View on AlgoExplorer
+        </Link>
+      </>,
+    );
 
     setShareSwapDialogOpen(true);
     resetLoading();

@@ -1,4 +1,4 @@
-export const CONNECT_WALLET_DIALOG_ID = `AWConnectWalletDialog`;
+export const CONNECT_PROVIDER_DIALOG_ID = `AWConnectProviderDialog`;
 
 export const ABOUT_DIALOG_ID = `AWAboutDialog`;
 

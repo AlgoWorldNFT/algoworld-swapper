@@ -21,12 +21,13 @@ import { Card, CardHeader, CardContent, Stack, Button } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { Asset } from '@/models/Asset';
 import AssetListView from '../Lists/AssetListView';
-import { setRequestingAssets } from '@/redux/slices/walletConnectSlice';
+import { setRequestingAssets } from '@/redux/slices/applicationSlice';
 import { useAppSelector, useAppDispatch } from '@/redux/store/hooks';
 import { CoinType } from '@/models/CoinType';
 import { ToAlgoPickerDialog } from '../Dialogs/ToAlgoPickerDialog';
 import { ToAssetPickerDialog } from '../Dialogs/ToAssetPickerDialog';
 import { TO_SWAP_REQUESTING_BTN_ID } from './constants';
+import { useWallet } from '@txnlab/use-wallet';
 
 type Props = {
   cardTitle: string;
@@ -42,10 +43,10 @@ const ToSwapCard = ({
   disabled = false,
 }: Props) => {
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
+  const { activeAddress } = useWallet();
 
-  const address = useAppSelector((state) => state.walletConnect.address);
   const requestingAssets = useAppSelector(
-    (state) => state.walletConnect.selectedRequestingAssets,
+    (state) => state.application.selectedRequestingAssets,
   );
   const dispatch = useAppDispatch();
 
@@ -114,7 +115,9 @@ const ToSwapCard = ({
               id={TO_SWAP_REQUESTING_BTN_ID}
               variant="outlined"
               disabled={
-                requestingAssets.length >= maxAssets || !address || disabled
+                requestingAssets.length >= maxAssets ||
+                !activeAddress ||
+                disabled
               }
               onClick={() => {
                 setPickerOpen(true);

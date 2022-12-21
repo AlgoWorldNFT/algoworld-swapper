@@ -146,7 +146,7 @@ const AssetsTable = ({
   const theme = useTheme();
   const largeScreen = useMediaQuery(theme.breakpoints.up(`sm`));
 
-  const chain = useAppSelector((state) => state.walletConnect.chain);
+  const chain = useAppSelector((state) => state.application.chain);
   const [assetsWithBalances, setAssetsWithBalances] = React.useState<
     AssetWithBalance[]
   >([]);

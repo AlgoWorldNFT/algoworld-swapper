@@ -8,12 +8,6 @@ import AsaToAsa from '@/pages/swaps/asa-to-asa.page';
 import renderWithProviders from '@/__utils__/renderWithProviders';
 import { ASA_TO_ASA_PAGE_HEADER_ID } from '@/common/constants';
 
-jest.mock(`notistack`, () => {
-  return {
-    useSnackbar: jest.fn().mockReturnValue({ enqueueSnackbar: jest.fn() }),
-  };
-});
-
 describe(`Asa to Asa`, () => {
   it(`renders a heading`, () => {
     const dom = renderWithProviders(<AsaToAsa />);
@@ -25,5 +19,10 @@ describe(`Asa to Asa`, () => {
     expect(headerComponent?.textContent?.toLowerCase()).toContain(
       `🎴 asa to asa swap`,
     );
+  });
+
+  it(`AsaToAsa component renders correctly`, () => {
+    const { getByText } = renderWithProviders(<AsaToAsa />);
+    expect(getByText(`🎴 ASA to ASA Swap`)).toBeInTheDocument();
   });
 });

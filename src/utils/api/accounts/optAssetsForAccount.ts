@@ -25,15 +25,15 @@ import submitTransactions from '@/utils/api/transactions/submitTransactions';
 
 import { setLoadingIndicator } from '@/redux/slices/applicationSlice';
 import { Dispatch } from '@reduxjs/toolkit';
-import { getAccountAssets, getProxy } from '@/redux/slices/walletConnectSlice';
-import WalletManager from '@/utils/wallets/walletManager';
+import { getAccountAssets, getProxy } from '@/redux/slices/applicationSlice';
 import { IpfsGateway } from '@/models/Gateway';
+import processTransactions from '../transactions/processTransactions';
 
 export default async function optAssetsForAccount(
   chain: ChainType,
   gateway: IpfsGateway,
   assetIndexes: number[],
-  creatorWallet: WalletManager,
+  signTransactions: (transactions: Array<Uint8Array>) => Promise<Uint8Array[]>,
   creatorAddress: string,
   dispatch: Dispatch,
   deOptIn = false,
@@ -78,12 +78,13 @@ export default async function optAssetsForAccount(
     }),
   );
 
-  const signedSaveSwapConfigTxns = await creatorWallet
-    .signTransactions(optInTxns)
-    .catch(() => {
-      dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
-      return undefined;
-    });
+  const signedSaveSwapConfigTxns = await processTransactions(
+    optInTxns,
+    signTransactions,
+  ).catch(() => {
+    dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));
+    return undefined;
+  });
 
   if (!signedSaveSwapConfigTxns) {
     dispatch(setLoadingIndicator({ isLoading: false, message: undefined }));

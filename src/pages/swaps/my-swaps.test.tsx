@@ -9,12 +9,6 @@ import { MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
 
 import MySwaps from './my-swaps.page';
 
-jest.mock(`notistack`, () => {
-  return {
-    useSnackbar: jest.fn().mockReturnValue({ enqueueSnackbar: jest.fn() }),
-  };
-});
-
 describe(`My Swaps`, () => {
   it(`renders a heading`, () => {
     const dom = renderWithProviders(<MySwaps />);

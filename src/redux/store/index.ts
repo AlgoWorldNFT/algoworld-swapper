@@ -21,12 +21,10 @@ import {
   PreloadedState,
   combineReducers,
 } from '@reduxjs/toolkit';
-import walletConnectReducer from '../slices/walletConnectSlice';
 import applicationReducer from '../slices/applicationSlice';
 import logger from '../middleware/logger';
 
 const rootReducer = combineReducers({
-  walletConnect: walletConnectReducer,
   application: applicationReducer,
 });
 

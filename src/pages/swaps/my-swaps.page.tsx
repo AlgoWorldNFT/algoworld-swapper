@@ -30,7 +30,7 @@ import {
   getAccountSwaps,
   optAssets,
   recoverSwapTxnHistory,
-} from '@/redux/slices/walletConnectSlice';
+} from '@/redux/slices/applicationSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import {
   Box,
@@ -41,27 +41,33 @@ import {
   Tooltip,
 } from '@mui/material';
 import { AWVT_ASSET_INDEX, MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
-import { connector } from '@/redux/store/connector';
 import { useMemo, useState } from 'react';
+import { useWallet } from '@txnlab/use-wallet';
 
 export default function MySwaps() {
-  const hasAwvt = useAppSelector((state) => state.walletConnect.hasAwvt);
+  const hasAwvt = useAppSelector((state) => state.application.hasAwvt);
   const dispatch = useAppDispatch();
   const selectedManageSwap = useAppSelector(
     (state) => state.application.selectedManageSwap,
   );
   const {
     gateway,
-    address,
     chain,
     swaps,
     recoveredSwaps,
     fetchingSwaps,
     recoveringSwaps,
-  } = useAppSelector((state) => state.walletConnect);
+  } = useAppSelector((state) => state.application);
+
   const isManageSwapPopupOpen = useAppSelector(
     (state) => state.application.isManageSwapPopupOpen,
   );
+
+  const { activeAddress, signTransactions } = useWallet();
+
+  const address = useMemo(() => {
+    return activeAddress;
+  }, [activeAddress]);
 
   const isShareSwapPopupOpen = useAppSelector(
     (state) => state.application.isShareSwapPopupOpen,
@@ -80,6 +86,9 @@ export default function MySwaps() {
       <ManageSwapDialog
         open={isManageSwapPopupOpen}
         onClose={() => {
+          if (!address) {
+            return;
+          }
           dispatch(setIsManageSwapPopupOpen(false));
           dispatch(getAccountSwaps({ chain, gateway, address }));
         }}
@@ -125,7 +134,9 @@ export default function MySwaps() {
                     optAssets({
                       assetIndexes: awvtIndex,
                       gateway,
-                      connector,
+                      chain,
+                      activeAddress: address,
+                      signTransactions,
                       deOptIn: true,
                     }),
                   );
@@ -141,7 +152,9 @@ export default function MySwaps() {
                     optAssets({
                       assetIndexes: awvtIndex,
                       gateway,
-                      connector,
+                      chain,
+                      activeAddress: address,
+                      signTransactions,
                     }),
                   );
                 }}
@@ -179,7 +192,9 @@ export default function MySwaps() {
                     setIsShowHistoricalSwaps(!isShowHistoricalSwaps);
                     await dispatch(
                       recoverSwapTxnHistory({
+                        chain,
                         gateway,
+                        activeAddress: address,
                       }),
                     );
                   }}
