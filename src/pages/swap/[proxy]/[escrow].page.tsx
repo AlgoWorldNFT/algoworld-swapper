@@ -23,7 +23,6 @@ import {
   PERFORM_SWAP_PAGE_HEADER_ID,
   PERFORM_SWAP_PERFORM_BUTTON_ID,
 } from '@/common/constants';
-import ViewOnAlgoExplorerButton from '@/components/Buttons/ViewOnAlgoExplorerButton';
 import ConfirmDialog from '@/components/Dialogs/ConfirmDialog';
 import InfoDialog from '@/components/Dialogs/InfoDialog';
 import PageHeader from '@/components/Headers/PageHeader';

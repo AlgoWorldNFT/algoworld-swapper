@@ -1,4 +1,8 @@
-import { queryByAttribute } from '@testing-library/react';
+import {
+  fireEvent,
+  queryByAttribute,
+  queryByText,
+} from '@testing-library/react';
 
 jest.mock(`@perawallet/connect`, () => {
   return jest.fn();
@@ -19,5 +23,10 @@ describe(`Asa to Asa`, () => {
     expect(headerComponent?.textContent?.toLowerCase()).toContain(
       `🎴 asa to asa swap`,
     );
+  });
+
+  it(`AsaToAsa component renders correctly`, () => {
+    const { getByText } = renderWithProviders(<AsaToAsa />);
+    expect(getByText(`🎴 ASA to ASA Swap`)).toBeInTheDocument();
   });
 });
