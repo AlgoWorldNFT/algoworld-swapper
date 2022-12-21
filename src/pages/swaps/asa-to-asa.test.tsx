@@ -1,8 +1,4 @@
-import {
-  fireEvent,
-  queryByAttribute,
-  queryByText,
-} from '@testing-library/react';
+import { queryByAttribute } from '@testing-library/react';
 
 jest.mock(`@perawallet/connect`, () => {
   return jest.fn();
