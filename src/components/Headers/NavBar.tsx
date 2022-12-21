@@ -24,7 +24,6 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import Container from '@mui/material/Container';
-import AccountBalanceWalletOutlined from '@mui/icons-material/AccountBalanceWalletOutlined';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
@@ -78,6 +77,8 @@ import {
 import { IpfsGateway } from '@/models/Gateway';
 import ValueSelect from '../Select/ValueSelect';
 import { useWallet } from '@txnlab/use-wallet';
+import { useAsync } from 'react-use';
+import getNFDsForAddress from '@/utils/api/accounts/getNFDsForAddress';
 
 type PageConfiguration = {
   title: string;
@@ -111,6 +112,7 @@ const NavBar = () => {
   };
 
   const { providers, activeAddress } = useWallet();
+
   const activeProvider = React.useMemo(() => {
     return providers?.find((p) => p.isActive);
   }, [providers]);
@@ -122,6 +124,26 @@ const NavBar = () => {
     gateway,
     chain: selectedChain,
   } = useAppSelector((state) => state.application);
+
+  const nfdState = useAsync(async () => {
+    if (!activeAddress) {
+      return;
+    }
+    const nfd = await getNFDsForAddress(activeAddress, selectedChain);
+    return nfd;
+  }, [activeAddress, selectedChain]);
+
+  const nfd = React.useMemo(() => {
+    if (nfdState.loading || nfdState.error) {
+      return null;
+    }
+
+    return nfdState.value;
+  }, [nfdState.error, nfdState.loading, nfdState.value]);
+
+  const nfdAvatar = React.useMemo(() => {
+    return nfd?.properties?.userDefined?.avatar;
+  }, [nfd]);
 
   const isWalletPopupOpen = useAppSelector(
     (state) => state.application.isWalletPopupOpen,
@@ -436,15 +458,30 @@ const NavBar = () => {
                           onClick={handleOpenUserMenu}
                           sx={{ p: 0, borderRadius: 1 }}
                         >
-                          <AccountBalanceWalletOutlined sx={{ pr: 0.5 }} />
-                          <Typography variant="h6">
-                            {`${activeAddress?.slice(
-                              0,
-                              4,
-                            )}...${activeAddress?.slice(
-                              activeAddress.length - 4,
-                              activeAddress.length,
-                            )} `}
+                          {/* <AccountBalanceWalletOutlined sx={{ pr: 0.5 }} /> */}
+                          {nfd && nfdAvatar && (
+                            <div
+                              style={{
+                                borderRadius: `50%`,
+                                overflow: `hidden`,
+                                width: `40px`,
+                                height: `40px`,
+                              }}
+                            >
+                              <Image
+                                src={nfdAvatar}
+                                alt="nfd-profile"
+                                width={40}
+                                height={40}
+                                placeholder="blur"
+                                blurDataURL={nfdAvatar}
+                              />
+                            </div>
+                          )}
+                          <Typography sx={{ pl: nfd ? 1 : 0 }} variant="h6">
+                            {`${
+                              nfd ? nfd.name : ellipseAddress(activeAddress, 4)
+                            }`}
                           </Typography>
                         </IconButton>
                       </Tooltip>

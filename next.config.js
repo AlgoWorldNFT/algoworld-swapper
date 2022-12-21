@@ -23,6 +23,8 @@ const nextConfig = {
       'dweb.link',
       'cloudflare-ipfs.com',
       'ipfs-gateway.cloud',
+      '*.nf.domains',
+      'images.nf.domains',
 
       'images.unsplash.com',
       'vitals.vercel-insights.com',
