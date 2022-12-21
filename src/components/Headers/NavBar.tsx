@@ -41,6 +41,7 @@ import {
 import {
   ellipseAddress,
   formatBigNumWithDecimals,
+  trimString,
 } from '@/redux/helpers/utilities';
 import { Asset } from '@/models/Asset';
 import ConnectProviderDialog from '../Dialogs/ConnectProviderDialog';
@@ -480,7 +481,9 @@ const NavBar = () => {
                           )}
                           <Typography sx={{ pl: nfd ? 1 : 0 }} variant="h6">
                             {`${
-                              nfd ? nfd.name : ellipseAddress(activeAddress, 4)
+                              nfd
+                                ? trimString(nfd.name, 20)
+                                : ellipseAddress(activeAddress, 4)
                             }`}
                           </Typography>
                         </IconButton>
@@ -547,6 +550,11 @@ const NavBar = () => {
                       values={
                         activeProvider?.accounts.map((account) => {
                           return ellipseAddress(account.address);
+                        }) || []
+                      }
+                      rawValues={
+                        activeProvider?.accounts.map((account) => {
+                          return account.address;
                         }) || []
                       }
                       onSelect={async (value: string) => {

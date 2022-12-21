@@ -50,6 +50,13 @@ export function ellipseAddress(address = ``, width = 6): string {
   return `${address.slice(0, width)}...${address.slice(-width)}`;
 }
 
+export function trimString(str: string, maxLength: number): string {
+  if (str.length > maxLength) {
+    return str.substring(0, maxLength - 3) + `...`;
+  }
+  return str;
+}
+
 export function padLeft(n: string, width: number, z?: string): string {
   z = z || `0`;
   n = n + ``;

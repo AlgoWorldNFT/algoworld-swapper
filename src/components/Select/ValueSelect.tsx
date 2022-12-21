@@ -22,11 +22,19 @@ type Props = {
   label: string;
   value: string;
   values: string[];
+  rawValues?: string[];
   onSelect: (value: string) => void;
   id?: string;
 };
 
-const ValueSelect = ({ id, label, value, values, onSelect }: Props) => {
+const ValueSelect = ({
+  id,
+  label,
+  value,
+  values,
+  onSelect,
+  rawValues = undefined,
+}: Props) => {
   return (
     <FormControl sx={{ p: 1, width: `100%` }} size="small" id={id}>
       <InputLabel id="demo-select-small">{label}</InputLabel>
@@ -36,7 +44,11 @@ const ValueSelect = ({ id, label, value, values, onSelect }: Props) => {
         value={value}
         label={label}
         onChange={(event) => {
-          onSelect(event.target.value);
+          onSelect(
+            rawValues
+              ? rawValues[values.indexOf(event.target.value)]
+              : event.target.value,
+          );
         }}
       >
         {values.map((currentValue) => {
