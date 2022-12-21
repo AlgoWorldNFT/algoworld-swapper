@@ -40,8 +40,8 @@ import {
 } from '@/redux/slices/applicationSlice';
 import {
   ellipseAddress,
+  ellipseText,
   formatBigNumWithDecimals,
-  trimString,
 } from '@/redux/helpers/utilities';
 import { Asset } from '@/models/Asset';
 import ConnectProviderDialog from '../Dialogs/ConnectProviderDialog';
@@ -482,7 +482,7 @@ const NavBar = () => {
                           <Typography sx={{ pl: nfd ? 1 : 0 }} variant="h6">
                             {`${
                               nfd
-                                ? trimString(nfd.name, 20)
+                                ? ellipseText(nfd.name, 20)
                                 : ellipseAddress(activeAddress, 4)
                             }`}
                           </Typography>
