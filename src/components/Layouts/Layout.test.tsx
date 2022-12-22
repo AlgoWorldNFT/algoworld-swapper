@@ -21,18 +21,17 @@ jest.mock(`next/dist/client/router`, () => ({
 }));
 
 describe(`Layout`, () => {
-  it(`should render the children in the main`, () => {
-    let byText: any;
-    act(() => {
-      const { getByText } = renderWithProviders(
+  it(`should render the children in the main`, async () => {
+    let dom: ReturnType<typeof renderWithProviders> = {} as any;
+
+    await act(async () => {
+      dom = renderWithProviders(
         <Layout>
           <p>Test Children</p>
         </Layout>,
       );
-
-      byText = getByText;
     });
 
-    expect(byText(`Test Children`)).toBeInTheDocument();
+    expect(dom.getByText(`Test Children`)).toBeInTheDocument();
   });
 });

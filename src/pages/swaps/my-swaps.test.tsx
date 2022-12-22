@@ -1,4 +1,4 @@
-import { queryByAttribute } from '@testing-library/react';
+import { act, queryByAttribute } from '@testing-library/react';
 
 jest.mock(`@perawallet/connect`, () => {
   return jest.fn();
@@ -10,8 +10,12 @@ import { MY_SWAPS_PAGE_HEADER_ID } from '@/common/constants';
 import MySwaps from './my-swaps.page';
 
 describe(`My Swaps`, () => {
-  it(`renders a heading`, () => {
-    const dom = renderWithProviders(<MySwaps />);
+  it(`renders a heading`, async () => {
+    let dom: ReturnType<typeof renderWithProviders> = {} as any;
+
+    await act(async () => {
+      dom = renderWithProviders(<MySwaps />);
+    });
 
     const getById = queryByAttribute.bind(null, `id`);
     const headerComponent = getById(dom.container, MY_SWAPS_PAGE_HEADER_ID);

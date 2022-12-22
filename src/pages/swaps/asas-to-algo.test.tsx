@@ -1,4 +1,4 @@
-import { queryByAttribute } from '@testing-library/react';
+import { act, queryByAttribute } from '@testing-library/react';
 
 jest.mock(`@perawallet/connect`, () => {
   return jest.fn();
@@ -9,8 +9,12 @@ import { ASAS_TO_ALGO_PAGE_HEADER_ID } from '@/common/constants';
 import MultiAsaToAlgo from './asas-to-algo.page';
 
 describe(`Asas to Algo`, () => {
-  it(`renders a heading`, () => {
-    const dom = renderWithProviders(<MultiAsaToAlgo />);
+  it(`renders a heading`, async () => {
+    let dom: ReturnType<typeof renderWithProviders> = {} as any;
+
+    await act(async () => {
+      dom = renderWithProviders(<MultiAsaToAlgo />);
+    });
 
     const getById = queryByAttribute.bind(null, `id`);
     const headerComponent = getById(dom.container, ASAS_TO_ALGO_PAGE_HEADER_ID);
