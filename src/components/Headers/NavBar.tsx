@@ -219,19 +219,18 @@ const NavBar = () => {
     };
 
     if (typeof window !== `undefined`) {
-      const persistedChainType =
-        chain !== undefined
-          ? chain.toLowerCase() === `mainnet`
-            ? ChainType.MainNet
-            : ChainType.TestNet
-          : (localStorage.getItem(`ChainType`) as ChainType) ??
-            ChainType.TestNet;
-      changeChain(persistedChainType);
+      const persistedChainType = localStorage.getItem(`ChainType`) as ChainType;
+      const selectedChainType = chain
+        ? (chain as ChainType)
+        : persistedChainType;
+
+      if (selectedChainType) {
+        changeChain(selectedChainType);
+      }
 
       const persistedGateway = localStorage.getItem(
         `IpfsGateway`,
       ) as IpfsGateway;
-
       if (persistedGateway) {
         changeGateway(persistedGateway);
       }
