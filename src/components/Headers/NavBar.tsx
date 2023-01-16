@@ -220,9 +220,12 @@ const NavBar = () => {
 
     if (typeof window !== `undefined`) {
       const persistedChainType = localStorage.getItem(`ChainType`) as ChainType;
+      const selectedChainType = chain
+        ? (chain as ChainType)
+        : persistedChainType;
 
-      if (persistedChainType) {
-        changeChain(persistedChainType);
+      if (selectedChainType) {
+        changeChain(selectedChainType);
       }
 
       const persistedGateway = localStorage.getItem(
