@@ -3,6 +3,8 @@ import Layout from './Layout';
 import renderWithProviders from '@/__utils__/renderWithProviders';
 import { act } from '@testing-library/react';
 
+jest.mock(`react-markdown`, () => jest.fn());
+
 jest.mock(`next/dist/client/router`, () => ({
   __esModule: true,
   useRouter: () => ({
