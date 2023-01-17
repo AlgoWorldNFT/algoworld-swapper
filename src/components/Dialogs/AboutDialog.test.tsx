@@ -2,6 +2,8 @@ import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import AboutDialog from './AboutDialog';
 
+jest.mock(`react-markdown`, () => jest.fn());
+
 describe(`AboutDialog`, () => {
   it(`renders the correct content and handles the close button correctly`, () => {
     const changeStateMock = jest.fn();

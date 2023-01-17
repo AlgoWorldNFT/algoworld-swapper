@@ -24,6 +24,9 @@ export const CHAIN_TYPE: ChainType = process.env.NEXT_PUBLIC_CHAIN_TYPE
   ? (process.env.NEXT_PUBLIC_CHAIN_TYPE.trim().toLowerCase() as ChainType)
   : ChainType.TestNet;
 
+export const TOC_MD: string = process.env.NEXT_PUBLIC_TOC_MD || `N/A`;
+export const PRIVACY_MD: string = process.env.NEXT_PUBLIC_PRIVACY_MD || `N/A`;
+
 export const ALGOEXPLORER_API_URL = (chain: ChainType) => {
   return chain.toLowerCase() === `mainnet`
     ? `https://node.algoexplorerapi.io`

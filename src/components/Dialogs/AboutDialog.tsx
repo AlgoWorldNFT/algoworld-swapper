@@ -25,6 +25,16 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import pJson from '../../../package.json';
 import { ABOUT_DIALOG_ID } from './constants';
+import {
+  Accordion,
+  AccordionSummary,
+  Typography,
+  AccordionDetails,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { PRIVACY_MD, TOC_MD } from '@/common/constants';
+import useSWR from 'swr';
+import ReactMarkdown from 'react-markdown';
 
 type Props = {
   open: boolean;
@@ -33,6 +43,35 @@ type Props = {
 
 export default function AboutDialog({ open, changeState }: Props) {
   const descriptionElementRef = React.useRef<HTMLElement>(null);
+
+  const tocMdResponse = useSWR(TOC_MD, (url) => {
+    return fetch(url).then((res) => {
+      return res.text();
+    });
+  });
+
+  const privacyMdResponse = useSWR(PRIVACY_MD, (url) => {
+    return fetch(url).then((res) => {
+      return res.text();
+    });
+  });
+
+  const tocMd: string = React.useMemo(() => {
+    if (tocMdResponse.error || !tocMdResponse.data) {
+      return `N/A`;
+    }
+
+    return tocMdResponse.data;
+  }, [tocMdResponse]);
+
+  const privacyMd: string = React.useMemo(() => {
+    if (privacyMdResponse.error || !privacyMdResponse.data) {
+      return `N/A`;
+    }
+
+    return privacyMdResponse.data;
+  }, [privacyMdResponse]);
+
   React.useEffect(() => {
     if (open) {
       const { current: descriptionElement } = descriptionElementRef;
@@ -59,6 +98,32 @@ export default function AboutDialog({ open, changeState }: Props) {
             {`AlgoWorld Swapper is a free and open-source tool for swapping assets on Algorand blockchain. Distributed under GPLv3 license.
             Swaps are powered by Algorand Smart Signatures and were developed in collaboration with a Solution Architect from Algorand (credits: @cusma). AlgoWorld currently charges 0.05 Algo fee per swap, the fee is then periodically transfered to AWT/ALGO pair on Tinyman to increase liquidity for AlgoWorld Token.`}
           </DialogContentText>
+          <br />
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>Terms of services</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <ReactMarkdown>{tocMd}</ReactMarkdown>
+            </AccordionDetails>
+          </Accordion>
+          <br />
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>Privacy policy</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <ReactMarkdown>{privacyMd}</ReactMarkdown>
+            </AccordionDetails>
+          </Accordion>
         </DialogContent>
         <DialogActions>
           <Button

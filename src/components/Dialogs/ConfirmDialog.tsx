@@ -111,15 +111,17 @@ const ConfirmDialog = ({
         >
           Cancel
         </Button>
-        <Button
-          id={DIALOG_SELECT_BTN_ID}
-          onClick={() => {
-            setOpen(false);
-            onConfirm();
-          }}
-        >
-          Proceed
-        </Button>
+        <Tooltip title="By confirming, you agree to our Terms of Service.">
+          <Button
+            id={DIALOG_SELECT_BTN_ID}
+            onClick={() => {
+              setOpen(false);
+              onConfirm();
+            }}
+          >
+            Proceed
+          </Button>
+        </Tooltip>
       </DialogActions>
     </Dialog>
   );

@@ -30,6 +30,7 @@ const nextConfig = {
       'vitals.vercel-insights.com',
       'google-analytics.com',
       '*.google-analytics.com',
+      'gist.githubusercontent.com',
     ],
   },
 };
