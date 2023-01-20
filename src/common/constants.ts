@@ -26,6 +26,12 @@ export const CHAIN_TYPE: ChainType = process.env.NEXT_PUBLIC_CHAIN_TYPE
 
 export const TOC_MD: string = process.env.NEXT_PUBLIC_TOC_MD || `N/A`;
 export const PRIVACY_MD: string = process.env.NEXT_PUBLIC_PRIVACY_MD || `N/A`;
+export const USER_RECOVER_ADDRESS: string | null =
+  process.env.NEXT_PUBLIC_USER_RECOVER_ADDRESS || null;
+export const USER_RECOVER_IPFS: string | null =
+  process.env.NEXT_PUBLIC_USER_RECOVER_IPFS || null;
+export const USER_RECOVER_ESCROW: string | null =
+  process.env.NEXT_PUBLIC_USER_RECOVER_ESCROW || null;
 
 export const ALGOEXPLORER_API_URL = (chain: ChainType) => {
   return chain.toLowerCase() === `mainnet`

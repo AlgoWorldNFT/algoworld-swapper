@@ -16,13 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LATEST_SWAP_PROXY_VERSION } from '@/common/constants';
+import {
+  LATEST_SWAP_PROXY_VERSION,
+  USER_RECOVER_ADDRESS,
+  USER_RECOVER_ESCROW,
+  USER_RECOVER_IPFS,
+} from '@/common/constants';
 import { ChainType } from '@/models/Chain';
 import { IpfsGateway } from '@/models/Gateway';
 import { SwapConfiguration } from '@/models/Swap';
 import filterAsync from '@/utils/filterAsync';
 import getLogicSign from '../accounts/getLogicSignature';
 import getCompiledProxy from '../swaps/getCompiledProxy';
+import getSwapConfiguration from '../swaps/getSwapConfiguration';
 import loadSwapConfigurations from '../swaps/loadSwapConfigurations';
 import accountExists from './accountExists';
 
@@ -46,6 +52,24 @@ export default async function recoverSwapConfigurationsForAccount(
     proxyAddress,
     true,
   );
+
+  if (
+    USER_RECOVER_ADDRESS === address &&
+    USER_RECOVER_ESCROW &&
+    USER_RECOVER_IPFS
+  ) {
+    const data = await getSwapConfiguration({
+      chain,
+      escrow: USER_RECOVER_ESCROW,
+      ipfs_url: USER_RECOVER_IPFS,
+    });
+
+    const swapConfiguration = (await data.data) as SwapConfiguration[];
+
+    if (swapConfiguration) {
+      response.push(swapConfiguration[0]);
+    }
+  }
 
   const activeSwapConfigurations = await filterAsync(
     response,

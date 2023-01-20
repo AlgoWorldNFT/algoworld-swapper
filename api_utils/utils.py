@@ -89,3 +89,10 @@ class SwapProxyConfig:
     swap_creator: str
     version: str
     chain_type: str
+
+
+@dataclass
+class SwapConfigUrl:
+    escrow: str
+    ipfs_url: str
+    chain: str
