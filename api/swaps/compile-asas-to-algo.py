@@ -35,7 +35,6 @@ class SwapConfig:
 
 
 def compileMultiSwap(inputParams: SwapConfig):
-
     swapper = contracts.get_multi_swapper_teal(
         inputParams.creator_address,
         inputParams.offered_asa_amounts,
