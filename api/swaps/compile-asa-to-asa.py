@@ -36,7 +36,6 @@ class SwapQueryParams:
 
 
 def compileSwap(input_params: SwapQueryParams):
-
     swapper = contracts.get_swapper_teal(
         input_params.creator_address,
         input_params.offered_asa_id,
