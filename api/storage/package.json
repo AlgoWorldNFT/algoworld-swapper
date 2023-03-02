@@ -7,9 +7,9 @@
   "license": "GPL-3.0",
   "dependencies": {
     "typescript": "4.9.5",
-    "web3.storage": "4.4.0"
+    "web3.storage": "4.5.4"
   },
   "devDependencies": {
-    "@vercel/node": "2.9.2"
+    "@vercel/node": "2.9.10"
   }
 }
