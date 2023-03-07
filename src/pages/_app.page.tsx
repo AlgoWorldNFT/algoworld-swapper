@@ -51,8 +51,8 @@ const walletProviders = initializeProviders([
   PROVIDER_ID.PERA,
   PROVIDER_ID.EXODUS,
   PROVIDER_ID.DEFLY,
-  PROVIDER_ID.WALLETCONNECT,
-  PROVIDER_ID.ALGOSIGNER,
+  // PROVIDER_ID.WALLETCONNECT,
+  // PROVIDER_ID.ALGOSIGNER,
 ]);
 
 export default function MyApp(props: MyAppProps) {
