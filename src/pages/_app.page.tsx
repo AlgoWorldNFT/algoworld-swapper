@@ -47,7 +47,7 @@ interface MyAppProps extends AppProps {
 }
 
 const walletProviders = initializeProviders([
-  PROVIDER_ID.MYALGO,
+  // PROVIDER_ID.MYALGO,
   PROVIDER_ID.PERA,
   PROVIDER_ID.EXODUS,
   PROVIDER_ID.DEFLY,
