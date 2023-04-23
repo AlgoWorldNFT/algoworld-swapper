@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { render } from '@testing-library/react';
 import ConfirmDialog from './ConfirmDialog';
+import renderWithProviders from '@/__utils__/renderWithProviders';
 
 describe(`ConfirmDialog`, () => {
   it(`renders the correct content and handles the buttons correctly`, () => {
     const setOpenMock = jest.fn();
     const onConfirmMock = jest.fn();
     const onSwapVisibilityChangeMock = jest.fn();
-    const { getByText } = render(
+    const { getByText } = renderWithProviders(
       <ConfirmDialog
         title="Test Dialog"
         open={true}

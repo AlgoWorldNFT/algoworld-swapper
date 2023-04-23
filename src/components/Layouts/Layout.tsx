@@ -26,6 +26,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import LoadingBackdrop from '../Backdrops/Backdrop';
 import AboutDialog from '../Dialogs/AboutDialog';
 import { setIsAboutPopupOpen } from '@/redux/slices/applicationSlice';
+import TelegramFooter from '../Footers/TelegramFooter';
 
 type Props = {
   children?: ReactNode;
@@ -42,12 +43,21 @@ const Layout = ({ children, title = `This is the default title` }: Props) => {
     (state) => state.application.isAboutPopupOpen,
   );
 
+  const [loadedFromTelegram, setLoadedFromTelegram] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== `undefined`) {
+      if (Object.hasOwn(window, `Telegram`)) {
+        setLoadedFromTelegram(true);
+      }
+    }
+  }, []);
+
   return (
     <Box
       sx={{
         display: `flex`,
         flexDirection: `column`,
-        minHeight: `100vh`,
       }}
     >
       <AboutDialog
@@ -74,7 +84,7 @@ const Layout = ({ children, title = `This is the default title` }: Props) => {
           {children}
         </>
       </main>
-      <Footer />
+      {loadedFromTelegram ? <TelegramFooter /> : <Footer />}
     </Box>
   );
 };

@@ -200,37 +200,38 @@ export default function MultiAsaToAlgo() {
     proxy: LogicSigAccount,
     swapConfiguration: SwapConfiguration,
   ) => {
-    const cidResponse = await saveSwapConfigurations([
+    const cidData = await saveSwapConfigurations([
       ...existingSwaps,
       swapConfiguration,
     ]);
-    const cidData = await cidResponse.data;
 
-    const saveSwapConfigTxns = await createSaveSwapConfigTxns(
-      chain,
-      address,
-      proxy,
-      (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
-      cidData,
-    );
-    const signedSaveSwapConfigTxns = await processTransactions(
-      saveSwapConfigTxns,
-      signTransactions,
-    ).catch(() => {
-      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
-      return undefined;
-    });
+    if (cidData) {
+      const saveSwapConfigTxns = await createSaveSwapConfigTxns(
+        chain,
+        address,
+        proxy,
+        (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
+        cidData,
+      );
+      const signedSaveSwapConfigTxns = await processTransactions(
+        saveSwapConfigTxns,
+        signTransactions,
+      ).catch(() => {
+        toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+        return undefined;
+      });
 
-    if (!signedSaveSwapConfigTxns) {
-      return undefined;
+      if (!signedSaveSwapConfigTxns) {
+        return undefined;
+      }
+
+      const saveSwapConfigResponse = await submitTransactions(
+        chain,
+        signedSaveSwapConfigTxns,
+      );
+
+      return saveSwapConfigResponse.txId;
     }
-
-    const saveSwapConfigResponse = await submitTransactions(
-      chain,
-      signedSaveSwapConfigTxns,
-    );
-
-    return saveSwapConfigResponse.txId;
   };
 
   const signAndSendDepositSwapAssetTxns = async (
@@ -402,7 +403,7 @@ export default function MultiAsaToAlgo() {
               <Stack
                 justifyContent={`center`}
                 direction={`column`}
-                sx={{ pb: 5 }}
+                sx={{ pb: 10 }}
               >
                 {address && assetsToOptIn.length === 0 ? (
                   <LoadingButton

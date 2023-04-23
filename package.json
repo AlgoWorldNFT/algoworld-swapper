@@ -48,6 +48,7 @@
     "@randlabs/myalgo-connect": "1.4.2",
     "@reduxjs/toolkit": "1.9.3",
     "@txnlab/use-wallet": "1.2.11",
+    "@vkruglikov/react-telegram-web-app": "1.8.0",
     "@walletconnect/client": "1.8.0",
     "algorand-walletconnect-qrcode-modal": "1.8.0",
     "algosdk": "2.2.0",

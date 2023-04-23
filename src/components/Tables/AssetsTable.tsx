@@ -195,7 +195,8 @@ const AssetsTable = ({
           ? customNoRowsOverlay
           : () => (
               <Stack height="100%" alignItems="center" justifyContent="center">
-                😔 No swaps available for your account
+                😔 No swaps available for your account. If you created one
+                recently, please reload in a few minutes.
               </Stack>
             ),
         LoadingOverlay: LinearProgress,

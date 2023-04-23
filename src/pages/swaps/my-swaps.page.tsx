@@ -57,6 +57,7 @@ export default function MySwaps() {
     recoveredSwaps,
     fetchingSwaps,
     recoveringSwaps,
+    proxy,
   } = useAppSelector((state) => state.application);
 
   const isManageSwapPopupOpen = useAppSelector(
@@ -76,8 +77,11 @@ export default function MySwaps() {
     useState<boolean>(false);
 
   const mySwaps = useMemo(() => {
+    if (!proxy || Object.keys(proxy).length === 0) {
+      return [];
+    }
     return isShowHistoricalSwaps ? recoveredSwaps : swaps;
-  }, [isShowHistoricalSwaps, recoveredSwaps, swaps]);
+  }, [isShowHistoricalSwaps, proxy, recoveredSwaps, swaps]);
 
   const awvtIndex = useMemo(() => [AWVT_ASSET_INDEX(chain)], [chain]);
 
@@ -223,7 +227,7 @@ export default function MySwaps() {
           >
             Connect Wallet
           </Button>
-        ) : fetchingSwaps || recoveringSwaps ? (
+        ) : proxy && (fetchingSwaps || recoveringSwaps) ? (
           <Box sx={{ width: `100%` }}>
             <LinearProgress />
           </Box>

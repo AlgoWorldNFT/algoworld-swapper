@@ -38,6 +38,7 @@ import {
 } from '@txnlab/use-wallet';
 
 import { ToastContainer } from 'react-toastify';
+import Script from 'next/script';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -64,6 +65,7 @@ export default function MyApp(props: MyAppProps) {
 
   return (
     <CacheProvider value={emotionCache}>
+      <Script src="https://telegram.org/js/telegram-web-app.js" />
       <Head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
