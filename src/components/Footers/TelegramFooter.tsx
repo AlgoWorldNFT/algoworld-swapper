@@ -9,7 +9,7 @@ const TelegramFooter = () => {
   const { activeAddress } = useWallet();
   const router = useRouter();
 
-  return activeAddress ? (
+  return !activeAddress ? (
     <MainButton
       text="Connect wallet"
       onClick={() => {

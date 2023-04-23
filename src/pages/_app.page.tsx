@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/quotes */
 /**
  * AlgoWorld Swapper
  * Copyright (C) 2022 AlgoWorld
@@ -31,14 +32,12 @@ import Layout from '@/components/Layouts/Layout';
 import store from '@/redux/store';
 import { GoogleAnalytics } from 'nextjs-google-analytics';
 import {
-  reconnectProviders,
   initializeProviders,
   WalletProvider,
   PROVIDER_ID,
 } from '@txnlab/use-wallet';
 
 import { ToastContainer } from 'react-toastify';
-import Script from 'next/script';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -59,13 +58,8 @@ const walletProviders = initializeProviders([
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
-  React.useEffect(() => {
-    reconnectProviders(walletProviders);
-  }, []);
-
   return (
     <CacheProvider value={emotionCache}>
-      <Script src="https://telegram.org/js/telegram-web-app.js" />
       <Head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />

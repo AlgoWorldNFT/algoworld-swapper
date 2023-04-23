@@ -21,12 +21,18 @@ import Document, { Html, Head, Main, NextScript } from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
 import darkTheme from '../redux/theme/darkTheme';
 import createEmotionCache from '../utils/createEmotionCache';
+import Script from 'next/script';
 
 export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
         <Head>
+          <Script
+            src="https://telegram.org/js/telegram-web-app.js"
+            strategy="beforeInteractive"
+          />
+
           {/* PWA primary color */}
           <meta name="theme-color" content={darkTheme.palette.primary.main} />
           <link rel="shortcut icon" href="/static/favicon.ico" />

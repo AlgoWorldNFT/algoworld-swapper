@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/quotes */
 /**
  * AlgoWorld Swapper
  * Copyright (C) 2022 AlgoWorld
@@ -25,8 +26,13 @@ import { Box } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import LoadingBackdrop from '../Backdrops/Backdrop';
 import AboutDialog from '../Dialogs/AboutDialog';
-import { setIsAboutPopupOpen } from '@/redux/slices/applicationSlice';
+import {
+  setIsAboutPopupOpen,
+  setIsLoadedFromTelegram,
+} from '@/redux/slices/applicationSlice';
 import TelegramFooter from '../Footers/TelegramFooter';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 type Props = {
   children?: ReactNode;
@@ -43,15 +49,27 @@ const Layout = ({ children, title = `This is the default title` }: Props) => {
     (state) => state.application.isAboutPopupOpen,
   );
 
-  const [loadedFromTelegram, setLoadedFromTelegram] = React.useState(false);
+  const isLoadedFromTelegram = useAppSelector(
+    (state) => state.application.isLoadedFromTelegram,
+  );
+
+  const dispath = useDispatch();
 
   React.useEffect(() => {
     if (typeof window !== `undefined`) {
-      if (Object.hasOwn(window, `Telegram`)) {
-        setLoadedFromTelegram(true);
+      if (Object.hasOwnProperty.call(window, `Telegram`)) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        axios
+          .post('/api/storage/validate-hash', {
+            hash: window.Telegram.WebApp.initData,
+          })
+          .then(() => dispath(setIsLoadedFromTelegram(true)))
+          .catch(() => {
+            dispath(setIsLoadedFromTelegram(false));
+          });
       }
     }
-  }, []);
+  }, [dispath]);
 
   return (
     <Box
@@ -84,7 +102,7 @@ const Layout = ({ children, title = `This is the default title` }: Props) => {
           {children}
         </>
       </main>
-      {loadedFromTelegram ? <TelegramFooter /> : <Footer />}
+      {isLoadedFromTelegram ? <TelegramFooter /> : <Footer />}
     </Box>
   );
 };

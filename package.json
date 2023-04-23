@@ -67,6 +67,7 @@
     "react-tsparticles": "2.9.3",
     "react-use": "17.4.0",
     "swr": "1.3.0",
+    "telegram-webapps-types": "1.0.5",
     "tsparticles": "2.9.3"
   },
   "devDependencies": {
