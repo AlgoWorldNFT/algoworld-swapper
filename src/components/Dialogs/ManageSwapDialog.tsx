@@ -266,74 +266,75 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
     const newSwapConfigs = swaps.filter((swapConfig) => {
       return swapConfig.escrow !== selectedManageSwap.escrow;
     });
-    const cidResponse = await saveSwapConfigurations(newSwapConfigs);
-    const cidData = await cidResponse.data;
+    const cidData = await saveSwapConfigurations(newSwapConfigs);
 
-    toast.info(`Open your wallet to sign the delete transaction 2 of 2...`);
+    if (cidData) {
+      toast.info(`Open your wallet to sign the delete transaction 2 of 2...`);
 
-    const saveSwapConfigTxns = await createSaveSwapConfigTxns(
-      chain,
-      selectedManageSwap.creator,
-      proxy,
-      (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
-      cidData,
-    );
+      const saveSwapConfigTxns = await createSaveSwapConfigTxns(
+        chain,
+        selectedManageSwap.creator,
+        proxy,
+        (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
+        cidData,
+      );
 
-    const signedSaveSwapConfigTxns = await processTransactions(
-      saveSwapConfigTxns,
-      signTransactions,
-    ).catch(() => {
-      setDeleteLoading(false);
-      toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
-      return;
-    });
+      const signedSaveSwapConfigTxns = await processTransactions(
+        saveSwapConfigTxns,
+        signTransactions,
+      ).catch(() => {
+        setDeleteLoading(false);
+        toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+        return;
+      });
 
-    if (!signedSaveSwapConfigTxns) {
-      return;
+      if (!signedSaveSwapConfigTxns) {
+        return;
+      }
+
+      const saveSwapConfigResponse = await submitTransactions(
+        chain,
+        signedSaveSwapConfigTxns,
+      );
+      const saveSwapConfigResponseTxn = saveSwapConfigResponse.txId;
+      if (!saveSwapConfigResponseTxn) {
+        setDeleteLoading(false);
+        toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
+        return;
+      }
+
+      toast.success(
+        <>
+          {`${SWAP_REMOVED_FROM_PROXY_MESSAGE}\n`}
+          <Link
+            target="_blank"
+            href={createAlgoExplorerUrl(
+              chain,
+              saveSwapConfigResponseTxn,
+              AlgoExplorerUrlType.Transaction,
+            )}
+          >
+            View on AlgoExplorer
+          </Link>
+        </>,
+      );
+
+      toast.success(
+        <>
+          {`${SWAP_DEACTIVATION_PERFORMED_MESSAGE}\n`}
+          <Link
+            target="_blank"
+            href={createAlgoExplorerUrl(
+              chain,
+              deactivateTxnId,
+              AlgoExplorerUrlType.Transaction,
+            )}
+          >
+            View on AlgoExplorer
+          </Link>
+        </>,
+      );
     }
-
-    const saveSwapConfigResponse = await submitTransactions(
-      chain,
-      signedSaveSwapConfigTxns,
-    );
-    const saveSwapConfigResponseTxn = saveSwapConfigResponse.txId;
-    if (!saveSwapConfigResponseTxn) {
-      setDeleteLoading(false);
-      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
-      return;
-    }
-
-    toast.success(
-      <>
-        {`${SWAP_REMOVED_FROM_PROXY_MESSAGE}\n`}
-        <Link
-          target="_blank"
-          href={createAlgoExplorerUrl(
-            chain,
-            saveSwapConfigResponseTxn,
-            AlgoExplorerUrlType.Transaction,
-          )}
-        >
-          View on AlgoExplorer
-        </Link>
-      </>,
-    );
-
-    toast.success(
-      <>
-        {`${SWAP_DEACTIVATION_PERFORMED_MESSAGE}\n`}
-        <Link
-          target="_blank"
-          href={createAlgoExplorerUrl(
-            chain,
-            deactivateTxnId,
-            AlgoExplorerUrlType.Transaction,
-          )}
-        >
-          View on AlgoExplorer
-        </Link>
-      </>,
-    );
 
     setDeleteLoading(false);
   };

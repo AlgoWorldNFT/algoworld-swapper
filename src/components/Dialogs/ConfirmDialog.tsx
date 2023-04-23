@@ -34,6 +34,23 @@ import {
   DIALOG_CANCEL_BTN_ID,
   DIALOG_SELECT_BTN_ID,
 } from './constants';
+import {
+  TXN_SIGNING_CANCELLED_MESSAGE,
+  TXN_SUBMISSION_FAILED_MESSAGE,
+} from '@/common/constants';
+import { useAppSelector } from '@/redux/store/hooks';
+import { useWallet } from '@txnlab/use-wallet';
+import { LogicSigAccount } from 'algosdk';
+import { useMemo, useState } from 'react';
+import { useAsyncRetry } from 'react-use';
+import loadSwapConfigurations from '@/utils/api/swaps/loadSwapConfigurations';
+import { toast } from 'react-toastify';
+import accountExists from '@/utils/api/accounts/accountExists';
+import createSaveSwapConfigTxns from '@/utils/api/swaps/createSaveSwapConfigTxns';
+import saveSwapConfigurations from '@/utils/api/swaps/saveSwapConfigurations';
+import processTransactions from '@/utils/api/transactions/processTransactions';
+import submitTransactions from '@/utils/api/transactions/submitTransactions';
+import { LoadingButton } from '@mui/lab';
 
 type Props = {
   title: string;
@@ -56,6 +73,96 @@ const ConfirmDialog = ({
   onSwapVisibilityChange,
   transactionsFee,
 }: Props) => {
+  const { gateway, chain, proxy } = useAppSelector(
+    (state) => state.application,
+  );
+  const [loading, setLoading] = useState(false);
+
+  const { activeAddress, signTransactions } = useWallet();
+  const address = useMemo(() => {
+    return activeAddress || ``;
+  }, [activeAddress]);
+
+  const existingSwaps = useAppSelector((state) => state.application.swaps);
+
+  const proxyExistsState = useAsyncRetry(async () => {
+    return await accountExists(chain, proxy.address());
+  }, [proxy]);
+
+  const proxyExists = useMemo(() => {
+    if (proxyExistsState.loading || proxyExistsState.error) return false;
+
+    return proxyExistsState.value;
+  }, [proxyExistsState]);
+
+  const swapConfigsState = useAsyncRetry(async () => {
+    return await loadSwapConfigurations(chain, gateway, proxy.address());
+  }, [proxy]);
+
+  const hasSwapConfigurations = useMemo(() => {
+    console.log(swapConfigsState);
+    if (swapConfigsState.loading || swapConfigsState.error) return false;
+
+    console.log(swapConfigsState);
+    const allConfigs = swapConfigsState.value;
+
+    if (!allConfigs) return false;
+
+    return allConfigs.length > 0;
+  }, [swapConfigsState]);
+
+  const signAndSendSaveSwapConfigTxns = async (proxy: LogicSigAccount) => {
+    if (!address) {
+      return undefined;
+    }
+
+    const cidData = await saveSwapConfigurations([...existingSwaps]);
+
+    if (cidData) {
+      const saveSwapConfigTxns = await createSaveSwapConfigTxns(
+        chain,
+        address,
+        proxy,
+        (await accountExists(chain, proxy.address())) ? 10_000 : 110_000,
+        cidData,
+      );
+      const signedSaveSwapConfigTxns = await processTransactions(
+        saveSwapConfigTxns,
+        signTransactions,
+      ).catch(() => {
+        toast.error(TXN_SIGNING_CANCELLED_MESSAGE);
+        return undefined;
+      });
+
+      if (!signedSaveSwapConfigTxns) {
+        return undefined;
+      }
+
+      const saveSwapConfigResponse = await submitTransactions(
+        chain,
+        signedSaveSwapConfigTxns,
+      );
+
+      return saveSwapConfigResponse.txId;
+    }
+  };
+
+  const handleInitSwapConfig = async () => {
+    setLoading(true);
+
+    const saveSwapTxnId = await signAndSendSaveSwapConfigTxns(proxy);
+    if (!saveSwapTxnId) {
+      setLoading(false);
+      toast.error(TXN_SUBMISSION_FAILED_MESSAGE);
+      return;
+    }
+
+    swapConfigsState.retry();
+    proxyExistsState.retry();
+
+    setLoading(false);
+  };
+
   return (
     <Dialog
       id={CONFIRM_DIALOG_ID}
@@ -107,21 +214,36 @@ const ConfirmDialog = ({
         <Button
           id={DIALOG_CANCEL_BTN_ID}
           onClick={() => setOpen(false)}
+          disabled={loading}
           color="secondary"
         >
           Cancel
         </Button>
-        <Tooltip title="By confirming, you agree to our Terms of Service.">
-          <Button
-            id={DIALOG_SELECT_BTN_ID}
-            onClick={() => {
-              setOpen(false);
-              onConfirm();
-            }}
-          >
-            Proceed
-          </Button>
-        </Tooltip>
+        {!proxyExists && !hasSwapConfigurations ? (
+          <Tooltip title="Create Swap Configuration to use Swapper. This is a one time only operation">
+            <LoadingButton
+              id={DIALOG_SELECT_BTN_ID}
+              loading={loading}
+              onClick={() => {
+                handleInitSwapConfig();
+              }}
+            >
+              Initialize
+            </LoadingButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="By confirming, you agree to our Terms of Service.">
+            <Button
+              id={DIALOG_SELECT_BTN_ID}
+              onClick={() => {
+                setOpen(false);
+                onConfirm();
+              }}
+            >
+              Proceed
+            </Button>
+          </Tooltip>
+        )}
       </DialogActions>
     </Dialog>
   );

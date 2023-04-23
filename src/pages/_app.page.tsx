@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/quotes */
 /**
  * AlgoWorld Swapper
  * Copyright (C) 2022 AlgoWorld
@@ -31,7 +32,6 @@ import Layout from '@/components/Layouts/Layout';
 import store from '@/redux/store';
 import { GoogleAnalytics } from 'nextjs-google-analytics';
 import {
-  reconnectProviders,
   initializeProviders,
   WalletProvider,
   PROVIDER_ID,
@@ -57,10 +57,6 @@ const walletProviders = initializeProviders([
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-
-  React.useEffect(() => {
-    reconnectProviders(walletProviders);
-  }, []);
 
   return (
     <CacheProvider value={emotionCache}>

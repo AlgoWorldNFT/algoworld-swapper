@@ -1,7 +1,7 @@
 {
   "name": "algoworld-swapper",
   "description": "Free and trustless ASA swapper, powered by Algorand ⚡️",
-  "version": "0.9.4",
+  "version": "1.0.1",
   "private": true,
   "author": "AlgoWorld <info@algoworld.io>",
   "license": "GPL-3.0",
@@ -48,6 +48,7 @@
     "@randlabs/myalgo-connect": "1.4.2",
     "@reduxjs/toolkit": "1.9.3",
     "@txnlab/use-wallet": "1.2.11",
+    "@vkruglikov/react-telegram-web-app": "1.8.0",
     "@walletconnect/client": "1.8.0",
     "algorand-walletconnect-qrcode-modal": "1.8.0",
     "algosdk": "2.2.0",
@@ -66,6 +67,7 @@
     "react-tsparticles": "2.9.3",
     "react-use": "17.4.0",
     "swr": "1.3.0",
+    "telegram-webapps-types": "1.0.5",
     "tsparticles": "2.9.3"
   },
   "devDependencies": {

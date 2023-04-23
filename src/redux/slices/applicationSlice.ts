@@ -68,6 +68,7 @@ interface ApplicationState {
   fetchingSwaps: boolean;
   hasAwvt: boolean;
 
+  isLoadedFromTelegram: boolean;
   isWalletPopupOpen: boolean;
   isManageSwapPopupOpen: boolean;
   isShareSwapPopupOpen: boolean;
@@ -104,6 +105,7 @@ const initialState: ApplicationState = {
   fetchingSwaps: false,
   hasAwvt: false,
 
+  isLoadedFromTelegram: false,
   isWalletPopupOpen: false,
   isManageSwapPopupOpen: false,
   isShareSwapPopupOpen: false,
@@ -264,6 +266,9 @@ export const applicationSlice = createSlice({
     },
     reset: (state) => ({ ...initialState, chain: state.chain }),
 
+    setIsLoadedFromTelegram: (state, action: PayloadAction<boolean>) => {
+      state.isLoadedFromTelegram = action.payload;
+    },
     setIsWalletPopupOpen: (state, action: PayloadAction<boolean>) => {
       state.isWalletPopupOpen = action.payload;
     },
@@ -364,6 +369,7 @@ export const {
   reset,
   setOfferingAssets,
   setRequestingAssets,
+  setIsLoadedFromTelegram,
   setIsWalletPopupOpen,
   setIsManageSwapPopupOpen,
   setIsShareSwapPopupOpen,

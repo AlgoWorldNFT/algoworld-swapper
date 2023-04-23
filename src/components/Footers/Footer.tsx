@@ -98,6 +98,7 @@ const Footer = () => {
     <>
       <Box
         sx={{
+          pt: 2,
           py: 2,
           px: 2,
           mt: `auto`,

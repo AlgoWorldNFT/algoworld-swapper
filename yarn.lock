@@ -2556,6 +2556,11 @@
     "@typescript-eslint/types" "5.58.0"
     eslint-visitor-keys "^3.3.0"
 
+"@vkruglikov/react-telegram-web-app@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@vkruglikov/react-telegram-web-app/-/react-telegram-web-app-1.8.0.tgz#a5bb3fb0b88991edfb9a091a93c8259e52102ead"
+  integrity sha512-XEHahGJxqu8MQl8AeCVsleU3+gFfDhceVwX7Nul27/zPhh6lqIiJZtkYHPMBY8MBwFjm3dDhzN1ZS2NGHsI9Vg==
+
 "@walletconnect/browser-utils@^1.8.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@walletconnect/browser-utils/-/browser-utils-1.8.0.tgz#33c10e777aa6be86c713095b5206d63d32df0951"
@@ -8592,6 +8597,11 @@ tapable@^2.2.0:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.2.1.tgz#1967a73ef4060a82f12ab96af86d52fdb76eeca0"
   integrity sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==
+
+telegram-webapps-types@1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/telegram-webapps-types/-/telegram-webapps-types-1.0.5.tgz#35eee9b690cc8a8127b4d68ec6e8b2b40b33847b"
+  integrity sha512-QLBBjEgdGdJZmnSshq2jVUrqwolRBiM7e0YPsUpHOFxA2W9nkUYI5yBFd3vGyCqFlNoJw8S6k2Q7lxVffzUwlw==
 
 temp-dir@^2.0.0:
   version "2.0.0"

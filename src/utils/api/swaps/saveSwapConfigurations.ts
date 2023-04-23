@@ -18,9 +18,17 @@
 
 import { SwapConfiguration } from '@/models/Swap';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
-export default function saveSwapConfigurations(
+export default async function saveSwapConfigurations(
   configurations: SwapConfiguration[],
 ) {
-  return axios.post(`/api/storage/save-configurations`, configurations);
+  const response = await axios
+    .post(`/api/storage/save-configurations`, configurations)
+    .catch((error) => {
+      console.error(error);
+      toast.error(`Error saving swap configuration. Please retry.`);
+      return { data: null };
+    });
+  return response.data;
 }
