@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@blockshake/defly-connect": "1.1.2",
+    "@daffiwallet/connect": "1.0.3",
     "@emotion/cache": "11.10.8",
     "@emotion/react": "11.10.8",
     "@emotion/server": "11.10.0",
