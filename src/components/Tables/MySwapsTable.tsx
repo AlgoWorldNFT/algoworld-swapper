@@ -206,8 +206,7 @@ const MySwapsTable = ({ swapConfigurations }: Props) => {
         }}
         autoHeight
         getRowId={(row) => row.escrow}
-        pageSize={10}
-        rowsPerPageOptions={[10]}
+        autoPageSize
         getCellClassName={() => {
           return `cellStyle`;
         }}

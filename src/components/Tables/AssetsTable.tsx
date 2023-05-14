@@ -17,7 +17,12 @@
  */
 
 import * as React from 'react';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridValidRowModel,
+} from '@mui/x-data-grid';
 import { Asset, AssetWithBalance } from '@/models/Asset';
 import {
   LinearProgress,
@@ -40,7 +45,7 @@ const columns: GridColDef[] = [
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
-    renderCell: (params: GridRenderCellParams<string>) => {
+    renderCell: (params: GridRenderCellParams<GridValidRowModel>) => {
       const value = params.value ?? `N/A`;
       return (
         <Tooltip enterTouchDelay={0} title={<span>{value}</span>}>
@@ -58,7 +63,7 @@ const columns: GridColDef[] = [
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
-    renderCell: (params: GridRenderCellParams<string>) => {
+    renderCell: (params: GridRenderCellParams<GridValidRowModel>) => {
       const value = params.value ?? `N/A`;
       return (
         <Tooltip enterTouchDelay={0} title={<span>{value}</span>}>
@@ -204,12 +209,11 @@ const AssetsTable = ({
       rows={escrowAddress ? assetsWithBalances : assets}
       hideFooter
       autoHeight={customNoRowsOverlay && largeScreen ? false : true}
-      pageSize={10}
+      autoPageSize
       columns={escrowAddress ? columnsWithBalance : columns}
       getRowId={(row) => {
         return `${row.index}${row.offeringAmount}${row.requestingAmount}`;
       }}
-      autoPageSize
       getCellClassName={() => {
         return `cellStyle`;
       }}

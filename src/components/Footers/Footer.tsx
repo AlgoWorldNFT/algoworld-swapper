@@ -98,11 +98,11 @@ const Footer = () => {
     <>
       <Box
         sx={{
-          pt: 2,
-          py: 2,
-          px: 2,
-          mt: `auto`,
           bgcolor: `background.paper`,
+          position: `fixed`,
+          bottom: 0,
+          left: 0,
+          right: 0,
           display: { xs: `none`, md: `flex` },
         }}
         alignItems="center"

@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@blockshake/defly-connect": "1.1.2",
+    "@daffiwallet/connect": "1.0.3",
     "@emotion/cache": "11.10.8",
     "@emotion/react": "11.10.8",
     "@emotion/server": "11.10.0",
@@ -43,7 +44,7 @@
     "@mui/icons-material": "5.11.16",
     "@mui/lab": "5.0.0-alpha.128",
     "@mui/material": "5.12.2",
-    "@mui/x-data-grid": "5.17.26",
+    "@mui/x-data-grid": "6.4.0",
     "@perawallet/connect": "1.2.3",
     "@randlabs/myalgo-connect": "1.4.2",
     "@reduxjs/toolkit": "1.9.5",
