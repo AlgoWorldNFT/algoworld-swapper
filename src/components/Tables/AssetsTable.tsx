@@ -192,7 +192,7 @@ const AssetsTable = ({
         '& .cellStyle': {
           backgroundColor: `background.paper`,
         },
-        height: customNoRowsOverlay && largeScreen ? `400px` : `auto`,
+        height: customNoRowsOverlay && largeScreen ? `400px` : `200px`,
       }}
       loading={loading}
       components={{
@@ -208,7 +208,7 @@ const AssetsTable = ({
       }}
       rows={escrowAddress ? assetsWithBalances : assets}
       hideFooter
-      autoHeight={customNoRowsOverlay && largeScreen ? false : true}
+      autoHeight={false}
       autoPageSize
       columns={escrowAddress ? columnsWithBalance : columns}
       getRowId={(row) => {

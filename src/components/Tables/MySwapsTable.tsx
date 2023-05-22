@@ -193,6 +193,9 @@ const MySwapsTable = ({ swapConfigurations }: Props) => {
       }}
     >
       <DataGrid
+        sx={{
+          height: `400px`,
+        }}
         rows={swapConfigurations}
         columns={columns}
         hideFooter={swapConfigurations.length === 0}
@@ -204,7 +207,7 @@ const MySwapsTable = ({ swapConfigurations }: Props) => {
             </Stack>
           ),
         }}
-        autoHeight
+        autoHeight={false}
         getRowId={(row) => row.escrow}
         autoPageSize
         getCellClassName={() => {
