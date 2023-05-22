@@ -60,7 +60,7 @@ function ReferenceButtons() {
       <IconButton
         size="small"
         target={`_blank`}
-        href="https://algoworldexplorer.io"
+        href="https://explorer.algoworld.io"
       >
         <TravelExploreIcon />
       </IconButton>

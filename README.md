@@ -8,7 +8,7 @@
     </a>
     <br/>
     <a href="https://github.com/AlgoWorldNFT/algoworld-swapper/actions/workflows/release.yml"><img src="https://github.com/AlgoWorldNFT/algoworld-swapper/actions/workflows/release.yml/badge.svg?branch=main" /></a>
-    <a href="https://algoworldexplorer.io"><img src="https://img.shields.io/badge/AlgoWorldExplorer-Platform-orange.svg" /></a>
+    <a href="https://explorer.algoworld.io"><img src="https://img.shields.io/badge/AlgoWorldExplorer-Platform-orange.svg" /></a>
     <a><img src="https://visitor-badge.glitch.me/badge?page_id=AlgoWorldNFT.algoworld-swapper&right_color=blue" /></a>
 </p>
 
@@ -16,7 +16,7 @@
 
 The following repository hosts the source codes for `AlgoWorld Swapper`. Free and open-source swapper that allows for trustless transfers of assets on Algorand blockchain and extensibility.
 
-> _**⚠️ NOTE: [algoworld-contracts](https://github.com/AlgoWorldNFT/algoworld-contracts) used by the swapper are not formally audited by accredited third parties. However, contracts are a basis for certain functionality on the AlgoWorldExplorer.io platform and were created in collaboration with Solution Architect from Algorand (credits @cusma).**_
+> _**⚠️ NOTE: [algoworld-contracts](https://github.com/AlgoWorldNFT/algoworld-contracts) used by the swapper are not formally audited by accredited third parties. However, contracts are a basis for certain functionality on the [explorer](https://explorer.algoworld.io) platform and were created in collaboration with Solution Architect from Algorand (credits @cusma).**_
 
 ---
 
