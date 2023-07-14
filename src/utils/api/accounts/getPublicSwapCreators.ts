@@ -17,7 +17,6 @@
  */
 
 import {
-  ALGOEXPLORER_INDEXER_URL,
   ALGONODE_INDEXER_URL,
   AWVT_ASSET_INDEX,
   AWVT_CREATOR_ADDRESS,
@@ -27,6 +26,7 @@ import { IpfsGateway } from '@/models/Gateway';
 import filterAsync from '@/utils/filterAsync';
 import axios from 'axios';
 import getSwapConfigurationsForAccount from './getSwapConfigurationsForAccount';
+import { isSafeVersion } from '@/utils/isSafeVersion';
 
 export default async function getPublicSwapCreators(
   assetId: number,
@@ -35,7 +35,7 @@ export default async function getPublicSwapCreators(
   limit = 10,
   nextToken?: string,
 ) {
-  let url = `${ALGOEXPLORER_INDEXER_URL(
+  let url = `${ALGONODE_INDEXER_URL(
     chain,
   )}/v2/accounts?asset-id=${assetId}&limit=${limit}&exclude=all`;
 
@@ -80,7 +80,9 @@ export default async function getPublicSwapCreators(
               gateway,
               account.address,
             )
-          ).filter((config) => config.isPublic);
+          ).filter(
+            (config) => config.isPublic && isSafeVersion(config.version),
+          );
 
           return swapConfigs && swapConfigs.length > 0;
         } catch (e) {

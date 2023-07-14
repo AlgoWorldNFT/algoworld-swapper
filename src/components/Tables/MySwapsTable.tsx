@@ -29,6 +29,7 @@ import {
 } from '@/redux/slices/applicationSlice';
 import { MY_SWAPS_TABLE_MANAGE_BTN_ID } from './constants';
 import assetsToRowString from '@/utils/api/assets/assetsToRawString';
+import { isSafeVersion } from '@/utils/isSafeVersion';
 
 const columns: GridColDef[] = [
   {
@@ -114,6 +115,29 @@ const columns: GridColDef[] = [
     headerAlign: `center`,
     headerClassName: `super-app-theme--header`,
     align: `center`,
+    valueFormatter: ({ value }) => {
+      return isSafeVersion(value) ? value : `⚠️ ${value} ⚠️`;
+    },
+    renderCell: (params) => {
+      return (
+        <Tooltip
+          enterTouchDelay={0}
+          title={
+            <span style={{ whiteSpace: `pre-line` }}>
+              {isSafeVersion(params.row.version)
+                ? params.row.version
+                : `⚠️ ${params.row.version}, unsafe version - please upgrade by deleting and recreating the swap!`}
+            </span>
+          }
+        >
+          <div>
+            {isSafeVersion(params.row.version)
+              ? params.row.version
+              : `⚠️ ${params.row.version}`}
+          </div>
+        </Tooltip>
+      );
+    },
   },
   {
     field: `type`,

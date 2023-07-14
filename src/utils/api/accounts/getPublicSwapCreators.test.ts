@@ -1,4 +1,4 @@
-import { ALGOEXPLORER_INDEXER_URL } from '@/common/constants';
+import { ALGONODE_INDEXER_URL } from '@/common/constants';
 import { ChainType } from '@/models/Chain';
 import { IpfsGateway } from '@/models/Gateway';
 import axios from 'axios';
@@ -11,7 +11,7 @@ describe(`getPublicSwapCreators`, () => {
     const gateway = {} as IpfsGateway;
     const chain = ChainType.TestNet;
     const limit = 10;
-    const expectedUrl = `${ALGOEXPLORER_INDEXER_URL(
+    const expectedUrl = `${ALGONODE_INDEXER_URL(
       chain,
     )}/v2/accounts?asset-id=${assetId}&limit=${limit}&exclude=all`;
 
@@ -27,7 +27,7 @@ describe(`getPublicSwapCreators`, () => {
     const chain = ChainType.TestNet;
     const limit = 10;
     const nextToken = `abc`;
-    const expectedUrl = `${ALGOEXPLORER_INDEXER_URL(
+    const expectedUrl = `${ALGONODE_INDEXER_URL(
       chain,
     )}/v2/accounts?asset-id=${assetId}&limit=${limit}&exclude=all&next=${nextToken}`;
 

@@ -239,7 +239,7 @@ export default function PublicSwaps() {
                 chain={chain}
               />
             ) : (
-              <div>Creator address not found...</div>
+              <div>No public swaps found...</div>
             )}
           </>
         )}
