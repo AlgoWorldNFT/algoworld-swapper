@@ -26,18 +26,6 @@ export const CHAIN_TYPE: ChainType = process.env.NEXT_PUBLIC_CHAIN_TYPE
 export const TOC_MD: string = process.env.NEXT_PUBLIC_TOC_MD || `N/A`;
 export const PRIVACY_MD: string = process.env.NEXT_PUBLIC_PRIVACY_MD || `N/A`;
 
-export const ALGOEXPLORER_API_URL = (chain: ChainType) => {
-  return chain.toLowerCase() === `mainnet`
-    ? `https://node.algoexplorerapi.io`
-    : `https://node.testnet.algoexplorerapi.io`;
-};
-
-export const ALGOEXPLORER_INDEXER_URL = (chain: ChainType) => {
-  return chain.toLowerCase() === `mainnet`
-    ? `https://algoindexer.algoexplorerapi.io`
-    : `https://algoindexer.testnet.algoexplorerapi.io`;
-};
-
 export const ALGONODE_INDEXER_URL = (chain: ChainType) => {
   return chain.toLowerCase() === `mainnet`
     ? `	https://mainnet-idx.algonode.cloud`
@@ -97,3 +85,5 @@ export const PERFORM_SWAP_PERFORM_BUTTON_ID = `AWPerformSwapPerformButton`;
 
 export const PUBLIC_SWAPS_SEARCH_FIELD_ID = `AWPublicSwapsSearchField`;
 export const PUBLIC_SWAPS_SEARCH_BUTTON_ID = `AWPublicSwapsSearchButton`;
+
+export const MIN_CONTRACTS_VERSION = `0.0.4`;

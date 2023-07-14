@@ -30,11 +30,11 @@ INCENTIVE_FEES = {
 }
 
 
-ALGOD_URL = "https://node.algoexplorerapi.io"
-TESTNET_ALGOD_URL = "https://node.testnet.algoexplorerapi.io"
+ALGOD_URL = "https://mainnet-api.algonode.cloud"
+TESTNET_ALGOD_URL = "https://testnet-api.algonode.cloud"
 
-INDEXER_URL = "https://algoindexer.algoexplorerapi.io"
-TESTNET_INDEXER_URL = "https://algoindexer.testnet.algoexplorerapi.io"
+INDEXER_URL = "https://mainnet-idx.algonode.cloud"
+TESTNET_INDEXER_URL = "https://testnet-idx.algonode.cloud"
 
 
 def get_incentive_fee(version: str):

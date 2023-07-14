@@ -29,7 +29,7 @@ import { useMemo, useState } from 'react';
 import { Autocomplete, CircularProgress } from '@mui/material';
 import {
   EMPTY_ASSET_IMAGE_URL,
-  ALGOEXPLORER_INDEXER_URL,
+  ALGONODE_INDEXER_URL,
 } from '@/common/constants';
 import useSWR from 'swr';
 import CryptoTextField from '../TextFields/CryptoTextField';
@@ -73,9 +73,7 @@ export const ToAssetPickerDialog = ({
       ? `asset-id=${Number(searchContent)}`
       : `name=${searchContent}`;
 
-    return `${ALGOEXPLORER_INDEXER_URL(
-      chain,
-    )}/v2/assets?${searchParam}&limit=5`;
+    return `${ALGONODE_INDEXER_URL(chain)}/v2/assets?${searchParam}&limit=5`;
   }, [chain, searchContent]);
 
   const { data, error } = useSWR(searchAssetSearchParam, (url: string) => {

@@ -61,6 +61,7 @@ import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
 import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
 import processTransactions from '@/utils/api/transactions/processTransactions';
 import { useWallet } from '@txnlab/use-wallet';
+import { isSafeVersion } from '@/utils/isSafeVersion';
 
 type Props = {
   open: boolean;
@@ -394,7 +395,11 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
           Close
         </Button>
         <Button
-          disabled={depositLoading || deleteLoading}
+          disabled={
+            depositLoading ||
+            deleteLoading ||
+            !isSafeVersion(selectedManageSwap?.version)
+          }
           onClick={() => onShare()}
         >
           Share
@@ -419,7 +424,11 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
               await manageDepositSwap();
               onClose();
             }}
-            disabled={depositLoading || deleteLoading}
+            disabled={
+              depositLoading ||
+              deleteLoading ||
+              !isSafeVersion(selectedManageSwap?.version)
+            }
             loading={depositLoading}
             color="info"
           >

@@ -32,12 +32,15 @@ import Layout from '@/components/Layouts/Layout';
 import store from '@/redux/store';
 import { GoogleAnalytics } from 'nextjs-google-analytics';
 import {
-  initializeProviders,
   WalletProvider,
   PROVIDER_ID,
+  useInitializeProviders,
 } from '@txnlab/use-wallet';
 
 import { ToastContainer } from 'react-toastify';
+import { DeflyWalletConnect } from '@blockshake/defly-connect';
+import { DaffiWalletConnect } from '@daffiwallet/connect';
+import { PeraWalletConnect } from '@perawallet/connect';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -46,18 +49,26 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
-const walletProviders = initializeProviders([
-  // PROVIDER_ID.MYALGO,
-  PROVIDER_ID.PERA,
-  PROVIDER_ID.EXODUS,
-  PROVIDER_ID.DEFLY,
-  PROVIDER_ID.DAFFI,
-  // PROVIDER_ID.WALLETCONNECT,
-  // PROVIDER_ID.ALGOSIGNER,
-]);
+// const walletProviders = initializeProviders([
+//   // PROVIDER_ID.MYALGO,
+//   PROVIDER_ID.PERA,
+//   PROVIDER_ID.EXODUS,
+//   PROVIDER_ID.DEFLY,
+//   PROVIDER_ID.DAFFI,
+//   // PROVIDER_ID.WALLETCONNECT,
+//   // PROVIDER_ID.ALGOSIGNER,
+// ]);
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  const walletProviders = useInitializeProviders({
+    providers: [
+      { id: PROVIDER_ID.PERA, clientStatic: PeraWalletConnect },
+      { id: PROVIDER_ID.DEFLY, clientStatic: DeflyWalletConnect },
+      { id: PROVIDER_ID.EXODUS },
+      { id: PROVIDER_ID.DAFFI, clientStatic: DaffiWalletConnect },
+    ],
+  });
 
   return (
     <CacheProvider value={emotionCache}>

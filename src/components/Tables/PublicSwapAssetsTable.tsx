@@ -10,6 +10,7 @@ import AssetsTable from './AssetsTable';
 import getSwapUrl from '@/utils/api/swaps/getSwapUrl';
 import { PUBLIC_SWAP_OPEN_SWAP_BUTTON_ID } from './constants';
 import { IpfsGateway } from '@/models/Gateway';
+import { isSafeVersion } from '@/utils/isSafeVersion';
 
 type Props = {
   address: string;
@@ -33,8 +34,15 @@ const PublicSwapAssetsTable = ({ address, gateway, chain }: Props) => {
         gateway: gateway,
         chain_type: chain,
       }).then(async (response) => {
-        const swapConfigurationsForProxy =
+        let swapConfigurationsForProxy =
           (await response.data) as SwapConfiguration[];
+
+        swapConfigurationsForProxy = swapConfigurationsForProxy.filter(
+          (config) => {
+            isSafeVersion(config.version);
+          },
+        );
+
         const swapConfigurationAssetsForProxy = swapConfigurationsForProxy.map(
           (config) => {
             return [...config.offering, ...config.requesting];

@@ -20,6 +20,8 @@ import { Container, Stack } from '@mui/material';
 import SwapTypePickerCard from '@/components/Cards/SwapTypePickerCard';
 import { SwapType } from '@/models/Swap';
 import PageHeader from '@/components/Headers/PageHeader';
+import { LATEST_SWAP_PROXY_VERSION } from '@/common/constants';
+import { isSafeVersion } from '@/utils/isSafeVersion';
 
 export default function Dashboard() {
   const pageContent = [
@@ -28,7 +30,7 @@ export default function Dashboard() {
       description: `Secure & Simple 1 to 1 asset swaps with minimal fees.`,
       type: SwapType.ASA_TO_ASA,
       emoji: `🎴↔️🎴`,
-      disabled: false,
+      disabled: !isSafeVersion(LATEST_SWAP_PROXY_VERSION),
       swapPageUrl: `/swaps/asa-to-asa`,
     },
     {
@@ -37,7 +39,7 @@ export default function Dashboard() {
       type: SwapType.MULTI_ASA_TO_ALGO,
       emoji: `x🎴↔️💰`,
       swapPageUrl: `/swaps/asas-to-algo`,
-      disabled: false,
+      disabled: !isSafeVersion(LATEST_SWAP_PROXY_VERSION),
     },
   ];
 
@@ -45,8 +47,8 @@ export default function Dashboard() {
     <div>
       <PageHeader
         title="🏠 Dashboard"
-        description="Create atomic swaps powered by Algorand Smart Signatures.
-        Currently supports ASA to ASA and ASAs to Algo swaps."
+        description="⚠️ Creation of new swaps is disabled until the next version of AlgoWorld contracts is available, the update will introduce important security updates.
+        "
       />
 
       <Container component="main" sx={{ pt: 5, pb: 15 }}>
