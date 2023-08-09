@@ -239,7 +239,7 @@ export default function PublicSwaps() {
                 chain={chain}
               />
             ) : (
-              <div>No public swaps found...</div>
+              <div>No public swaps found, try searching by address...</div>
             )}
           </>
         )}
