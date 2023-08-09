@@ -1,7 +1,7 @@
 {
   "name": "algoworld-swapper",
   "description": "Free and trustless ASA swapper, powered by Algorand ⚡️",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "private": true,
   "author": "AlgoWorld <info@algoworld.io>",
   "license": "GPL-3.0",

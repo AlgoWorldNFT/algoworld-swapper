@@ -22,6 +22,7 @@ import { SwapType } from '@/models/Swap';
 import PageHeader from '@/components/Headers/PageHeader';
 import { LATEST_SWAP_PROXY_VERSION } from '@/common/constants';
 import { isSafeVersion } from '@/utils/isSafeVersion';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const pageContent = [
@@ -47,9 +48,25 @@ export default function Dashboard() {
     <div>
       <PageHeader
         title="🏠 Dashboard"
-        description="⚠️ Creation of new swaps is disabled until the next version of AlgoWorld contracts is available, the update will introduce important security updates.
-        "
-      />
+        description="Create atomic swaps powered by Algorand Smart Signatures.
+        Currently supports ASA to ASA and ASAs to Algo swaps."
+      >
+        <div style={{ textAlign: `center`, color: `#FFD700` }}>
+          To delete your legacy v0.0.3 swaps refer to{` `}
+          <Link
+            href="https://algoworld-swapper-ngzrf5xxr-algoworldexplorer.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: `#94ff8b`,
+              // This gives a yellowish color to the link text
+              textDecoration: `none`, // This removes the underline
+            }}
+          >
+            legacy page.
+          </Link>
+        </div>
+      </PageHeader>
 
       <Container component="main" sx={{ pt: 5, pb: 15 }}>
         <Stack

@@ -41,8 +41,7 @@ export const ALGOEXPLORER_URL = (chain: ChainType) => {
 export const EMPTY_ASSET_IMAGE_URL = (gateway: IpfsGateway) => {
   return `https://${gateway}/ipfs/QmXrsy5TddTiwDCXqGc2yzNowKs7WhCJfQ17rvHuArfnQp`;
 };
-export const LATEST_SWAP_PROXY_VERSION = `0.0.3`;
-export const ALL_SWAP_PROXY_VERSIONS = [LATEST_SWAP_PROXY_VERSION, `0.0.1`];
+export const LATEST_SWAP_PROXY_VERSION = `0.0.4`;
 export const AWVT_ASSET_INDEX = (chain: ChainType) => {
   return chain === ChainType.MainNet ? 827624831 : 100256867;
 };
@@ -62,6 +61,7 @@ export const INCENTIVE_FEES: { [key: string]: number } = {
   '0.0.1': 500_000,
   '0.0.2': 500_000,
   '0.0.3': INCENTIVE_FEE,
+  '0.0.4': INCENTIVE_FEE,
 };
 export const GET_INCENTIVE_FEE = (version: string, toAlgos = false) => {
   const response = INCENTIVE_FEES[version] ?? INCENTIVE_FEE;
