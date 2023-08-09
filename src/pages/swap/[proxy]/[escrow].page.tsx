@@ -63,6 +63,7 @@ import { useAsync, useAsyncRetry } from 'react-use';
 import Link from 'next/link';
 import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
 import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
+import { isSafeVersion } from '@/utils/isSafeVersion';
 
 const PerformSwap = () => {
   const router = useRouter();
@@ -221,7 +222,8 @@ const PerformSwap = () => {
           <LoadingButton
             disabled={
               swapConfiguration.offering.length === 0 ||
-              swapConfiguration.requesting.length === 0
+              swapConfiguration.requesting.length === 0 ||
+              !isSafeVersion(swapConfiguration.version)
             }
             id={PERFORM_SWAP_PERFORM_BUTTON_ID}
             fullWidth
@@ -231,7 +233,9 @@ const PerformSwap = () => {
               setConfirmSwapDialogOpen(true);
             }}
           >
-            Perform Swap
+            {isSafeVersion(swapConfiguration.version)
+              ? `Perform Swap`
+              : `Legacy contract version detected, swap is disabled...`}
           </LoadingButton>
         );
       }

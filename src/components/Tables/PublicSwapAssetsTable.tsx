@@ -39,7 +39,7 @@ const PublicSwapAssetsTable = ({ address, gateway, chain }: Props) => {
 
         swapConfigurationsForProxy = swapConfigurationsForProxy.filter(
           (config) => {
-            isSafeVersion(config.version);
+            return isSafeVersion(config.version);
           },
         );
 
