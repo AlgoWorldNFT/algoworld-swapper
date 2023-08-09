@@ -49,16 +49,6 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
-// const walletProviders = initializeProviders([
-//   // PROVIDER_ID.MYALGO,
-//   PROVIDER_ID.PERA,
-//   PROVIDER_ID.EXODUS,
-//   PROVIDER_ID.DEFLY,
-//   PROVIDER_ID.DAFFI,
-//   // PROVIDER_ID.WALLETCONNECT,
-//   // PROVIDER_ID.ALGOSIGNER,
-// ]);
-
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const walletProviders = useInitializeProviders({
@@ -88,6 +78,24 @@ export default function MyApp(props: MyAppProps) {
           content="Algorand, AlgoWorld, Swapper, ASA, NFT, Blockchain"
         />
         <title>AlgoWorld Swapper</title>
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@algoworld_nft" />
+        <meta name="twitter:title" content="AlgoWorld Swapper" />
+        <meta
+          name="twitter:description"
+          content="⚡️ Free and trustless ASA swapper, powered by Algorand"
+        />
+        <meta name="twitter:image" content="https://imgur.com/Sv4A6cq.png" />
+
+        <meta property="og:title" content="AlgoWorld Swapper" />
+        <meta
+          property="og:description"
+          content="⚡️ Free and trustless ASA swapper, powered by Algorand"
+        />
+        <meta property="og:image" content="https://imgur.com/Sv4A6cq.png" />
+        <meta property="og:url" content="https://swapper.algoworld.io" />
+        <meta property="og:type" content="website" />
 
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />
