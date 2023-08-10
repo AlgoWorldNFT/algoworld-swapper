@@ -20,7 +20,7 @@ import { createTheme } from '@mui/material/styles';
 
 const darkTheme = createTheme({
   typography: {
-    fontFamily: `Helvetica Neue`,
+    fontFamily: `"JetBrains Mono", monospace`,
   },
   palette: {
     mode: `dark`,
