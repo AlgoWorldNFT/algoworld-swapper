@@ -7,7 +7,7 @@ import { generateAccount } from 'algosdk';
 import { LogicSigAccount, encodeAddress } from 'algosdk';
 import getLogicSign from '../accounts/getLogicSignature';
 import { TransactionToSign, TransactionToSignType } from '@/models/Transaction';
-import { dummyContract } from './__utils__/testUtils';
+import { dummyContract, expectUserTxn } from './__utils__/testUtils';
 import { SwapConfiguration, SwapType } from '@/models/Swap';
 import { GET_INCENTIVE_FEE, INCENTIVE_WALLET } from '@/common/constants';
 
@@ -38,20 +38,6 @@ function expectOfferedAsaXferTxn(
   expect(encodeAddress(txn.transaction.to.publicKey)).toBe(to);
   expect(txn.transaction.assetIndex).toBe(assetIndex);
   expect(txn.transaction.amount).toBe(amount);
-}
-function expectRequestedTxn(
-  txn: TransactionToSign,
-  from: string,
-  to: string,
-  assetIndex?: number,
-) {
-  expect(txn.signer).toBe(undefined);
-  expect(txn.type).toBe(TransactionToSignType.UserTransaction);
-  expect(encodeAddress(txn.transaction.from.publicKey)).toBe(from);
-  expect(encodeAddress(txn.transaction.to.publicKey)).toBe(to);
-  if (typeof assetIndex !== `undefined`) {
-    expect(txn.transaction.assetIndex).toBe(assetIndex);
-  }
 }
 
 describe(`createPerformSwapTxns`, () => {
@@ -102,7 +88,7 @@ describe(`createPerformSwapTxns`, () => {
     );
 
     // Second txn - Requested ASA
-    expectRequestedTxn(
+    expectUserTxn(
       txns[1],
       dummyAccount.addr,
       dummyAccount.addr,
@@ -167,7 +153,7 @@ describe(`createPerformSwapTxns`, () => {
     expectIncentivePayment(txns[0], dummyAccount.addr, dummySwapVersion);
 
     // Second txn - Request Algo Payment
-    expectRequestedTxn(txns[1], dummyAccount.addr, dummyAccount.addr);
+    expectUserTxn(txns[1], dummyAccount.addr, dummyAccount.addr);
 
     // Third txn - Assets Transfer
     expectOfferedAsaXferTxn(
