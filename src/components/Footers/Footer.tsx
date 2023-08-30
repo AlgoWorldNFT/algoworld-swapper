@@ -117,7 +117,26 @@ const Footer = () => {
             color="text.secondary"
             component="p"
           >
-            Powered by Algorand ❤️
+            Powered by{` `}
+            <a
+              href="https://developer.algorand.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: `teal` }}
+            >
+              Algorand
+            </a>
+            &nbsp;&{` `}
+            <a
+              href="https://algonode.io/"
+              target="_blank"
+              rel="nourl noreferrer"
+              style={{ color: `gold` }}
+            >
+              AlgoNode
+            </a>
+            {` `}
+            ❤️
           </Typography>
           <Copyright />
         </Container>
