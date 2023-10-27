@@ -51,7 +51,7 @@
     "@txnlab/use-wallet": "2.1.0",
     "@vkruglikov/react-telegram-web-app": "1.11.0",
     "algosdk": "2.4.0",
-    "axios": "1.4.0",
+    "axios": "1.6.0",
     "axios-retry": "3.5.1",
     "next": "13.4.13",
     "next-pwa": "5.6.0",
