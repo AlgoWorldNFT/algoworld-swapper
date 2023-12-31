@@ -4,6 +4,7 @@
 // Used for __tests__/testing-library.js
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
+import fetch from 'node-fetch';
 
 var localStorageMock = (function () {
   var store = {};
@@ -30,5 +31,6 @@ if (typeof window !== 'undefined') {
   });
 }
 
+global.fetch = fetch;
 global.dummyContract =
   'BiAH6AcBBJmH0wcDAGQmASB6zQMKOJBtxFB4ILNYiiRQngRy5XJoFC96k36qJavhHDIEgQISMwAQIxIQMwEQJBIQQAENMgQhBBIzABAkEhAzARAkEhAzAhAjEhBAAG8yBCEEEjMAECQSEDMBECMSEDMCECMSEEAAAQAzAAEiDjMAIDIDEhAzABMyAxIQMwEBIg4zASAyAxIQEDMAESUSEDMAFCgSEDMAFSgSEDMBBygSEDMBCSgSEDMCACgSEDMCBygSEDMCCCEFEhBCAN4zAAEiDjMAIDIDEhAzABMyAxIQMwAVMgMSEDMBEzIDEhAzABElEhAzABIhBhIQMwERJRIQMwESIQYSEDMAFDMBABIQMwEUKBIQMwIHgCCKaxNJ5pPcb9t1+hmc6CDAgBtvAussZRHPAQiO5V1OjRIQMwIAMwEAEhAzAgiBoMIeEhBCAFozAAEiDjMAIDIDEhAzAAkyAxIQMwEBIg4zASAyAxIQMwETMgMSEDMBFTIDEhAQMwAAKBIQMwAHMwEAEhAzAAiB0OgMDxAzARElEhAzAQAzARQSEDMBEiEFEhBD';
