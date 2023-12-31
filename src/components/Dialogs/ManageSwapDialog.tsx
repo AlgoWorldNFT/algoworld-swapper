@@ -57,8 +57,8 @@ import {
 } from './constants';
 import createInitSwapTxns from '@/utils/api/swaps/createInitSwapTxns';
 import { SwapType } from '@/models/Swap';
-import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
-import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
+import createAlloExplorerUrl from '@/utils/createAlloExplorerUrl';
+import AlloExplorerUrlType from '@/models/AlloExplorerUrlType';
 import processTransactions from '@/utils/api/transactions/processTransactions';
 import { useWallet } from '@txnlab/use-wallet';
 import { isSafeVersion } from '@/utils/isSafeVersion';
@@ -157,17 +157,17 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       );
 
       const initTxnId = initSwapResponse.txId || ``;
-      const algoexplorerUrl = createAlgoExplorerUrl(
+      const alloexplorerUrl = createAlloExplorerUrl(
         chain,
         initTxnId,
-        AlgoExplorerUrlType.Transaction,
+        AlloExplorerUrlType.Transaction,
       );
       if (initTxnId !== undefined) {
         toast.success(
           <>
             {`${SWAP_DEPOSIT_PERFORMED_MESSAGE}\n`}
-            <Link href={algoexplorerUrl} target={`_blank`}>
-              View on AlgoExplorer
+            <Link href={alloexplorerUrl} target={`_blank`}>
+              View on Allo Explorer
             </Link>
           </>,
         );
@@ -207,17 +207,17 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
       return;
     }
 
-    const algoexplorerUrl = createAlgoExplorerUrl(
+    const alloexplorerUrl = createAlloExplorerUrl(
       chain,
       depositTxnId,
-      AlgoExplorerUrlType.Transaction,
+      AlloExplorerUrlType.Transaction,
     );
 
     toast.success(
       <>
         {`${SWAP_DEPOSIT_PERFORMED_MESSAGE}\n`}
-        <Link target={`_blank`} href={algoexplorerUrl}>
-          View on AlgoExplorer
+        <Link target={`_blank`} href={alloexplorerUrl}>
+          View on Allo Explorer
         </Link>
       </>,
     );
@@ -309,13 +309,13 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
           {`${SWAP_REMOVED_FROM_PROXY_MESSAGE}\n`}
           <Link
             target="_blank"
-            href={createAlgoExplorerUrl(
+            href={createAlloExplorerUrl(
               chain,
               saveSwapConfigResponseTxn,
-              AlgoExplorerUrlType.Transaction,
+              AlloExplorerUrlType.Transaction,
             )}
           >
-            View on AlgoExplorer
+            View on Allo Explorer
           </Link>
         </>,
       );
@@ -325,13 +325,13 @@ const ManageSwapDialog = ({ open, onClose, onShare }: Props) => {
           {`${SWAP_DEACTIVATION_PERFORMED_MESSAGE}\n`}
           <Link
             target="_blank"
-            href={createAlgoExplorerUrl(
+            href={createAlloExplorerUrl(
               chain,
               deactivateTxnId,
-              AlgoExplorerUrlType.Transaction,
+              AlloExplorerUrlType.Transaction,
             )}
           >
-            View on AlgoExplorer
+            View on Allo Explorer
           </Link>
         </>,
       );

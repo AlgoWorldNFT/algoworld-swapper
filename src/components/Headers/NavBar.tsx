@@ -61,8 +61,8 @@ import {
 } from '@mui/material';
 import { ChainType } from '@/models/Chain';
 import Link from 'next/link';
-import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
-import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
+import createAlloExplorerUrl from '@/utils/createAlloExplorerUrl';
+import AlloExplorerUrlType from '@/models/AlloExplorerUrlType';
 import {
   NAV_BAR_CHAIN_FORM_CONTROL_ID,
   NAV_BAR_CHAIN_SWITCH_ID,
@@ -94,7 +94,7 @@ const pages = [
   { title: `Docs`, url: `https://docs.algoworld.io`, target: `_blank` },
 ] as PageConfiguration[];
 
-const settings = [`AlgoExplorer`, `My Swaps`, `Logout`];
+const settings = [`Allo Explorer`, `My Swaps`, `Logout`];
 const BUG_REPORT_URL = `https://github.com/AlgoWorldNFT/algoworld-swapper/issues/new`;
 
 const NavBar = () => {
@@ -185,12 +185,12 @@ const NavBar = () => {
       return;
     }
 
-    if (event.target.textContent === `AlgoExplorer`) {
+    if (event.target.textContent === `Allo Explorer`) {
       window.open(
-        createAlgoExplorerUrl(
+        createAlloExplorerUrl(
           selectedChain,
           activeAddress as string,
-          AlgoExplorerUrlType.Address,
+          AlloExplorerUrlType.Address,
         ),
         `_blank`,
       );

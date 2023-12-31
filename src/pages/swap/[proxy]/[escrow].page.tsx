@@ -61,8 +61,8 @@ import { toast } from 'react-toastify';
 import { useMemo, useState } from 'react';
 import { useAsync, useAsyncRetry } from 'react-use';
 import Link from 'next/link';
-import createAlgoExplorerUrl from '@/utils/createAlgoExplorerUrl';
-import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
+import createAlloExplorerUrl from '@/utils/createAlloExplorerUrl';
+import AlloExplorerUrlType from '@/models/AlloExplorerUrlType';
 import { isSafeVersion } from '@/utils/isSafeVersion';
 
 const PerformSwap = () => {
@@ -356,14 +356,14 @@ const PerformSwap = () => {
       <>
         {`Swap performed successfully...\n`}
         <Link
-          href={createAlgoExplorerUrl(
+          href={createAlloExplorerUrl(
             chain,
             txId,
-            AlgoExplorerUrlType.Transaction,
+            AlloExplorerUrlType.Transaction,
           )}
           target="_blank"
         >
-          View on AlgoExplorer
+          View on Allo Explorer
         </Link>
       </>,
     );

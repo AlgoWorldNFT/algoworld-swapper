@@ -16,27 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ALGOEXPLORER_URL } from '@/common/constants';
-import AlgoExplorerUrlType from '@/models/AlgoExplorerUrlType';
+import { ALLO_EXPLORER_URL } from '@/common/constants';
+import AlloExplorerUrlType from '@/models/AlloExplorerUrlType';
 import { ChainType } from '@/models/Chain';
 
-function algoExplorerUrlTypeToPath(type: AlgoExplorerUrlType) {
+function alloExplorerUrlTypeToPath(type: AlloExplorerUrlType) {
   switch (type) {
-    case AlgoExplorerUrlType.Transaction:
+    case AlloExplorerUrlType.Transaction:
       return `tx`;
-    case AlgoExplorerUrlType.Address:
-      return `address`;
-    case AlgoExplorerUrlType.Asset:
+    case AlloExplorerUrlType.Address:
+      return `account`;
+    case AlloExplorerUrlType.Asset:
       return `asset`;
   }
 }
 
-export default function createAlgoExplorerUrl(
+export default function createAlloExplorerUrl(
   chain: ChainType,
   input: string,
-  type: AlgoExplorerUrlType,
+  type: AlloExplorerUrlType,
 ) {
-  return `${ALGOEXPLORER_URL(chain)}/${algoExplorerUrlTypeToPath(
+  return `${ALLO_EXPLORER_URL(chain)}/${alloExplorerUrlTypeToPath(
     type,
   )}/${input}`;
 }

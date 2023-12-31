@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-enum AlgoExplorerUrlType {
+enum AlloExplorerUrlType {
   Transaction = `Transaction`,
   Address = `Address`,
   Asset = `Asset`,
 }
 
-export default AlgoExplorerUrlType;
+export default AlloExplorerUrlType;
