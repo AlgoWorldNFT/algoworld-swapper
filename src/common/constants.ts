@@ -32,10 +32,10 @@ export const ALGONODE_INDEXER_URL = (chain: ChainType) => {
     : `https://testnet-idx.algonode.cloud`;
 };
 
-export const ALGOEXPLORER_URL = (chain: ChainType) => {
+export const ALLO_EXPLORER_URL = (chain: ChainType) => {
   return chain.toLowerCase() === `mainnet`
-    ? `https://algoexplorer.io`
-    : `https://testnet.algoexplorer.io`;
+    ? `https://allo.info`
+    : `https://testnet.allo.info`;
 };
 
 export const EMPTY_ASSET_IMAGE_URL = (gateway: IpfsGateway) => {
