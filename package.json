@@ -71,8 +71,8 @@
     "tsparticles": "2.11.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.6.6",
-    "@commitlint/config-conventional": "17.6.6",
+    "@commitlint/cli": "19.3.0",
+    "@commitlint/config-conventional": "19.2.2",
     "@playwright/test": "1.36.1",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "14.0.0",
