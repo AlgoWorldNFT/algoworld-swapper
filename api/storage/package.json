@@ -6,10 +6,10 @@
   "author": "AlgoWorld <info@algoworld.io>",
   "license": "GPL-3.0",
   "dependencies": {
-    "typescript": "5.1.6",
-    "web3.storage": "4.5.4"
+    "typescript": "5.4.5",
+    "web3.storage": "4.5.5"
   },
   "devDependencies": {
-    "@vercel/node": "2.15.5"
+    "@vercel/node": "2.15.10"
   }
 }
