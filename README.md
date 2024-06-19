@@ -18,6 +18,8 @@ The following repository hosts the source codes for `AlgoWorld Swapper`. Free an
 
 > _**⚠️ NOTE: [algoworld-contracts](https://github.com/AlgoWorldNFT/algoworld-contracts) used by the swapper are formally audited by [Tenset Security](https://www.tenset.io/en/smart-contract-audits). Contracts are a basis for certain functionality on the [explorer](https://explorer.algoworld.io) platform and were developed in collaboration with Solution Architect from Algorand (credits @cusma).**_
 
+> **⚠️ REPOSITORY IS NO LONGER ACTIVELY MAINTAINED, swapper is planned to be revamped in v4 (most likely to reside in a new repo) with a simplified functionality removing dependency on ipfs providers, existing implementation is to be kept available in archived mode. Audited stateless contracts are available for anyone to use or be used as a base for their own implementations.**
+
 ---
 
 ## 💁‍♂️ Docs
