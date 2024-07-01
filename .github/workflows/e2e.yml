@@ -19,7 +19,7 @@ jobs:
         with:
           access_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Expose e2e base url
         run: |
