@@ -52,7 +52,7 @@
     "@vkruglikov/react-telegram-web-app": "^1.11.0",
     "@walletconnect/modal-sign-html": "^2.5.5",
     "algosdk": "^2.4.0",
-    "axios": "1.4.0",
+    "axios": "1.6.4",
     "axios-retry": "3.5.1",
     "next": "13.4.13",
     "next-pwa": "5.6.0",
